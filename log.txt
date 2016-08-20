@@ -1,0 +1,3 @@
+[2016-08-20 14:13:15.821509000]FTPServer starting...
+[2016-08-20 14:13:15.824030000]FTPServer waiting for connections on port 3370
+[2016-08-20 14:13:23.516131000]FTPServer new connection established
