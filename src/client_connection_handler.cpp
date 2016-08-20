@@ -9,6 +9,7 @@
 #include "../inc/thread_fwk/jobdispatcher.h"
 #include "../inc/server_socket_listener.h"
 #include <string>
+#include <cstdlib>
 
 ClientConnectionHandler::~ClientConnectionHandler() {
 	std::lock_guard<std::mutex> execLock(execMutex);
@@ -16,7 +17,8 @@ ClientConnectionHandler::~ClientConnectionHandler() {
 
 ClientConnectionHandler::ClientConnectionHandler(int fileDescriptor) :
 valid(true),
-currDir("/Users/janne/GitHub/FTPServer"){
+currDir("/Users/janne/GitHub/FTPServer"),
+dataFd(-1){
 	JobDispatcher::GetApi()->SubscribeToEvent(fileDescriptor, this);
 
 	std::string initConnStr = "220 OK.\r\n";
@@ -62,27 +64,39 @@ void ClientConnectionHandler::HandleEvent(unsigned int eventNo, const EventDataB
 
 	printf("stringBuf: %s\n", stringBuf.c_str());
 
-	std::string command;
-	std::string subCommand;
+	std::vector<std::string> command = SplitString(stringBuf, ' ');
 
-	size_t pos = stringBuf.find(' ');
+	if(command.size() == 0) {
+		JobDispatcher::GetApi()->Log("ERROR: Couldn't parse command: %s", stringBuf.c_str());
+		JobDispatcher::GetApi()->NotifyExecutionFinished();
+	}
 
-	command = stringBuf.substr(0, pos);
-	subCommand = stringBuf.substr(pos + 1, stringBuf.length());
-
-	if("USER" == command) {
+	if("USER" == command[0]) {
 		printf("Sending 230 ok\n");
 		std::string send_string = "230 OK, go ahead\r\n";
 		SendResponse(send_string, eventNo);
-	} else if("PWD" == command) {
+	} else if("PWD" == command[0]) {
 		printf("Sending PWD response\n");
 		std::string send_string = "257 \"" +  currDir + "\"\r\n";
 		SendResponse(send_string, eventNo);
-	} else if("TYPE" == command && "I" == subCommand) {
+	} else if("PORT" == command[0]) {
+		printf("Sending PORT response\n");
+		std::vector<std::string> addressInfo = SplitString(command[1], ',');
+		std::string ipAddress = addressInfo[0] + "." + addressInfo[1] + "." + addressInfo[2] + "." + addressInfo[3];
+		unsigned int portNoInt = atoi(addressInfo[4].c_str()) * 256 + atoi(addressInfo[5].c_str());
+		std::string portNo = std::to_string(portNoInt);
+
+		printf("ipAddress: %s, portNo: %s\n", ipAddress.c_str(), portNo.c_str());
+		dataFd = socketApi.getClientSocketFileDescriptor(ipAddress, portNo);
+
+		printf("Sending 200 PORT ok\n");
+		std::string send_string = "200, PORT command ok\r\n";
+		SendResponse(send_string, eventNo);
+	} else if("TYPE" == command[0] && "I" == command[1]) {
 		printf("Sending 200 ok\n");
 		std::string send_string = "200 Binary transfer mode chosen\r\n";
 		SendResponse(send_string, eventNo);
-	} else if("QUIT" == command) {
+	} else if("QUIT" == command[0]) {
 		printf("Sending 221 QUIT response\n");
 		std::string send_string = "221 Bye Bye\r\n";
 		SendResponse(send_string, eventNo);
@@ -91,7 +105,7 @@ void ClientConnectionHandler::HandleEvent(unsigned int eventNo, const EventDataB
 		JobDispatcher::GetApi()->RaiseEvent(CLIENT_DISCONNECTED_EVENT, new ClientDisconnectedEventData(eventNo));
 		valid = false;
 	} else {
-		printf("Sending 500 not implemented response to: %s\n", command.c_str());
+		printf("Sending 500 not implemented response to: %s\n", command[0].c_str());
 		std::string send_string = "500 Not implemented\r\n";
 		SendResponse(send_string, eventNo);
 	}
@@ -107,4 +121,23 @@ void ClientConnectionHandler::SendResponse(const std::string& response, int file
 	socketApi.sendData(fileDescriptor, sendData);
 
 	delete sendData.data;
+}
+
+std::vector<std::string> ClientConnectionHandler::SplitString(std::string& str, const char& c) {
+	std::vector<std::string> retVal;
+
+	std::string::size_type start_pos = 0;
+	std::string::size_type end_pos = str.find(c);
+
+	while (end_pos != std::string::npos) {
+		retVal.push_back(str.substr(start_pos, end_pos-start_pos));
+		start_pos = ++end_pos;
+		end_pos = str.find(c, end_pos);
+	}
+
+	if (end_pos == std::string::npos) {
+	 retVal.push_back(str.substr(start_pos, str.length()));
+	}
+
+	return retVal;
 }

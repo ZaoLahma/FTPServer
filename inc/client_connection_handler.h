@@ -27,8 +27,10 @@ private:
 	std::mutex execMutex;
 	bool valid;
 	std::string currDir;
+	int dataFd;
 
 	void SendResponse(const std::string& response, int fileDescriptor);
+	std::vector<std::string> SplitString(std::string& string, const char& character);
 };
 
 typedef std::map<int, ClientConnectionHandler*> ClientConnMapT;
