@@ -15,7 +15,8 @@ ClientConnectionHandler::~ClientConnectionHandler() {
 }
 
 ClientConnectionHandler::ClientConnectionHandler(int fileDescriptor) :
-valid(true) {
+valid(true),
+currDir("/Users/janne/GitHub/FTPServer"){
 	JobDispatcher::GetApi()->SubscribeToEvent(fileDescriptor, this);
 
 	std::string initConnStr = "220 OK.\r\n";
@@ -74,8 +75,12 @@ void ClientConnectionHandler::HandleEvent(unsigned int eventNo, const EventDataB
 		std::string send_string = "230 OK, go ahead\r\n";
 		SendResponse(send_string, eventNo);
 	}
-	else if("QUIT" == command)
-	{
+	else if("PWD" == command) {
+		printf("Sending PWD response\n");
+		std::string send_string = "257 \"" +  currDir + "\"\r\n";
+		SendResponse(send_string, eventNo);
+	}
+	else if("QUIT" == command) {
 		printf("Sending 221 QUIT response\n");
 		std::string send_string = "221 Bye Bye\r\n";
 		SendResponse(send_string, eventNo);

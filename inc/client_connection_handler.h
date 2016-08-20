@@ -26,6 +26,7 @@ private:
 	SocketAPI socketApi;
 	std::mutex execMutex;
 	bool valid;
+	std::string currDir;
 
 	void SendResponse(const std::string& response, int fileDescriptor);
 };
