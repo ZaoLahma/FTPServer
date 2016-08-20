@@ -10,6 +10,10 @@
 #include <string>
 #include <sys/time.h>
 
+ServerSocketListener::ServerSocketListener() {
+	JobDispatcher::GetApi()->SubscribeToEvent(CLIENT_DISCONNECTED_EVENT, this);
+}
+
 void ServerSocketListener::Execute() {
 	int serverFd = socketAPI.getServerSocketFileDescriptor("3370");
 	observedFds.push_back(serverFd);
@@ -34,6 +38,7 @@ void ServerSocketListener::Execute() {
 
 		if(retval > 0)
 		{
+			std::vector<int> newFds;
 			fdIter = observedFds.begin();
 			for( ; fdIter != observedFds.end(); ++fdIter) {
 				if(FD_ISSET(*fdIter, &rfds)) {
@@ -41,25 +46,19 @@ void ServerSocketListener::Execute() {
 						int clientFd = socketAPI.waitForConnection(serverFd);
 						JobDispatcher::GetApi()->Log("FTPServer new connection established");
 
-						std::string initConnStr = "220 OK.\r\n";
-
-						SocketBuf initConnBuf;
-						initConnBuf.dataSize = strlen(initConnStr.c_str());
-						initConnBuf.data = new char[initConnBuf.dataSize];
-
-						memcpy(initConnBuf.data, initConnStr.c_str(), initConnBuf.dataSize);
-
-						socketAPI.sendData(clientFd, initConnBuf);
-
-						delete initConnBuf.data;
-
-						observedFds.push_back(clientFd);
+						ClientConnectionHandler* clientConn = new ClientConnectionHandler(clientFd);
+						clientConnections[clientFd] = clientConn;
+						newFds.push_back(clientFd);
 					}
 					else
 					{
-						//Start a new job handling the already established connection
+						JobDispatcher::GetApi()->RaiseEvent(*fdIter, nullptr);
 					}
 				}
+			}
+			fdIter = newFds.begin();
+			for(; fdIter != newFds.end(); ++fdIter) {
+				observedFds.push_back(*fdIter);
 			}
 		}
 		else if(retval == 0) {
@@ -70,5 +69,32 @@ void ServerSocketListener::Execute() {
 			JobDispatcher::GetApi()->NotifyExecutionFinished();
 			break;
 		}
+
+		std::lock_guard<std::mutex> fileDescriptorLock(fileDescriptorMutex);
+		std::vector<int>::iterator fdsToCloseIter = fdsToClose.begin();
+		for(; fdsToCloseIter != fdsToClose.end(); ++fdsToCloseIter) {
+			fdIter = std::find(observedFds.begin(), observedFds.end() - 1, *fdsToCloseIter);
+			if(observedFds.end() != fdIter) {
+				observedFds.erase(fdIter);
+			}
+			socketAPI.disconnect(*fdsToCloseIter);
+
+			ClientConnMapT::iterator clientConn = clientConnections.find(*fdsToCloseIter);
+
+			if(clientConn != clientConnections.end()) {
+				delete clientConn->second;
+				clientConnections.erase(clientConn);
+			}
+			printf("Disconnected a client\n");
+		}
+		fdsToClose.clear();
 	}
+}
+
+void ServerSocketListener::HandleEvent(const uint32_t eventNo, const EventDataBase* dataPtr) {
+	std::lock_guard<std::mutex> fileDescriptorLock(fileDescriptorMutex);
+
+	ClientDisconnectedEventData* clientDisconnected = (ClientDisconnectedEventData*)(dataPtr);
+
+	fdsToClose.push_back(clientDisconnected->fileDescriptor);
 }
