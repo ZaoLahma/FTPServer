@@ -26,6 +26,8 @@ private:
 	SocketAPI socketApi;
 	std::mutex execMutex;
 	bool valid;
+
+	void SendResponse(const std::string& response, int fileDescriptor);
 };
 
 typedef std::map<int, ClientConnectionHandler*> ClientConnMapT;

@@ -62,7 +62,7 @@ void ServerSocketListener::Execute() {
 			}
 		}
 		else if(retval == 0) {
-			printf("No connections established\n");
+			//printf("No connections established\n");
 		}
 		else {
 			perror("select failed\n");
@@ -93,8 +93,9 @@ void ServerSocketListener::Execute() {
 
 void ServerSocketListener::HandleEvent(const uint32_t eventNo, const EventDataBase* dataPtr) {
 	std::lock_guard<std::mutex> fileDescriptorLock(fileDescriptorMutex);
+	if(CLIENT_DISCONNECTED_EVENT == eventNo){
+		ClientDisconnectedEventData* clientDisconnected = (ClientDisconnectedEventData*)(dataPtr);
 
-	ClientDisconnectedEventData* clientDisconnected = (ClientDisconnectedEventData*)(dataPtr);
-
-	fdsToClose.push_back(clientDisconnected->fileDescriptor);
+		fdsToClose.push_back(clientDisconnected->fileDescriptor);
+	}
 }

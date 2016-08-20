@@ -55,11 +55,11 @@ void ClientConnectionHandler::HandleEvent(unsigned int eventNo, const EventDataB
 		delete buf.data;
 	}
 
-	printf("stringBuf: %s\n", stringBuf.c_str());
-
 	if(stringBuf == "") {
 		return;
 	}
+
+	printf("stringBuf: %s\n", stringBuf.c_str());
 
 	std::string command;
 	std::string subCommand;
@@ -69,46 +69,35 @@ void ClientConnectionHandler::HandleEvent(unsigned int eventNo, const EventDataB
 	command = stringBuf.substr(0, pos);
 	subCommand = stringBuf.substr(pos + 1, stringBuf.length());
 
-	SocketBuf sendData;
 	if("USER" == command) {
 		printf("Sending 230 ok\n");
 		std::string send_string = "230 OK, go ahead\r\n";
-		sendData.dataSize = strlen(send_string.c_str());
-		sendData.data = new char[sendData.dataSize];
-
-		memcpy(sendData.data, send_string.c_str(), sendData.dataSize);
-
-		socketApi.sendData(eventNo, sendData);
-
-		delete sendData.data;
-
+		SendResponse(send_string, eventNo);
 	}
 	else if("QUIT" == command)
 	{
 		printf("Sending 221 QUIT response\n");
 		std::string send_string = "221 Bye Bye\r\n";
-		sendData.dataSize = strlen(send_string.c_str());
-		sendData.data = new char[sendData.dataSize];
-
-		memcpy(sendData.data, send_string.c_str(), sendData.dataSize);
-
-		socketApi.sendData(eventNo, sendData);
-
-		delete sendData.data;
+		SendResponse(send_string, eventNo);
 
 		JobDispatcher::GetApi()->UnsubscribeToEvent(eventNo, this);
 		JobDispatcher::GetApi()->RaiseEvent(CLIENT_DISCONNECTED_EVENT, new ClientDisconnectedEventData(eventNo));
 		valid = false;
 	} else {
 		printf("Sending 500 not implemented response to: %s\n", command.c_str());
-		std::string send_string = "500 UNKNOWN COMMAND\r\n";
-		sendData.dataSize = strlen(send_string.c_str());
-		sendData.data = new char[sendData.dataSize];
-
-		memcpy(sendData.data, send_string.c_str(), sendData.dataSize);
-
-		socketApi.sendData(eventNo, sendData);
-
-		delete sendData.data;
+		std::string send_string = "500 Not implemented\r\n";
+		SendResponse(send_string, eventNo);
 	}
+}
+
+void ClientConnectionHandler::SendResponse(const std::string& response, int fileDescriptor) {
+	SocketBuf sendData;
+	sendData.dataSize = strlen(response.c_str());
+	sendData.data = new char[sendData.dataSize];
+
+	memcpy(sendData.data, response.c_str(), sendData.dataSize);
+
+	socketApi.sendData(fileDescriptor, sendData);
+
+	delete sendData.data;
 }
