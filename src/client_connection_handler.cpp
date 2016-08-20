@@ -74,13 +74,15 @@ void ClientConnectionHandler::HandleEvent(unsigned int eventNo, const EventDataB
 		printf("Sending 230 ok\n");
 		std::string send_string = "230 OK, go ahead\r\n";
 		SendResponse(send_string, eventNo);
-	}
-	else if("PWD" == command) {
+	} else if("PWD" == command) {
 		printf("Sending PWD response\n");
 		std::string send_string = "257 \"" +  currDir + "\"\r\n";
 		SendResponse(send_string, eventNo);
-	}
-	else if("QUIT" == command) {
+	} else if("TYPE" == command && "I" == subCommand) {
+		printf("Sending 200 ok\n");
+		std::string send_string = "200 Binary transfer mode chosen\r\n";
+		SendResponse(send_string, eventNo);
+	} else if("QUIT" == command) {
 		printf("Sending 221 QUIT response\n");
 		std::string send_string = "221 Bye Bye\r\n";
 		SendResponse(send_string, eventNo);
