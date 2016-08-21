@@ -10,6 +10,7 @@
 #include "../inc/server_socket_listener.h"
 #include <string>
 #include <cstdlib>
+#include <stdio.h>
 
 ClientConnectionHandler::~ClientConnectionHandler() {
 	std::lock_guard<std::mutex> execLock(execMutex);
@@ -92,6 +93,41 @@ void ClientConnectionHandler::HandleEvent(unsigned int eventNo, const EventDataB
 		printf("Sending 200 PORT ok\n");
 		std::string send_string = "200, PORT command ok\r\n";
 		SendResponse(send_string, eventNo);
+	} else if("LIST" == command[0]) {
+		char buffer[2048];
+		std::string response = "150 ";
+        std::string ls = "ls -l";
+        ls.append(" 2>&1");
+        FILE* file = popen(ls.c_str(), "r");
+
+        while (!feof(file)) {
+            if (fgets(buffer, 2048, file) != NULL) {
+            	response.append(buffer);
+            }
+        }
+
+        printf("LS: %s\n", response.c_str());
+        std::vector<std::string> responseVector = SplitString(response, '\n');
+        response = "";
+        for(unsigned int i = 0; i < responseVector.size(); ++i) {
+        	response += responseVector[i] + "\r\n";
+        }
+
+        response += "\r\n";
+
+		printf("Sending 150 LIST ok\n");
+		std::string send_string = "150 LIST executed ok, data follows\r\n";
+		SendResponse(send_string, eventNo);
+
+		printf("dataFd: %d\n", dataFd);
+        SendResponse(response, dataFd);
+
+		printf("Sending 226 LIST ok\n");
+		send_string = "226 LIST data send finished\r\n";
+		SendResponse(send_string, eventNo);
+
+		socketApi.disconnect(dataFd);
+		dataFd = -1;
 	} else if("TYPE" == command[0] && "I" == command[1]) {
 		printf("Sending 200 ok\n");
 		std::string send_string = "200 Binary transfer mode chosen\r\n";
