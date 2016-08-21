@@ -34,7 +34,10 @@ private:
 	std::string transferMode;
 
 	void SendResponse(const std::string& response, int fileDescriptor);
-	std::vector<std::string> SplitString(std::string& string, const std::string& delimiter);
+	std::vector<std::string> SplitString(const std::string& string, const std::string& delimiter);
+	bool TransferActive();
+
+	std::vector<std::string> GetCommand();
 };
 
 typedef std::map<int, ClientConnectionHandler*> ClientConnMapT;

@@ -48,38 +48,7 @@ void ClientConnectionHandler::HandleEvent(unsigned int eventNo, const EventDataB
 		return;
 	}
 
-	SocketBuf buf;
-	buf.data = nullptr;
-	buf.dataSize = 0;
-
-	std::string stringBuf;
-	buf = socketApi.receiveData(eventNo, 1);
-
-	while(*buf.data != '\n') {
-		if(*buf.data != '\r') {
-			stringBuf += std::string(buf.data);
-		}
-		delete buf.data;
-
-		buf = socketApi.receiveData(eventNo, 1);
-	}
-
-	if(nullptr != buf.data) {
-		delete buf.data;
-	}
-
-	if(stringBuf == "") {
-		return;
-	}
-
-	printf("stringBuf: %s\n", stringBuf.c_str());
-
-	std::vector<std::string> command = SplitString(stringBuf, " ");
-
-	if(command.size() == 0) {
-		JobDispatcher::GetApi()->Log("ERROR: Couldn't parse command: %s", stringBuf.c_str());
-		JobDispatcher::GetApi()->NotifyExecutionFinished();
-	}
+	std::vector<std::string> command = GetCommand();
 
 	if("USER" == command[0]) {
 		printf("Sending 230 ok\n");
@@ -163,6 +132,9 @@ void ClientConnectionHandler::HandleEvent(unsigned int eventNo, const EventDataB
 				*sendBuf.data = c;
 				socketApi.sendData(dataFd, sendBuf);
 				length -= 1;
+				if(false == TransferActive()) {
+					break;
+				}
 			}
 		} else if("I" == transferMode) {
 			unsigned int max_buf = 2048;
@@ -179,6 +151,9 @@ void ClientConnectionHandler::HandleEvent(unsigned int eventNo, const EventDataB
 				}
 				sendBuf.dataSize = read_bytes;
 				socketApi.sendData(dataFd, sendBuf);
+				if(false == TransferActive()) {
+					break;
+				}
 			}
 		}
 		fileStream.close();
@@ -243,7 +218,7 @@ void ClientConnectionHandler::HandleEvent(unsigned int eventNo, const EventDataB
 					fileStream<<*receiveBuf.data;
 				}
 				delete[] receiveBuf.data;
-			} while(receiveBuf.dataSize != 0);
+			} while(receiveBuf.dataSize != 0 && TransferActive());
 		} else if("I" == transferMode) {
 
 			unsigned int max_buf = 2048;
@@ -251,7 +226,7 @@ void ClientConnectionHandler::HandleEvent(unsigned int eventNo, const EventDataB
 				receiveBuf = socketApi.receiveData(dataFd, max_buf);
 				fileStream.write(receiveBuf.data, receiveBuf.dataSize);
 				delete[] receiveBuf.data;
-			} while(receiveBuf.dataSize == max_buf);
+			} while(receiveBuf.dataSize == max_buf && TransferActive());
 		}
 
 
@@ -291,7 +266,7 @@ void ClientConnectionHandler::SendResponse(const std::string& response, int file
 	delete[] sendData.data;
 }
 
-std::vector<std::string> ClientConnectionHandler::SplitString(std::string& str, const std::string& delimiter) {
+std::vector<std::string> ClientConnectionHandler::SplitString(const std::string& str, const std::string& delimiter) {
 	std::vector<std::string> retVal;
 
 	std::string::size_type start_pos = 0;
@@ -310,4 +285,60 @@ std::vector<std::string> ClientConnectionHandler::SplitString(std::string& str, 
 	}
 
 	return retVal;
+}
+
+bool ClientConnectionHandler::TransferActive() {
+	fd_set rfds;
+	FD_ZERO(&rfds);
+
+	FD_SET(controlFd, &rfds);
+
+
+	timeval timeout;
+	timeout.tv_usec = 0;
+	timeout.tv_sec = 0;
+	int retval = select(controlFd + 1, &rfds, NULL, NULL, &timeout);
+	if(retval > 0) {
+		std::vector<std::string> command = GetCommand();
+		if(command[0].find("ABOR") != std::string::npos) {
+			std::string send_string = "426 Abort ok\r\n";
+			SendResponse(send_string, controlFd);
+			return false;
+		}
+	}
+
+	return true;
+}
+
+std::vector<std::string> ClientConnectionHandler::GetCommand() {
+	SocketBuf buf;
+	buf.data = nullptr;
+	buf.dataSize = 0;
+
+	std::string stringBuf;
+	buf = socketApi.receiveData(controlFd, 1);
+
+	while(*buf.data != '\n') {
+		if(*buf.data != '\r') {
+			stringBuf += std::string(buf.data);
+		}
+		delete buf.data;
+
+		buf = socketApi.receiveData(controlFd, 1);
+	}
+
+	if(nullptr != buf.data) {
+		delete buf.data;
+	}
+
+	printf("stringBuf: %s\n", stringBuf.c_str());
+
+	std::vector<std::string> command = SplitString(stringBuf, " ");
+
+	if(command.size() == 0) {
+		JobDispatcher::GetApi()->Log("ERROR: Couldn't parse command: %s", stringBuf.c_str());
+		JobDispatcher::GetApi()->NotifyExecutionFinished();
+	}
+
+	return command;
 }
