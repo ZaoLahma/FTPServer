@@ -145,6 +145,9 @@ void ClientConnectionHandler::HandleEvent(unsigned int eventNo, const EventDataB
 
 		printf("Sending 150 RETR ok\n");
 		std::string send_string = "150 RETR executed ok, data follows\r\n";
+		if("A" == transferMode) {
+			send_string = "150 RETR ok. Note transmission mode ASCII is slow, data follows\r\n";
+		}
 		SendResponse(send_string, eventNo);
 
 		SocketBuf sendBuf;
@@ -162,7 +165,7 @@ void ClientConnectionHandler::HandleEvent(unsigned int eventNo, const EventDataB
 				length -= 1;
 			}
 		} else if("I" == transferMode) {
-			unsigned int max_buf = 1024;
+			unsigned int max_buf = 2048;
 			sendBuf.data = new char[max_buf];
 			while(length > 0) {
 				unsigned int read_bytes = 0;
@@ -178,6 +181,7 @@ void ClientConnectionHandler::HandleEvent(unsigned int eventNo, const EventDataB
 				socketApi.sendData(dataFd, sendBuf);
 			}
 		}
+		fileStream.close();
 		delete[] sendBuf.data;
 
 		printf("Sending 226 RETR ok\n");
@@ -220,6 +224,43 @@ void ClientConnectionHandler::HandleEvent(unsigned int eventNo, const EventDataB
 		transferMode = command[1];
 		std::string send_string = "200 Transfer mode change to: " + transferMode + "\r\n";
 		SendResponse(send_string, eventNo);
+	} else if("STOR" == command[0]) {
+		std::ofstream fileStream(command[1]);
+
+		printf("Sending 150 STORE ok\n");
+		std::string send_string = "150 STORE ok, send data pretty please\r\n";
+		if("A" == transferMode) {
+			send_string = "150 STORE ok, note transmission mode ASCII is slow\r\n";
+		}
+		SendResponse(send_string, eventNo);
+
+		SocketBuf receiveBuf;
+		if("A" == transferMode) {
+			receiveBuf = socketApi.receiveData(dataFd, 1);
+			do {
+				receiveBuf = socketApi.receiveData(dataFd, 1);
+				if(0 != receiveBuf.dataSize && *receiveBuf.data != '\r') {
+					fileStream<<*receiveBuf.data;
+				}
+				delete[] receiveBuf.data;
+			} while(receiveBuf.dataSize != 0);
+		} else if("I" == transferMode) {
+
+			unsigned int max_buf = 2048;
+			do {
+				receiveBuf = socketApi.receiveData(dataFd, max_buf);
+				fileStream.write(receiveBuf.data, receiveBuf.dataSize);
+				delete[] receiveBuf.data;
+			} while(receiveBuf.dataSize == max_buf);
+		}
+
+
+		printf("Sending 226 STOR ok\n");
+		send_string = "226 STOR data received ok\r\n";
+		SendResponse(send_string, eventNo);
+
+		socketApi.disconnect(dataFd);
+
 	} else if("QUIT" == command[0]) {
 		printf("Sending 221 QUIT response\n");
 		std::string send_string = "221 Bye Bye\r\n";
@@ -247,7 +288,7 @@ void ClientConnectionHandler::SendResponse(const std::string& response, int file
 
 	socketApi.sendData(fileDescriptor, sendData);
 
-	delete sendData.data;
+	delete[] sendData.data;
 }
 
 std::vector<std::string> ClientConnectionHandler::SplitString(std::string& str, const std::string& delimiter) {
