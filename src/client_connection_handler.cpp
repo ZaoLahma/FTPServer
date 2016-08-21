@@ -74,7 +74,7 @@ void ClientConnectionHandler::HandleEvent(unsigned int eventNo, const EventDataB
 
 	printf("stringBuf: %s\n", stringBuf.c_str());
 
-	std::vector<std::string> command = SplitString(stringBuf, ' ');
+	std::vector<std::string> command = SplitString(stringBuf, " ");
 
 	if(command.size() == 0) {
 		JobDispatcher::GetApi()->Log("ERROR: Couldn't parse command: %s", stringBuf.c_str());
@@ -91,7 +91,7 @@ void ClientConnectionHandler::HandleEvent(unsigned int eventNo, const EventDataB
 		SendResponse(send_string, eventNo);
 	} else if("PORT" == command[0]) {
 		printf("Sending PORT response\n");
-		std::vector<std::string> addressInfo = SplitString(command[1], ',');
+		std::vector<std::string> addressInfo = SplitString(command[1], ",");
 		std::string ipAddress = addressInfo[0] + "." + addressInfo[1] + "." + addressInfo[2] + "." + addressInfo[3];
 		unsigned int portNoInt = atoi(addressInfo[4].c_str()) * 256 + atoi(addressInfo[5].c_str());
 		std::string portNo = std::to_string(portNoInt);
@@ -116,7 +116,7 @@ void ClientConnectionHandler::HandleEvent(unsigned int eventNo, const EventDataB
 		}
 
 		printf("LS: %s\n", response.c_str());
-		std::vector<std::string> responseVector = SplitString(response, '\n');
+		std::vector<std::string> responseVector = SplitString(response, "\n");
 		response = "";
 		for(unsigned int i = 0; i < responseVector.size(); ++i) {
 			response += responseVector[i] + "\r\n";
@@ -171,24 +171,26 @@ void ClientConnectionHandler::HandleEvent(unsigned int eventNo, const EventDataB
 		socketApi.disconnect(dataFd);
 		dataFd = -1;
 	} else if("CWD" == command[0]) {
+		std::string tmpDir = "";
 		bool validDirectory = true;
-		if(command[1] == "..") {
-			std::vector<std::string> splitDirectory = SplitString(currDir, '/');
-			std::string tmpDir = "";
-			for(unsigned int i = 0; i < splitDirectory.size() - 1; ++i) {
+		if(command[1].find("..") != std::string::npos) {
+			std::vector<std::string> levels = SplitString(command[1], "..");
+			std::vector<std::string> splitDirectory = SplitString(currDir, "/");
+			for(unsigned int i = 0; i < splitDirectory.size() - levels.size(); ++i) {
 				tmpDir += '/' + splitDirectory[i];
 			}
 			if(tmpDir.find(ftpDir) != std::string::npos) {
-				currDir = tmpDir;
+
 			} else {
 				validDirectory = false;
 			}
 		}
 		else {
-			currDir = currDir + "/" + command[1];
+			tmpDir = currDir + "/" + command[1];
 		}
-		printf("currDir: %s\n", currDir.c_str());
-		if(validDirectory && 0 == chdir(currDir.c_str())) {
+		printf("tmpDir: %s\n", tmpDir.c_str());
+		if(validDirectory && 0 == chdir(tmpDir.c_str())) {
+			currDir = tmpDir;
 			printf("Sending 250 ok\n");
 			std::string send_string = "250 CWD ok\r\n";
 			SendResponse(send_string, eventNo);
@@ -232,18 +234,18 @@ void ClientConnectionHandler::SendResponse(const std::string& response, int file
 	delete sendData.data;
 }
 
-std::vector<std::string> ClientConnectionHandler::SplitString(std::string& str, const char& c) {
+std::vector<std::string> ClientConnectionHandler::SplitString(std::string& str, const std::string& delimiter) {
 	std::vector<std::string> retVal;
 
 	std::string::size_type start_pos = 0;
-	std::string::size_type end_pos = str.find(c);
+	std::string::size_type end_pos = str.find(delimiter);
 
 	while (end_pos != std::string::npos) {
 		if(start_pos != end_pos) {
 			retVal.push_back(str.substr(start_pos, end_pos-start_pos));
 		}
 		start_pos = ++end_pos;
-		end_pos = str.find(c, end_pos);
+		end_pos = str.find(delimiter, end_pos);
 	}
 
 	if (end_pos == std::string::npos) {
