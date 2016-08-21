@@ -28,6 +28,7 @@ private:
 	bool valid;
 	std::string currDir;
 	int dataFd;
+	int controlFd;
 
 	void SendResponse(const std::string& response, int fileDescriptor);
 	std::vector<std::string> SplitString(std::string& string, const char& character);

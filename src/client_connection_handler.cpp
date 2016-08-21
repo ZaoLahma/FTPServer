@@ -11,6 +11,8 @@
 #include <string>
 #include <cstdlib>
 #include <stdio.h>
+#include <fstream>
+#include <unistd.h>
 
 ClientConnectionHandler::~ClientConnectionHandler() {
 	std::lock_guard<std::mutex> execLock(execMutex);
@@ -19,7 +21,8 @@ ClientConnectionHandler::~ClientConnectionHandler() {
 ClientConnectionHandler::ClientConnectionHandler(int fileDescriptor) :
 valid(true),
 currDir("/Users/janne/GitHub/FTPServer"),
-dataFd(-1){
+dataFd(-1),
+controlFd(-1) {
 	JobDispatcher::GetApi()->SubscribeToEvent(fileDescriptor, this);
 
 	std::string initConnStr = "220 OK.\r\n";
@@ -128,6 +131,46 @@ void ClientConnectionHandler::HandleEvent(unsigned int eventNo, const EventDataB
 
 		socketApi.disconnect(dataFd);
 		dataFd = -1;
+	} else if("RETR" == command[0]) {
+		std::ifstream fileStream(command[1].c_str(), std::ifstream::binary);
+		fileStream.seekg(0, fileStream.end);
+	    int length = fileStream.tellg();
+	    fileStream.seekg(0, fileStream.beg);
+
+		printf("Sending 150 RETR ok\n");
+		std::string send_string = "150 RETR executed ok, data follows\r\n";
+		SendResponse(send_string, eventNo);
+
+	    SocketBuf sendBuf;
+	    while(length > 0) {
+	    	sendBuf.dataSize = 1;
+	    	sendBuf.data = new char[1];
+	    	char c = fileStream.get();
+	    	if(c == '\n') {
+	    		*sendBuf.data = '\r';
+		    	socketApi.sendData(dataFd, sendBuf);
+		    	delete[] sendBuf.data;
+		    	sendBuf.data = new char[1];
+	    	}
+	    	*sendBuf.data = c;
+	    	socketApi.sendData(dataFd, sendBuf);
+	    	delete[] sendBuf.data;
+	    	length -= 1;
+	    }
+
+		printf("Sending 226 RETR ok\n");
+		send_string = "226 RETR data send finished\r\n";
+		SendResponse(send_string, eventNo);
+
+		socketApi.disconnect(dataFd);
+		dataFd = -1;
+	} else if("CWD" == command[0]) {
+        currDir = currDir + "/" + command[1];
+        printf("currDir: %s\n", currDir.c_str());
+        chdir(currDir.c_str());
+		printf("Sending 250 ok\n");
+		std::string send_string = "250 CWD ok\r\n";
+		SendResponse(send_string, eventNo);
 	} else if("TYPE" == command[0] && "I" == command[1]) {
 		printf("Sending 200 ok\n");
 		std::string send_string = "200 Binary transfer mode chosen\r\n";
