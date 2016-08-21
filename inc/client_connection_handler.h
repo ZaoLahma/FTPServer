@@ -19,16 +19,17 @@ public:
 	~ClientConnectionHandler();
 	void HandleEvent(const uint32_t eventNo, const EventDataBase* dataPtr);
 
+	bool active;
+	bool invalid;
+	int controlFd;
 protected:
 
 private:
 	ClientConnectionHandler();
 	SocketAPI socketApi;
 	std::mutex execMutex;
-	bool valid;
 	std::string currDir;
 	int dataFd;
-	int controlFd;
 
 	void SendResponse(const std::string& response, int fileDescriptor);
 	std::vector<std::string> SplitString(std::string& string, const char& character);

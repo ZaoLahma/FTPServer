@@ -12,6 +12,7 @@
 
 ServerSocketListener::ServerSocketListener() {
 	JobDispatcher::GetApi()->SubscribeToEvent(CLIENT_DISCONNECTED_EVENT, this);
+	JobDispatcher::GetApi()->SubscribeToEvent(CLIENT_INACTIVE_EVENT, this);
 }
 
 void ServerSocketListener::Execute() {
@@ -21,6 +22,15 @@ void ServerSocketListener::Execute() {
 	JobDispatcher::GetApi()->Log("FTPServer waiting for connections on port %s", "3370");
 
 	while(true) {
+		observedFds.clear();
+		observedFds.push_back(serverFd);
+		ClientConnMapT::iterator connection = clientConnections.begin();
+		for(; connection != clientConnections.end(); ++connection) {
+			if(false == connection->second->active) {
+				//printf("Adding %d to observedFds\n", connection->second->controlFd);
+				observedFds.push_back(connection->second->controlFd);
+			}
+		}
 
 		std::vector<int>::iterator maxIter = std::max(observedFds.begin(), observedFds.end() - 1);
 		std::vector<int>::iterator fdIter = observedFds.begin();
@@ -32,8 +42,8 @@ void ServerSocketListener::Execute() {
 		}
 
 		timeval timeout;
-		timeout.tv_usec = 0;
-		timeout.tv_sec = 5;
+		timeout.tv_usec = 100000;
+		timeout.tv_sec = 0;
 		int retval = select(*maxIter + 1, &rfds, NULL, NULL, &timeout);
 
 		if(retval > 0)
@@ -48,17 +58,16 @@ void ServerSocketListener::Execute() {
 
 						ClientConnectionHandler* clientConn = new ClientConnectionHandler(clientFd);
 						clientConnections[clientFd] = clientConn;
-						newFds.push_back(clientFd);
 					}
 					else
 					{
-						JobDispatcher::GetApi()->RaiseEvent(*fdIter, nullptr);
+						ClientConnMapT::iterator connection = clientConnections.find(*fdIter);
+						if(false == connection->second->active) {
+							connection->second->active = true;
+							JobDispatcher::GetApi()->RaiseEvent(*fdIter, nullptr);
+						}
 					}
 				}
-			}
-			fdIter = newFds.begin();
-			for(; fdIter != newFds.end(); ++fdIter) {
-				observedFds.push_back(*fdIter);
 			}
 		}
 		else if(retval == 0) {
@@ -71,31 +80,39 @@ void ServerSocketListener::Execute() {
 		}
 
 		std::lock_guard<std::mutex> fileDescriptorLock(fileDescriptorMutex);
-		std::vector<int>::iterator fdsToCloseIter = fdsToClose.begin();
-		for(; fdsToCloseIter != fdsToClose.end(); ++fdsToCloseIter) {
-			fdIter = std::find(observedFds.begin(), observedFds.end() - 1, *fdsToCloseIter);
-			if(observedFds.end() != fdIter) {
-				observedFds.erase(fdIter);
-			}
-			socketAPI.disconnect(*fdsToCloseIter);
+		connection = clientConnections.begin();
+		while(connection != clientConnections.end()) {
+			if(true == connection->second->invalid) {
+				fdIter = std::find(observedFds.begin(), observedFds.end() - 1, connection->second->controlFd);
+				if(observedFds.end() != fdIter) {
+					observedFds.erase(fdIter);
+				}
+				socketAPI.disconnect(connection->second->controlFd);
 
-			ClientConnMapT::iterator clientConn = clientConnections.find(*fdsToCloseIter);
-
-			if(clientConn != clientConnections.end()) {
-				delete clientConn->second;
-				clientConnections.erase(clientConn);
+				delete connection->second;
+				connection = clientConnections.erase(connection);
+				printf("Disconnected a client\n");
+				continue;
 			}
-			printf("Disconnected a client\n");
+			connection++;
 		}
-		fdsToClose.clear();
 	}
 }
 
 void ServerSocketListener::HandleEvent(const uint32_t eventNo, const EventDataBase* dataPtr) {
 	std::lock_guard<std::mutex> fileDescriptorLock(fileDescriptorMutex);
 	if(CLIENT_DISCONNECTED_EVENT == eventNo){
-		ClientDisconnectedEventData* clientDisconnected = (ClientDisconnectedEventData*)(dataPtr);
+		ClientStatusChangeEventData* clientDisconnected = (ClientStatusChangeEventData*)(dataPtr);
 
-		fdsToClose.push_back(clientDisconnected->fileDescriptor);
+		ClientConnMapT::iterator connection = clientConnections.find(clientDisconnected->fileDescriptor);
+		connection->second->invalid = true;
+	} else if(CLIENT_INACTIVE_EVENT == eventNo) {
+		printf("Received client inactive event\n");
+		ClientStatusChangeEventData* clientDisconnected = (ClientStatusChangeEventData*)(dataPtr);
+
+		ClientConnMapT::iterator connection = clientConnections.find(clientDisconnected->fileDescriptor);
+		if(clientConnections.end() != connection) {
+			connection->second->active = false;
+		}
 	}
 }

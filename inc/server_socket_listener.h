@@ -17,16 +17,17 @@
 #include <mutex>
 
 #define CLIENT_DISCONNECTED_EVENT 0x70007000
+#define CLIENT_INACTIVE_EVENT     0x70007001
 
-class ClientDisconnectedEventData : public EventDataBase {
+class ClientStatusChangeEventData : public EventDataBase {
 public:
-	ClientDisconnectedEventData(unsigned int fileDescriptor) :
+	ClientStatusChangeEventData(unsigned int fileDescriptor) :
 	fileDescriptor(fileDescriptor) {
 
 	}
 
 	EventDataBase* clone() const {
-		return new ClientDisconnectedEventData(fileDescriptor);
+		return new ClientStatusChangeEventData(fileDescriptor);
 	}
 
 	unsigned int fileDescriptor;
@@ -48,7 +49,6 @@ protected:
 private:
 	SocketAPI socketAPI;
 	std::vector<int> observedFds;
-	std::vector<int> fdsToClose;
 	ClientConnMapT clientConnections;
 	std::mutex fileDescriptorMutex;
 };

@@ -19,10 +19,11 @@ ClientConnectionHandler::~ClientConnectionHandler() {
 }
 
 ClientConnectionHandler::ClientConnectionHandler(int fileDescriptor) :
-valid(true),
+active(false),
+invalid(false),
 currDir("/Users/janne/GitHub/FTPServer"),
 dataFd(-1),
-controlFd(-1) {
+controlFd(fileDescriptor) {
 	JobDispatcher::GetApi()->SubscribeToEvent(fileDescriptor, this);
 
 	std::string initConnStr = "220 OK.\r\n";
@@ -41,7 +42,7 @@ controlFd(-1) {
 void ClientConnectionHandler::HandleEvent(unsigned int eventNo, const EventDataBase* dataPtr) {
 	std::lock_guard<std::mutex> execLock(execMutex);
 
-	if(!valid) {
+	if(true == invalid) {
 		return;
 	}
 
@@ -51,8 +52,11 @@ void ClientConnectionHandler::HandleEvent(unsigned int eventNo, const EventDataB
 
 	std::string stringBuf;
 	buf = socketApi.receiveData(eventNo, 1);
-	while(*buf.data != '\r' && *buf.data != '\n' && *buf.data != '\0') {
-		stringBuf += std::string(buf.data);
+
+	while(*buf.data != '\n') {
+		if(*buf.data != '\r') {
+			stringBuf += std::string(buf.data);
+		}
 		delete buf.data;
 
 		buf = socketApi.receiveData(eventNo, 1);
@@ -99,31 +103,31 @@ void ClientConnectionHandler::HandleEvent(unsigned int eventNo, const EventDataB
 	} else if("LIST" == command[0]) {
 		char buffer[2048];
 		std::string response = "150 ";
-        std::string ls = "ls -l";
-        ls.append(" 2>&1");
-        FILE* file = popen(ls.c_str(), "r");
+		std::string ls = "ls -l";
+		ls.append(" 2>&1");
+		FILE* file = popen(ls.c_str(), "r");
 
-        while (!feof(file)) {
-            if (fgets(buffer, 2048, file) != NULL) {
-            	response.append(buffer);
-            }
-        }
+		while (!feof(file)) {
+			if (fgets(buffer, 2048, file) != NULL) {
+				response.append(buffer);
+			}
+		}
 
-        printf("LS: %s\n", response.c_str());
-        std::vector<std::string> responseVector = SplitString(response, '\n');
-        response = "";
-        for(unsigned int i = 0; i < responseVector.size(); ++i) {
-        	response += responseVector[i] + "\r\n";
-        }
+		printf("LS: %s\n", response.c_str());
+		std::vector<std::string> responseVector = SplitString(response, '\n');
+		response = "";
+		for(unsigned int i = 0; i < responseVector.size(); ++i) {
+			response += responseVector[i] + "\r\n";
+		}
 
-        response += "\r\n";
+		response += "\r\n";
 
 		printf("Sending 150 LIST ok\n");
 		std::string send_string = "150 LIST executed ok, data follows\r\n";
 		SendResponse(send_string, eventNo);
 
 		printf("dataFd: %d\n", dataFd);
-        SendResponse(response, dataFd);
+		SendResponse(response, dataFd);
 
 		printf("Sending 226 LIST ok\n");
 		send_string = "226 LIST data send finished\r\n";
@@ -134,29 +138,27 @@ void ClientConnectionHandler::HandleEvent(unsigned int eventNo, const EventDataB
 	} else if("RETR" == command[0]) {
 		std::ifstream fileStream(command[1].c_str(), std::ifstream::binary);
 		fileStream.seekg(0, fileStream.end);
-	    int length = fileStream.tellg();
-	    fileStream.seekg(0, fileStream.beg);
+		int length = fileStream.tellg();
+		fileStream.seekg(0, fileStream.beg);
 
 		printf("Sending 150 RETR ok\n");
 		std::string send_string = "150 RETR executed ok, data follows\r\n";
 		SendResponse(send_string, eventNo);
 
-	    SocketBuf sendBuf;
-	    while(length > 0) {
-	    	sendBuf.dataSize = 1;
-	    	sendBuf.data = new char[1];
-	    	char c = fileStream.get();
-	    	if(c == '\n') {
-	    		*sendBuf.data = '\r';
-		    	socketApi.sendData(dataFd, sendBuf);
-		    	delete[] sendBuf.data;
-		    	sendBuf.data = new char[1];
-	    	}
-	    	*sendBuf.data = c;
-	    	socketApi.sendData(dataFd, sendBuf);
-	    	delete[] sendBuf.data;
-	    	length -= 1;
-	    }
+		SocketBuf sendBuf;
+		sendBuf.dataSize = 1;
+		sendBuf.data = new char[1];
+		while(length > 0) {
+			char c = fileStream.get();
+			if(c == '\n') {
+				*sendBuf.data = '\r';
+				socketApi.sendData(dataFd, sendBuf);
+			}
+			*sendBuf.data = c;
+			socketApi.sendData(dataFd, sendBuf);
+			length -= 1;
+		}
+		delete[] sendBuf.data;
 
 		printf("Sending 226 RETR ok\n");
 		send_string = "226 RETR data send finished\r\n";
@@ -165,12 +167,26 @@ void ClientConnectionHandler::HandleEvent(unsigned int eventNo, const EventDataB
 		socketApi.disconnect(dataFd);
 		dataFd = -1;
 	} else if("CWD" == command[0]) {
-        currDir = currDir + "/" + command[1];
-        printf("currDir: %s\n", currDir.c_str());
-        chdir(currDir.c_str());
-		printf("Sending 250 ok\n");
-		std::string send_string = "250 CWD ok\r\n";
-		SendResponse(send_string, eventNo);
+		if(command[1] == "..") {
+			std::vector<std::string> splitDirectory = SplitString(currDir, '/');
+			currDir = "";
+			for(unsigned int i = 0; i < splitDirectory.size() - 1; ++i) {
+				currDir += '/' + splitDirectory[i];
+			}
+		}
+		else {
+			currDir = currDir + "/" + command[1];
+		}
+		printf("currDir: %s\n", currDir.c_str());
+		if(0 == chdir(currDir.c_str())) {
+			printf("Sending 250 ok\n");
+			std::string send_string = "250 CWD ok\r\n";
+			SendResponse(send_string, eventNo);
+		} else {
+			printf("Sending 550 NOK\n");
+			std::string send_string = "550 CWD not performed\r\n";
+			SendResponse(send_string, eventNo);
+		}
 	} else if("TYPE" == command[0] && "I" == command[1]) {
 		printf("Sending 200 ok\n");
 		std::string send_string = "200 Binary transfer mode chosen\r\n";
@@ -181,13 +197,16 @@ void ClientConnectionHandler::HandleEvent(unsigned int eventNo, const EventDataB
 		SendResponse(send_string, eventNo);
 
 		JobDispatcher::GetApi()->UnsubscribeToEvent(eventNo, this);
-		JobDispatcher::GetApi()->RaiseEvent(CLIENT_DISCONNECTED_EVENT, new ClientDisconnectedEventData(eventNo));
-		valid = false;
+		JobDispatcher::GetApi()->RaiseEvent(CLIENT_DISCONNECTED_EVENT, new ClientStatusChangeEventData(eventNo));
+		invalid = true;
 	} else {
 		printf("Sending 500 not implemented response to: %s\n", command[0].c_str());
 		std::string send_string = "500 Not implemented\r\n";
 		SendResponse(send_string, eventNo);
 	}
+
+	active = false;
+	JobDispatcher::GetApi()->RaiseEvent(CLIENT_INACTIVE_EVENT, new ClientStatusChangeEventData(eventNo));
 }
 
 void ClientConnectionHandler::SendResponse(const std::string& response, int fileDescriptor) {
