@@ -28,8 +28,10 @@ private:
 	ClientConnectionHandler();
 	SocketAPI socketApi;
 	std::mutex execMutex;
+	std::string ftpDir;
 	std::string currDir;
 	int dataFd;
+	std::string transferMode;
 
 	void SendResponse(const std::string& response, int fileDescriptor);
 	std::vector<std::string> SplitString(std::string& string, const char& character);

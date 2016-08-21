@@ -21,9 +21,11 @@ ClientConnectionHandler::~ClientConnectionHandler() {
 ClientConnectionHandler::ClientConnectionHandler(int fileDescriptor) :
 active(false),
 invalid(false),
-currDir("/Users/janne/GitHub/FTPServer"),
+controlFd(fileDescriptor),
+ftpDir("/Users/janne/GitHub/FTPServer"),
+currDir(ftpDir),
 dataFd(-1),
-controlFd(fileDescriptor) {
+transferMode("A") {
 	JobDispatcher::GetApi()->SubscribeToEvent(fileDescriptor, this);
 
 	std::string initConnStr = "220 OK.\r\n";
@@ -150,9 +152,11 @@ void ClientConnectionHandler::HandleEvent(unsigned int eventNo, const EventDataB
 		sendBuf.data = new char[1];
 		while(length > 0) {
 			char c = fileStream.get();
-			if(c == '\n') {
-				*sendBuf.data = '\r';
-				socketApi.sendData(dataFd, sendBuf);
+			if("A" == transferMode) {
+				if(c == '\n') {
+					*sendBuf.data = '\r';
+					socketApi.sendData(dataFd, sendBuf);
+				}
 			}
 			*sendBuf.data = c;
 			socketApi.sendData(dataFd, sendBuf);
@@ -167,18 +171,24 @@ void ClientConnectionHandler::HandleEvent(unsigned int eventNo, const EventDataB
 		socketApi.disconnect(dataFd);
 		dataFd = -1;
 	} else if("CWD" == command[0]) {
+		bool validDirectory = true;
 		if(command[1] == "..") {
 			std::vector<std::string> splitDirectory = SplitString(currDir, '/');
-			currDir = "";
+			std::string tmpDir = "";
 			for(unsigned int i = 0; i < splitDirectory.size() - 1; ++i) {
-				currDir += '/' + splitDirectory[i];
+				tmpDir += '/' + splitDirectory[i];
+			}
+			if(tmpDir.find(ftpDir) != std::string::npos) {
+				currDir = tmpDir;
+			} else {
+				validDirectory = false;
 			}
 		}
 		else {
 			currDir = currDir + "/" + command[1];
 		}
 		printf("currDir: %s\n", currDir.c_str());
-		if(0 == chdir(currDir.c_str())) {
+		if(validDirectory && 0 == chdir(currDir.c_str())) {
 			printf("Sending 250 ok\n");
 			std::string send_string = "250 CWD ok\r\n";
 			SendResponse(send_string, eventNo);
@@ -187,9 +197,10 @@ void ClientConnectionHandler::HandleEvent(unsigned int eventNo, const EventDataB
 			std::string send_string = "550 CWD not performed\r\n";
 			SendResponse(send_string, eventNo);
 		}
-	} else if("TYPE" == command[0] && "I" == command[1]) {
+	} else if("TYPE" == command[0] && ("I" == command[1] || "A" == command[1])) {
 		printf("Sending 200 ok\n");
-		std::string send_string = "200 Binary transfer mode chosen\r\n";
+		transferMode = command[1];
+		std::string send_string = "200 Transfer mode change to: " + transferMode + "\r\n";
 		SendResponse(send_string, eventNo);
 	} else if("QUIT" == command[0]) {
 		printf("Sending 221 QUIT response\n");
@@ -228,7 +239,9 @@ std::vector<std::string> ClientConnectionHandler::SplitString(std::string& str, 
 	std::string::size_type end_pos = str.find(c);
 
 	while (end_pos != std::string::npos) {
-		retVal.push_back(str.substr(start_pos, end_pos-start_pos));
+		if(start_pos != end_pos) {
+			retVal.push_back(str.substr(start_pos, end_pos-start_pos));
+		}
 		start_pos = ++end_pos;
 		end_pos = str.find(c, end_pos);
 	}
