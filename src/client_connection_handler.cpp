@@ -319,7 +319,7 @@ std::vector<std::string> ClientConnectionHandler::GetCommand() {
 	buf = socketApi.receiveData(controlFd, 1);
 
 	while(*buf.data != '\n') {
-		if(*buf.data != '\r') {
+		if(buf.dataSize != 0 && *buf.data != '\r') {
 			stringBuf += std::string(buf.data);
 		}
 		delete buf.data;
