@@ -17,6 +17,10 @@
 
 ClientConnectionHandler::~ClientConnectionHandler() {
 	std::lock_guard<std::mutex> execLock(execMutex);
+	delete user;
+	if(-1 != dataFd) {
+		socketApi.disconnect(dataFd);
+	}
 }
 
 ClientConnectionHandler::ClientConnectionHandler(int fileDescriptor) :
@@ -27,17 +31,8 @@ ftpDir(""),
 currDir(ftpDir),
 dataFd(-1),
 transferMode("A"),
-transferActive(false) {
-	
-	char cCurrentPath[FILENAME_MAX];
-
-	if (!getcwd(cCurrentPath, sizeof(cCurrentPath)))
-	{
-	  JobDispatcher::GetApi()->NotifyExecutionFinished();
-	}
-
-	ftpDir.append(cCurrentPath);
-	currDir = ftpDir;
+transferActive(false),
+user(nullptr) {
 
 	JobDispatcher::GetApi()->SubscribeToEvent(fileDescriptor, this);
 
@@ -71,9 +66,36 @@ void ClientConnectionHandler::HandleControlMessage() {
 	std::vector<std::string> command = GetCommand();
 
 	if("USER" == command[0]) {
-		printf("Sending 230 ok\n");
-		std::string send_string = "230 OK, go ahead\r\n";
+		user = config.GetUser(command[1]);
+
+		printf("Sending 330 ok\n");
+		std::string send_string = "330 OK, send password\r\n";
 		SendResponse(send_string, controlFd);
+	} else if("PASS" == command[0]) {
+			bool userLoggedIn = false;
+			printf("Sending PASS response\n");
+			std::string send_string = "530, user/passwd not correct or ftp directory not configured right";
+			if(user != nullptr) {
+				if(user->passwd == command[1]) {
+					send_string = "230 OK, user logged in";
+					ftpDir = user->homeDir;
+					currDir = ftpDir;
+					printf("ftpDir: %s\n", ftpDir.c_str());
+					if(0 == chdir(ftpDir.c_str())) {
+						userLoggedIn = true;
+					}
+				}
+			}
+			send_string += "\r\n";
+			SendResponse(send_string, controlFd);
+			if(!userLoggedIn) {
+				send_string = "221 Bye Bye\r\n";
+				SendResponse(send_string, controlFd);
+
+				JobDispatcher::GetApi()->UnsubscribeToEvent(controlFd, this);
+				JobDispatcher::GetApi()->RaiseEvent(CLIENT_DISCONNECTED_EVENT, new ClientStatusChangeEventData(controlFd));
+				invalid = true;
+			}
 	} else if("PWD" == command[0]) {
 		printf("Sending PWD response\n");
 		std::string send_string = "257 \"" +  currDir + "\"\r\n";
@@ -222,48 +244,55 @@ void ClientConnectionHandler::HandleControlMessage() {
 		std::string send_string = "200 Transfer mode change to: " + transferMode + "\r\n";
 		SendResponse(send_string, controlFd);
 	} else if("STOR" == command[0]) {
-		std::ofstream fileStream(command[1]);
+		std::string send_string = "550 STORE refused due to user access rights\r\n";
+		if(user->rights == READ) {
+			SendResponse(send_string, controlFd);
+			socketApi.disconnect(dataFd);
+			dataFd = -1;
+		} else {
+			std::ofstream fileStream(command[1]);
 
-		printf("Sending 150 STORE ok\n");
-		std::string send_string = "150 STORE ok, send data pretty please\r\n";
-		if("A" == transferMode) {
-			send_string = "150 STORE ok, note transmission mode ASCII is slow\r\n";
-		}
-		SendResponse(send_string, controlFd);
+			printf("Sending 150 STORE ok\n");
+			std::string send_string = "150 STORE ok, send data pretty please\r\n";
+			if("A" == transferMode) {
+				send_string = "150 STORE ok, note transmission mode ASCII is slow\r\n";
+			}
+			SendResponse(send_string, controlFd);
 
-		SocketBuf receiveBuf;
-		if("A" == transferMode) {
-			receiveBuf = socketApi.receiveData(dataFd, 1);
-			transferActive = true;
-			do {
+			SocketBuf receiveBuf;
+			if("A" == transferMode) {
 				receiveBuf = socketApi.receiveData(dataFd, 1);
-				if(0 != receiveBuf.dataSize && *receiveBuf.data != '\r') {
-					fileStream<<*receiveBuf.data;
-				}
-				delete[] receiveBuf.data;
-				if(true == CheckControlChannel()) {
-					HandleControlMessage();
-				}
-			} while(receiveBuf.dataSize != 0 && transferActive);
-		} else if("I" == transferMode) {
-			transferActive = true;
-			unsigned int max_buf = 2048;
-			do {
-				receiveBuf = socketApi.receiveData(dataFd, max_buf);
-				fileStream.write(receiveBuf.data, receiveBuf.dataSize);
-				delete[] receiveBuf.data;
-				if(true == CheckControlChannel()) {
-					HandleControlMessage();
-				}
-			} while(receiveBuf.dataSize == max_buf && transferActive);
+				transferActive = true;
+				do {
+					receiveBuf = socketApi.receiveData(dataFd, 1);
+					if(0 != receiveBuf.dataSize && *receiveBuf.data != '\r') {
+						fileStream<<*receiveBuf.data;
+					}
+					delete[] receiveBuf.data;
+					if(true == CheckControlChannel()) {
+						HandleControlMessage();
+					}
+				} while(receiveBuf.dataSize != 0 && transferActive);
+			} else if("I" == transferMode) {
+				transferActive = true;
+				unsigned int max_buf = 2048;
+				do {
+					receiveBuf = socketApi.receiveData(dataFd, max_buf);
+					fileStream.write(receiveBuf.data, receiveBuf.dataSize);
+					delete[] receiveBuf.data;
+					if(true == CheckControlChannel()) {
+						HandleControlMessage();
+					}
+				} while(receiveBuf.dataSize == max_buf && transferActive);
+			}
+
+
+			printf("Sending 226 STOR ok\n");
+			send_string = "226 STOR data received ok\r\n";
+			SendResponse(send_string, controlFd);
+
+			socketApi.disconnect(dataFd);
 		}
-
-
-		printf("Sending 226 STOR ok\n");
-		send_string = "226 STOR data received ok\r\n";
-		SendResponse(send_string, controlFd);
-
-		socketApi.disconnect(dataFd);
 
 	}else if(command[0].find("ABOR") != std::string::npos) {
 			transferActive = false;

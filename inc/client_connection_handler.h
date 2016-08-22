@@ -10,6 +10,7 @@
 
 #include "thread_fwk/eventlistenerbase.h"
 #include "socket_wrapper/socket_api.h"
+#include "config_handler.h"
 #include <mutex>
 #include <map>
 
@@ -33,6 +34,8 @@ private:
 	int dataFd;
 	std::string transferMode;
 	bool transferActive;
+	ConfigHandler config;
+	User* user;
 
 	void SendResponse(const std::string& response, int fileDescriptor);
 	std::vector<std::string> SplitString(const std::string& string, const std::string& delimiter);
