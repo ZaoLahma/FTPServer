@@ -9,7 +9,7 @@
 #define INC_CONFIG_HANDLER_H_
 
 #include <string>
-#include <thread>
+#include <mutex>
 
 #define READ  0x1
 #define WRITE 0x2
