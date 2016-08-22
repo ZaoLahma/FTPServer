@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include <fstream>
 #include <unistd.h>
+#include <cstring>
 
 ClientConnectionHandler::~ClientConnectionHandler() {
 	std::lock_guard<std::mutex> execLock(execMutex);
@@ -22,10 +23,21 @@ ClientConnectionHandler::ClientConnectionHandler(int fileDescriptor) :
 active(false),
 invalid(false),
 controlFd(fileDescriptor),
-ftpDir("/Users/janne/GitHub/FTPServer"),
+ftpDir(""),
 currDir(ftpDir),
 dataFd(-1),
 transferMode("A") {
+	
+	char cCurrentPath[FILENAME_MAX];
+
+	if (!getcwd(cCurrentPath, sizeof(cCurrentPath)))
+     	{
+     	  JobDispatcher::GetApi()->NotifyExecutionFinished();
+     	}
+
+	ftpDir.append(cCurrentPath);
+	currDir = ftpDir;
+
 	JobDispatcher::GetApi()->SubscribeToEvent(fileDescriptor, this);
 
 	std::string initConnStr = "220 OK.\r\n";
@@ -320,8 +332,9 @@ std::vector<std::string> ClientConnectionHandler::GetCommand() {
 
 	while(*buf.data != '\n') {
 		if(buf.dataSize != 0 && *buf.data != '\r') {
-			printf("buf.dataSize: %d, *buf.data: 0x%x", buf.dataSize, *buf.data);
-			stringBuf += std::string(buf.data);
+			//printf("buf.dataSize: %d, *buf.data: 0x%x, *buf.dat: %c\n", buf.dataSize, *buf.data, *buf.data);
+			stringBuf.append(buf.data, 1);
+			//printf("stringBuf: %s\n", stringBuf.c_str());
 		}
 		delete buf.data;
 

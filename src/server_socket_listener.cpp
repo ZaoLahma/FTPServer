@@ -9,6 +9,7 @@
 #include "../inc/thread_fwk/jobdispatcher.h"
 #include <string>
 #include <sys/time.h>
+#include <algorithm>
 
 ServerSocketListener::ServerSocketListener() {
 	JobDispatcher::GetApi()->SubscribeToEvent(CLIENT_DISCONNECTED_EVENT, this);
