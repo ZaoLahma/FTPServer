@@ -26,14 +26,15 @@ controlFd(fileDescriptor),
 ftpDir(""),
 currDir(ftpDir),
 dataFd(-1),
-transferMode("A") {
+transferMode("A"),
+transferActive(false) {
 	
 	char cCurrentPath[FILENAME_MAX];
 
 	if (!getcwd(cCurrentPath, sizeof(cCurrentPath)))
-     	{
-     	  JobDispatcher::GetApi()->NotifyExecutionFinished();
-     	}
+	{
+	  JobDispatcher::GetApi()->NotifyExecutionFinished();
+	}
 
 	ftpDir.append(cCurrentPath);
 	currDir = ftpDir;
@@ -60,16 +61,23 @@ void ClientConnectionHandler::HandleEvent(unsigned int eventNo, const EventDataB
 		return;
 	}
 
+	HandleControlMessage();
+
+	active = false;
+	JobDispatcher::GetApi()->RaiseEvent(CLIENT_INACTIVE_EVENT, new ClientStatusChangeEventData(eventNo));
+}
+
+void ClientConnectionHandler::HandleControlMessage() {
 	std::vector<std::string> command = GetCommand();
 
 	if("USER" == command[0]) {
 		printf("Sending 230 ok\n");
 		std::string send_string = "230 OK, go ahead\r\n";
-		SendResponse(send_string, eventNo);
+		SendResponse(send_string, controlFd);
 	} else if("PWD" == command[0]) {
 		printf("Sending PWD response\n");
 		std::string send_string = "257 \"" +  currDir + "\"\r\n";
-		SendResponse(send_string, eventNo);
+		SendResponse(send_string, controlFd);
 	} else if("PORT" == command[0]) {
 		printf("Sending PORT response\n");
 		std::vector<std::string> addressInfo = SplitString(command[1], ",");
@@ -82,7 +90,7 @@ void ClientConnectionHandler::HandleEvent(unsigned int eventNo, const EventDataB
 
 		printf("Sending 200 PORT ok\n");
 		std::string send_string = "200, PORT command ok\r\n";
-		SendResponse(send_string, eventNo);
+		SendResponse(send_string, controlFd);
 	} else if("LIST" == command[0]) {
 		char buffer[2048];
 		std::string response = "150 ";
@@ -107,14 +115,14 @@ void ClientConnectionHandler::HandleEvent(unsigned int eventNo, const EventDataB
 
 		printf("Sending 150 LIST ok\n");
 		std::string send_string = "150 LIST executed ok, data follows\r\n";
-		SendResponse(send_string, eventNo);
+		SendResponse(send_string, controlFd);
 
 		printf("dataFd: %d\n", dataFd);
 		SendResponse(response, dataFd);
 
 		printf("Sending 226 LIST ok\n");
 		send_string = "226 LIST data send finished\r\n";
-		SendResponse(send_string, eventNo);
+		SendResponse(send_string, controlFd);
 
 		socketApi.disconnect(dataFd);
 		dataFd = -1;
@@ -129,13 +137,14 @@ void ClientConnectionHandler::HandleEvent(unsigned int eventNo, const EventDataB
 		if("A" == transferMode) {
 			send_string = "150 RETR ok. Note transmission mode ASCII is slow, data follows\r\n";
 		}
-		SendResponse(send_string, eventNo);
+		SendResponse(send_string, controlFd);
 
 		SocketBuf sendBuf;
 		if("A" == transferMode) {
 			sendBuf.dataSize = 1;
 			sendBuf.data = new char[1];
-			while(length > 0) {
+			transferActive = true;
+			while(length > 0 && transferActive) {
 				char c = fileStream.get();
 				if(c == '\n') {
 					*sendBuf.data = '\r';
@@ -144,14 +153,15 @@ void ClientConnectionHandler::HandleEvent(unsigned int eventNo, const EventDataB
 				*sendBuf.data = c;
 				socketApi.sendData(dataFd, sendBuf);
 				length -= 1;
-				if(false == TransferActive()) {
-					break;
+				if(true == CheckControlChannel()) {
+					HandleControlMessage();
 				}
 			}
 		} else if("I" == transferMode) {
 			unsigned int max_buf = 2048;
 			sendBuf.data = new char[max_buf];
-			while(length > 0) {
+			transferActive = true;
+			while(length > 0 && transferActive) {
 				unsigned int read_bytes = 0;
 				while(read_bytes != max_buf) {
 					sendBuf.data[read_bytes] = fileStream.get();
@@ -163,8 +173,8 @@ void ClientConnectionHandler::HandleEvent(unsigned int eventNo, const EventDataB
 				}
 				sendBuf.dataSize = read_bytes;
 				socketApi.sendData(dataFd, sendBuf);
-				if(false == TransferActive()) {
-					break;
+				if(true == CheckControlChannel()) {
+					HandleControlMessage();
 				}
 			}
 		}
@@ -173,7 +183,7 @@ void ClientConnectionHandler::HandleEvent(unsigned int eventNo, const EventDataB
 
 		printf("Sending 226 RETR ok\n");
 		send_string = "226 RETR data send finished\r\n";
-		SendResponse(send_string, eventNo);
+		SendResponse(send_string, controlFd);
 
 		socketApi.disconnect(dataFd);
 		dataFd = -1;
@@ -200,17 +210,17 @@ void ClientConnectionHandler::HandleEvent(unsigned int eventNo, const EventDataB
 			currDir = tmpDir;
 			printf("Sending 250 ok\n");
 			std::string send_string = "250 CWD ok\r\n";
-			SendResponse(send_string, eventNo);
+			SendResponse(send_string, controlFd);
 		} else {
 			printf("Sending 550 NOK\n");
 			std::string send_string = "550 CWD not performed\r\n";
-			SendResponse(send_string, eventNo);
+			SendResponse(send_string, controlFd);
 		}
 	} else if("TYPE" == command[0] && ("I" == command[1] || "A" == command[1])) {
 		printf("Sending 200 ok\n");
 		transferMode = command[1];
 		std::string send_string = "200 Transfer mode change to: " + transferMode + "\r\n";
-		SendResponse(send_string, eventNo);
+		SendResponse(send_string, controlFd);
 	} else if("STOR" == command[0]) {
 		std::ofstream fileStream(command[1]);
 
@@ -219,51 +229,59 @@ void ClientConnectionHandler::HandleEvent(unsigned int eventNo, const EventDataB
 		if("A" == transferMode) {
 			send_string = "150 STORE ok, note transmission mode ASCII is slow\r\n";
 		}
-		SendResponse(send_string, eventNo);
+		SendResponse(send_string, controlFd);
 
 		SocketBuf receiveBuf;
 		if("A" == transferMode) {
 			receiveBuf = socketApi.receiveData(dataFd, 1);
+			transferActive = true;
 			do {
 				receiveBuf = socketApi.receiveData(dataFd, 1);
 				if(0 != receiveBuf.dataSize && *receiveBuf.data != '\r') {
 					fileStream<<*receiveBuf.data;
 				}
 				delete[] receiveBuf.data;
-			} while(receiveBuf.dataSize != 0 && TransferActive());
+				if(true == CheckControlChannel()) {
+					HandleControlMessage();
+				}
+			} while(receiveBuf.dataSize != 0 && transferActive);
 		} else if("I" == transferMode) {
-
+			transferActive = true;
 			unsigned int max_buf = 2048;
 			do {
 				receiveBuf = socketApi.receiveData(dataFd, max_buf);
 				fileStream.write(receiveBuf.data, receiveBuf.dataSize);
 				delete[] receiveBuf.data;
-			} while(receiveBuf.dataSize == max_buf && TransferActive());
+				if(true == CheckControlChannel()) {
+					HandleControlMessage();
+				}
+			} while(receiveBuf.dataSize == max_buf && transferActive);
 		}
 
 
 		printf("Sending 226 STOR ok\n");
 		send_string = "226 STOR data received ok\r\n";
-		SendResponse(send_string, eventNo);
+		SendResponse(send_string, controlFd);
 
 		socketApi.disconnect(dataFd);
 
+	}else if(command[0].find("ABOR") != std::string::npos) {
+			transferActive = false;
+			std::string send_string = "426 Abort ok\r\n";
+			SendResponse(send_string, controlFd);
 	} else if("QUIT" == command[0]) {
 		printf("Sending 221 QUIT response\n");
 		std::string send_string = "221 Bye Bye\r\n";
-		SendResponse(send_string, eventNo);
+		SendResponse(send_string, controlFd);
 
-		JobDispatcher::GetApi()->UnsubscribeToEvent(eventNo, this);
-		JobDispatcher::GetApi()->RaiseEvent(CLIENT_DISCONNECTED_EVENT, new ClientStatusChangeEventData(eventNo));
+		JobDispatcher::GetApi()->UnsubscribeToEvent(controlFd, this);
+		JobDispatcher::GetApi()->RaiseEvent(CLIENT_DISCONNECTED_EVENT, new ClientStatusChangeEventData(controlFd));
 		invalid = true;
 	} else {
 		printf("Sending 500 not implemented response to: %s\n", command[0].c_str());
 		std::string send_string = "500 Not implemented\r\n";
-		SendResponse(send_string, eventNo);
+		SendResponse(send_string, controlFd);
 	}
-
-	active = false;
-	JobDispatcher::GetApi()->RaiseEvent(CLIENT_INACTIVE_EVENT, new ClientStatusChangeEventData(eventNo));
 }
 
 void ClientConnectionHandler::SendResponse(const std::string& response, int fileDescriptor) {
@@ -299,27 +317,20 @@ std::vector<std::string> ClientConnectionHandler::SplitString(const std::string&
 	return retVal;
 }
 
-bool ClientConnectionHandler::TransferActive() {
+bool ClientConnectionHandler::CheckControlChannel() {
 	fd_set rfds;
 	FD_ZERO(&rfds);
 
 	FD_SET(controlFd, &rfds);
-
 
 	timeval timeout;
 	timeout.tv_usec = 0;
 	timeout.tv_sec = 0;
 	int retval = select(controlFd + 1, &rfds, NULL, NULL, &timeout);
 	if(retval > 0) {
-		std::vector<std::string> command = GetCommand();
-		if(command[0].find("ABOR") != std::string::npos) {
-			std::string send_string = "426 Abort ok\r\n";
-			SendResponse(send_string, controlFd);
-			return false;
-		}
+		return true;
 	}
-
-	return true;
+	return false;
 }
 
 std::vector<std::string> ClientConnectionHandler::GetCommand() {
@@ -332,9 +343,7 @@ std::vector<std::string> ClientConnectionHandler::GetCommand() {
 
 	while(*buf.data != '\n') {
 		if(buf.dataSize != 0 && *buf.data != '\r') {
-			//printf("buf.dataSize: %d, *buf.data: 0x%x, *buf.dat: %c\n", buf.dataSize, *buf.data, *buf.data);
 			stringBuf.append(buf.data, 1);
-			//printf("stringBuf: %s\n", stringBuf.c_str());
 		}
 		delete buf.data;
 

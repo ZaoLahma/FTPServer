@@ -32,10 +32,13 @@ private:
 	std::string currDir;
 	int dataFd;
 	std::string transferMode;
+	bool transferActive;
 
 	void SendResponse(const std::string& response, int fileDescriptor);
 	std::vector<std::string> SplitString(const std::string& string, const std::string& delimiter);
-	bool TransferActive();
+	bool CheckControlChannel();
+
+	void HandleControlMessage();
 
 	std::vector<std::string> GetCommand();
 };
