@@ -72,7 +72,6 @@ void ClientConnectionHandler::HandleControlMessage() {
 		std::string send_string = "330 OK, send password\r\n";
 		SendResponse(send_string, controlFd);
 	} else if("PASS" == command[0]) {
-		bool userLoggedIn = false;
 		printf("Sending PASS response\n");
 		std::string send_string = "530, user/passwd not correct or ftp directory not configured right";
 		if(user != nullptr) {
