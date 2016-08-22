@@ -320,6 +320,7 @@ std::vector<std::string> ClientConnectionHandler::GetCommand() {
 
 	while(*buf.data != '\n') {
 		if(buf.dataSize != 0 && *buf.data != '\r') {
+			printf("buf.dataSize: %d, *buf.data: 0x%x", buf.dataSize, *buf.data);
 			stringBuf += std::string(buf.data);
 		}
 		delete buf.data;
