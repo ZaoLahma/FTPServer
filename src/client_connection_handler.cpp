@@ -72,30 +72,22 @@ void ClientConnectionHandler::HandleControlMessage() {
 		std::string send_string = "330 OK, send password\r\n";
 		SendResponse(send_string, controlFd);
 	} else if("PASS" == command[0]) {
-			bool userLoggedIn = false;
-			printf("Sending PASS response\n");
-			std::string send_string = "530, user/passwd not correct or ftp directory not configured right";
-			if(user != nullptr) {
-				if(user->passwd == command[1]) {
-					send_string = "230 OK, user logged in";
-					ftpDir = user->homeDir;
-					currDir = ftpDir;
-					printf("ftpDir: %s\n", ftpDir.c_str());
-					if(0 == chdir(ftpDir.c_str())) {
-						userLoggedIn = true;
-					}
+		bool userLoggedIn = false;
+		printf("Sending PASS response\n");
+		std::string send_string = "530, user/passwd not correct or ftp directory not configured right";
+		if(user != nullptr) {
+			if(user->passwd == command[1]) {
+				send_string = "230 OK, user logged in";
+				ftpDir = user->homeDir;
+				currDir = ftpDir;
+				printf("ftpDir: %s\n", ftpDir.c_str());
+				if(0 == chdir(ftpDir.c_str())) {
+					userLoggedIn = true;
 				}
 			}
-			send_string += "\r\n";
-			SendResponse(send_string, controlFd);
-			if(!userLoggedIn) {
-				send_string = "221 Bye Bye\r\n";
-				SendResponse(send_string, controlFd);
-
-				JobDispatcher::GetApi()->UnsubscribeToEvent(controlFd, this);
-				JobDispatcher::GetApi()->RaiseEvent(CLIENT_DISCONNECTED_EVENT, new ClientStatusChangeEventData(controlFd));
-				invalid = true;
-			}
+		}
+		send_string += "\r\n";
+		SendResponse(send_string, controlFd);
 	} else if("PWD" == command[0]) {
 		printf("Sending PWD response\n");
 		std::string send_string = "257 \"" +  currDir + "\"\r\n";

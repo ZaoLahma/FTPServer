@@ -24,8 +24,6 @@ User* ConfigHandler::GetUser(const std::string& userName) {
 
 	while(getline(file, fileBuf)) {
 		printf("fileBuf: %s\n", fileBuf.c_str());
-    	fileBuf.erase(std::remove(fileBuf.begin(), fileBuf.end(), '\n'), fileBuf.end());
-    	fileBuf.erase(std::remove(fileBuf.begin(), fileBuf.end(), '\r'), fileBuf.end());
 	    if(fileBuf.find("USER") != std::string::npos) {
 	    	std::string::size_type pos = fileBuf.find(" ");
 	    	std::string user = fileBuf.substr(pos + 1, fileBuf.length());
