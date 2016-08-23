@@ -15,7 +15,6 @@ configFilePath("./config.cfg") {
 }
 
 User* ConfigHandler::GetUser(const std::string& userName) {
-	printf("GetUser called with userName: %s\n", userName.c_str());
 	std::lock_guard<std::mutex> fileLock(fileMutex);
 
 	std::ifstream file(configFilePath.c_str(), std::ifstream::in);
@@ -23,9 +22,7 @@ User* ConfigHandler::GetUser(const std::string& userName) {
 
 	User* userPtr = nullptr;
 	std::string state = "NO_STATE";
-	printf("Before getline\n");
 	while(getline(file, fileBuf)) {
-		printf("fileBuf: %s\n", fileBuf.c_str());
     	if(state == "NO_STATE") {
     		if(fileBuf.find("USER") != std::string::npos) {
 				state = "USER";
@@ -74,8 +71,5 @@ User* ConfigHandler::GetUser(const std::string& userName) {
 	}
 
 	file.close();
-
-
-	printf("returning: %p\n", userPtr);
 	return userPtr;
 }

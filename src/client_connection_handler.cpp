@@ -79,9 +79,6 @@ void ClientConnectionHandler::HandleControlMessage() {
 				send_string = "230 OK, user logged in";
 				ftpDir = user->homeDir;
 				currDir = ftpDir;
-				printf("ftpDir: %s\n", ftpDir.c_str());
-				//if(0 == chdir(ftpDir.c_str())) {
-				//}
 			}
 		}
 		send_string += "\r\n";
@@ -97,7 +94,6 @@ void ClientConnectionHandler::HandleControlMessage() {
 		unsigned int portNoInt = atoi(addressInfo[4].c_str()) * 256 + atoi(addressInfo[5].c_str());
 		std::string portNo = std::to_string(portNoInt);
 
-		printf("ipAddress: %s, portNo: %s\n", ipAddress.c_str(), portNo.c_str());
 		dataFd = socketApi.getClientSocketFileDescriptor(ipAddress, portNo);
 
 		printf("Sending 200 PORT ok\n");
@@ -117,7 +113,6 @@ void ClientConnectionHandler::HandleControlMessage() {
 			}
 		}
 
-		printf("LS: %s\n", response.c_str());
 		std::vector<std::string> responseVector = SplitString(response, "\n");
 		response = "";
 		for(unsigned int i = 0; i < responseVector.size(); ++i) {
@@ -130,7 +125,6 @@ void ClientConnectionHandler::HandleControlMessage() {
 		std::string send_string = "150 LIST executed ok, data follows\r\n";
 		SendResponse(send_string, controlFd);
 
-		printf("dataFd: %d\n", dataFd);
 		SendResponse(response, dataFd);
 
 		printf("Sending 226 LIST ok\n");
@@ -226,7 +220,6 @@ void ClientConnectionHandler::HandleControlMessage() {
 			std::string ls = "ls -l";
 			ls.append(" " + currDir + "/" + command[1]);
 			ls.append(" 2>&1");
-			printf("Performing ls on: %s\n", ls.c_str());
 			FILE* file = popen(ls.c_str(), "r");
 			while (!feof(file)) {
 				if (fgets(buffer, 2048, file) != NULL) {
@@ -240,7 +233,6 @@ void ClientConnectionHandler::HandleControlMessage() {
 				resString = currDir + "/" + command[1] + " - No such file or directory";
 			}
 		}
-		printf("tmpDir: %s\n", tmpDir.c_str());
 		if(validDirectory) {
 			currDir = tmpDir;
 			printf("Sending 250 ok\n");
