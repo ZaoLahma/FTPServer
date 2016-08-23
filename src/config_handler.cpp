@@ -10,7 +10,7 @@
 #include <fstream>
 
 ConfigHandler::ConfigHandler() :
-configFilePath("./config.cfg") {
+		configFilePath("./config.cfg") {
 
 }
 
@@ -22,52 +22,54 @@ User* ConfigHandler::GetUser(const std::string& userName) {
 
 	User* userPtr = nullptr;
 	std::string state = "NO_STATE";
-	while(getline(file, fileBuf)) {
-    	if(state == "NO_STATE") {
-    		if(fileBuf.find("USER") != std::string::npos) {
+	while (getline(file, fileBuf)) {
+		if (state == "NO_STATE") {
+			if (fileBuf.find("USER") != std::string::npos) {
 				state = "USER";
 				std::string::size_type pos = fileBuf.find(" ");
 				std::string user = fileBuf.substr(pos + 1, fileBuf.length());
-				if(user == userName) {
+				if (user == userName) {
 					userPtr = new User();
 					userPtr->userName = user;
 					userPtr->homeDir = "/";
 					userPtr->passwd = "";
 					userPtr->rights = READ;
 				}
-	    	}
-	    } else if(state == "USER") {
-	    	if(fileBuf.find("HOME_DIR") != std::string::npos) {
-				if(nullptr != userPtr) {
+			}
+		} else if (state == "USER") {
+			if (fileBuf.find("HOME_DIR") != std::string::npos) {
+				if (nullptr != userPtr) {
 					std::string::size_type pos = fileBuf.find(" ");
 					std::string dir = fileBuf.substr(pos + 1, fileBuf.length());
 					userPtr->homeDir = dir;
 				}
-	    	} else if(fileBuf.find("RIGHTS") != std::string::npos) {
-	    		if(nullptr != userPtr) {
-				std::string::size_type pos = fileBuf.find(" ");
-				std::string rights = fileBuf.substr(pos + 1, fileBuf.length());
-				if("READ" == rights) {
-					userPtr->rights = READ;
-					} else if("WRITE" == rights) {
+			} else if (fileBuf.find("RIGHTS") != std::string::npos) {
+				if (nullptr != userPtr) {
+					std::string::size_type pos = fileBuf.find(" ");
+					std::string rights = fileBuf.substr(pos + 1,
+							fileBuf.length());
+					if ("READ" == rights) {
+						userPtr->rights = READ;
+					} else if ("WRITE" == rights) {
 						userPtr->rights = WRITE;
 					}
-	    		}
-			} else if(fileBuf.find("PASSWD") != std::string::npos) {
-				if(nullptr != userPtr) {
+				}
+			} else if (fileBuf.find("PASSWD") != std::string::npos) {
+				if (nullptr != userPtr) {
 					std::string::size_type pos = fileBuf.find(" ");
-					std::string password = fileBuf.substr(pos + 1, fileBuf.length());
+					std::string password = fileBuf.substr(pos + 1,
+							fileBuf.length());
 					userPtr->passwd = password;
 				}
 			}
-	    }
+		}
 
-	    if(fileBuf.find("END_USER") != std::string::npos) {
-	    	state = "NO_STATE";
-	    	if(nullptr != userPtr) {
-	    		break;
-	    	}
-	    }
+		if (fileBuf.find("END_USER") != std::string::npos) {
+			state = "NO_STATE";
+			if (nullptr != userPtr) {
+				break;
+			}
+		}
 	}
 
 	file.close();
