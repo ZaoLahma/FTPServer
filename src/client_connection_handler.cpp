@@ -80,9 +80,8 @@ void ClientConnectionHandler::HandleControlMessage() {
 				ftpDir = user->homeDir;
 				currDir = ftpDir;
 				printf("ftpDir: %s\n", ftpDir.c_str());
-				if(0 == chdir(ftpDir.c_str())) {
-					userLoggedIn = true;
-				}
+				//if(0 == chdir(ftpDir.c_str())) {
+				//}
 			}
 		}
 		send_string += "\r\n";
@@ -108,6 +107,7 @@ void ClientConnectionHandler::HandleControlMessage() {
 		char buffer[2048];
 		std::string response = "150 ";
 		std::string ls = "ls -l";
+		ls.append(" " + currDir);
 		ls.append(" 2>&1");
 		FILE* file = popen(ls.c_str(), "r");
 
@@ -140,7 +140,11 @@ void ClientConnectionHandler::HandleControlMessage() {
 		socketApi.disconnect(dataFd);
 		dataFd = -1;
 	} else if("RETR" == command[0]) {
-		std::ifstream fileStream(command[1].c_str(), std::ifstream::binary);
+		std::string filePath = currDir + "/" + command[1];
+
+		printf("filePath: %s\n", filePath.c_str());
+
+		std::ifstream fileStream(filePath.c_str(), std::ifstream::binary);
 		fileStream.seekg(0, fileStream.end);
 		int length = fileStream.tellg();
 		fileStream.seekg(0, fileStream.beg);
@@ -202,6 +206,7 @@ void ClientConnectionHandler::HandleControlMessage() {
 		dataFd = -1;
 	} else if("CWD" == command[0]) {
 		std::string tmpDir = "";
+		std::string resString = "";
 		bool validDirectory = true;
 		if(command[1].find("..") != std::string::npos) {
 			std::vector<std::string> levels = SplitString(command[1], "..");
@@ -212,21 +217,38 @@ void ClientConnectionHandler::HandleControlMessage() {
 			if(tmpDir.find(ftpDir) != std::string::npos) {
 
 			} else {
+				resString = "Not allowed to CWD outside of FTP dir";
 				validDirectory = false;
 			}
 		}
 		else {
-			tmpDir = currDir + "/" + command[1];
+			char buffer[2048];
+			std::string ls = "ls -l";
+			ls.append(" " + currDir + "/" + command[1]);
+			ls.append(" 2>&1");
+			printf("Performing ls on: %s\n", ls.c_str());
+			FILE* file = popen(ls.c_str(), "r");
+			while (!feof(file)) {
+				if (fgets(buffer, 2048, file) != NULL) {
+					resString.append(buffer);
+				}
+			}
+			if(resString.find("No such file or directory") == std::string::npos) {
+				tmpDir = currDir + "/" + command[1];
+			} else {
+				validDirectory = false;
+				resString = currDir + "/" + command[1] + " - No such file or directory";
+			}
 		}
 		printf("tmpDir: %s\n", tmpDir.c_str());
-		if(validDirectory && 0 == chdir(tmpDir.c_str())) {
+		if(validDirectory) {
 			currDir = tmpDir;
 			printf("Sending 250 ok\n");
 			std::string send_string = "250 CWD ok\r\n";
 			SendResponse(send_string, controlFd);
 		} else {
 			printf("Sending 550 NOK\n");
-			std::string send_string = "550 CWD not performed\r\n";
+			std::string send_string = "550 CWD not performed. " + resString + "\r\n";
 			SendResponse(send_string, controlFd);
 		}
 	} else if("TYPE" == command[0] && ("I" == command[1] || "A" == command[1])) {

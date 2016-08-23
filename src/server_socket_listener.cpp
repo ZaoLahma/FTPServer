@@ -55,7 +55,7 @@ void ServerSocketListener::Execute() {
 				if(FD_ISSET(*fdIter, &rfds)) {
 					if(*fdIter == serverFd) {
 						int clientFd = socketAPI.waitForConnection(serverFd);
-						JobDispatcher::GetApi()->Log("FTPServer new connection established");
+						JobDispatcher::GetApi()->Log("FTPServer new connection established. clientFd: %d", clientFd);
 
 						ClientConnectionHandler* clientConn = new ClientConnectionHandler(clientFd);
 						clientConnections[clientFd] = clientConn;
