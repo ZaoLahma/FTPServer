@@ -61,7 +61,7 @@ void ServerSocketListener::Execute() {
 								clientFd);
 
 						ClientConnectionHandler* clientConn =
-								new ClientConnectionHandler(clientFd, &config);
+								new ClientConnectionHandler(clientFd, config);
 						clientConnections[clientFd] = clientConn;
 					} else {
 						ClientConnMapT::iterator connection =
