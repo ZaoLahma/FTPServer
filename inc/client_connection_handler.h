@@ -16,7 +16,7 @@
 
 class ClientConnectionHandler : public EventListenerBase {
 public:
-	ClientConnectionHandler(int fileDescriptor);
+	ClientConnectionHandler(int fileDescriptor, ConfigHandler& config);
 	~ClientConnectionHandler();
 	void HandleEvent(const uint32_t eventNo, const EventDataBase* dataPtr);
 
@@ -34,7 +34,7 @@ private:
 	int dataFd;
 	std::string transferMode;
 	bool transferActive;
-	ConfigHandler config;
+	ConfigHandler& config;
 	User* user;
 
 	void SendResponse(const std::string& response, int fileDescriptor);

@@ -23,10 +23,11 @@ ClientConnectionHandler::~ClientConnectionHandler() {
 	}
 }
 
-ClientConnectionHandler::ClientConnectionHandler(int fileDescriptor) :
+ClientConnectionHandler::ClientConnectionHandler(int fileDescriptor,
+		ConfigHandler& config) :
 		active(false), invalid(false), controlFd(fileDescriptor), ftpDir(""), currDir(
-				ftpDir), dataFd(-1), transferMode("A"), transferActive(false), user(
-				nullptr) {
+				ftpDir), dataFd(-1), transferMode("A"), transferActive(false), config(
+				config), user(nullptr) {
 
 	JobDispatcher::GetApi()->SubscribeToEvent(fileDescriptor, this);
 
@@ -398,8 +399,6 @@ std::vector<std::string> ClientConnectionHandler::GetCommand() {
 	if (nullptr != buf.data) {
 		delete buf.data;
 	}
-
-	printf("stringBuf: %s\n", stringBuf.c_str());
 
 	std::vector<std::string> command = SplitString(stringBuf, " ");
 

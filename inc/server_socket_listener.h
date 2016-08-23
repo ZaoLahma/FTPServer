@@ -51,6 +51,7 @@ private:
 	std::vector<int> observedFds;
 	ClientConnMapT clientConnections;
 	std::mutex fileDescriptorMutex;
+	ConfigHandler config;
 };
 
 
