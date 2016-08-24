@@ -34,12 +34,12 @@ void AdminInterface::Execute() {
 
 	std::unique_lock<std::mutex> shuttingDownLock(shuttingDownMutex);
 	shuttingDownCondition.wait(shuttingDownLock);
+	JobDispatcher::GetApi()->NotifyExecutionFinished();
 }
 
 void AdminInterface::HandleEvent(const uint32_t eventNo, const EventDataBase* dataPtr) {
 	if(eventNo == FTP_SHUT_DOWN_EVENT_RSP) {
 		std::unique_lock<std::mutex> shuttingDownLock(shuttingDownMutex);
 		shuttingDownCondition.notify_one();
-		JobDispatcher::GetApi()->NotifyExecutionFinished();
 	}
 }
