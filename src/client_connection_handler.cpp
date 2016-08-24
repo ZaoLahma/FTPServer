@@ -14,6 +14,8 @@
 #include <fstream>
 #include <unistd.h>
 #include <cstring>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 ClientConnectionHandler::~ClientConnectionHandler() {
 	std::lock_guard<std::mutex> execLock(execMutex);
@@ -33,15 +35,7 @@ ClientConnectionHandler::ClientConnectionHandler(int fileDescriptor,
 
 	std::string initConnStr = "220 OK.\r\n";
 
-	SocketBuf initConnBuf;
-	initConnBuf.dataSize = strlen(initConnStr.c_str());
-	initConnBuf.data = new char[initConnBuf.dataSize];
-
-	memcpy(initConnBuf.data, initConnStr.c_str(), initConnBuf.dataSize);
-
-	socketApi.sendData(fileDescriptor, initConnBuf);
-
-	delete initConnBuf.data;
+	SendResponse(initConnStr, controlFd);
 }
 
 void ClientConnectionHandler::HandleEvent(unsigned int eventNo,
@@ -65,11 +59,9 @@ void ClientConnectionHandler::HandleControlMessage() {
 	if ("USER" == command[0]) {
 		user = config.GetUser(command[1]);
 
-		printf("Sending 330 ok\n");
 		std::string send_string = "330 OK, send password\r\n";
 		SendResponse(send_string, controlFd);
 	} else if ("PASS" == command[0]) {
-		printf("Sending PASS response\n");
 		std::string send_string =
 				"530, user/passwd not correct or ftp directory not configured right";
 		if (user != nullptr) {
@@ -82,11 +74,9 @@ void ClientConnectionHandler::HandleControlMessage() {
 		send_string += "\r\n";
 		SendResponse(send_string, controlFd);
 	} else if ("PWD" == command[0]) {
-		printf("Sending PWD response\n");
 		std::string send_string = "257 \"" + currDir + "\"\r\n";
 		SendResponse(send_string, controlFd);
 	} else if ("PORT" == command[0]) {
-		printf("Sending PORT response\n");
 		std::vector<std::string> addressInfo = SplitString(command[1], ",");
 		std::string ipAddress = addressInfo[0] + "." + addressInfo[1] + "."
 				+ addressInfo[2] + "." + addressInfo[3];
@@ -96,12 +86,11 @@ void ClientConnectionHandler::HandleControlMessage() {
 
 		dataFd = socketApi.getClientSocketFileDescriptor(ipAddress, portNo);
 
-		printf("Sending 200 PORT ok\n");
 		std::string send_string = "200, PORT command ok\r\n";
 		SendResponse(send_string, controlFd);
 	} else if ("LIST" == command[0]) {
 		char buffer[2048];
-		std::string response = "150 ";
+		std::string response = "";
 		std::string ls = "ls -l";
 		ls.append(" " + currDir);
 		ls.append(" 2>&1");
@@ -121,13 +110,11 @@ void ClientConnectionHandler::HandleControlMessage() {
 
 		response += "\r\n";
 
-		printf("Sending 150 LIST ok\n");
 		std::string send_string = "150 LIST executed ok, data follows\r\n";
 		SendResponse(send_string, controlFd);
 
 		SendResponse(response, dataFd);
 
-		printf("Sending 226 LIST ok\n");
 		send_string = "226 LIST data send finished\r\n";
 		SendResponse(send_string, controlFd);
 
@@ -136,14 +123,11 @@ void ClientConnectionHandler::HandleControlMessage() {
 	} else if ("RETR" == command[0]) {
 		std::string filePath = currDir + "/" + command[1];
 
-		printf("filePath: %s\n", filePath.c_str());
-
 		std::ifstream fileStream(filePath.c_str(), std::ifstream::binary);
 		fileStream.seekg(0, fileStream.end);
 		int length = fileStream.tellg();
 		fileStream.seekg(0, fileStream.beg);
 
-		printf("Sending 150 RETR ok\n");
 		std::string send_string = "150 RETR executed ok, data follows\r\n";
 		if ("A" == transferMode) {
 			send_string =
@@ -193,7 +177,6 @@ void ClientConnectionHandler::HandleControlMessage() {
 		fileStream.close();
 		delete[] sendBuf.data;
 
-		printf("Sending 226 RETR ok\n");
 		send_string = "226 RETR data send finished\r\n";
 		SendResponse(send_string, controlFd);
 
@@ -238,18 +221,15 @@ void ClientConnectionHandler::HandleControlMessage() {
 		}
 		if (validDirectory) {
 			currDir = tmpDir;
-			printf("Sending 250 ok\n");
 			std::string send_string = "250 CWD ok\r\n";
 			SendResponse(send_string, controlFd);
 		} else {
-			printf("Sending 550 NOK\n");
 			std::string send_string = "550 CWD not performed. " + resString
 					+ "\r\n";
 			SendResponse(send_string, controlFd);
 		}
 	} else if ("TYPE" == command[0]
 			&& ("I" == command[1] || "A" == command[1])) {
-		printf("Sending 200 ok\n");
 		transferMode = command[1];
 		std::string send_string = "200 Transfer mode change to: " + transferMode
 				+ "\r\n";
@@ -264,7 +244,6 @@ void ClientConnectionHandler::HandleControlMessage() {
 		} else {
 			std::ofstream fileStream(command[1]);
 
-			printf("Sending 150 STORE ok\n");
 			std::string send_string =
 					"150 STORE ok, send data pretty please\r\n";
 			if ("A" == transferMode) {
@@ -300,19 +279,50 @@ void ClientConnectionHandler::HandleControlMessage() {
 				} while (receiveBuf.dataSize == max_buf && transferActive);
 			}
 
-			printf("Sending 226 STOR ok\n");
 			send_string = "226 STOR data received ok\r\n";
 			SendResponse(send_string, controlFd);
 
 			socketApi.disconnect(dataFd);
 		}
 
+	} else if (command[0] == "MKD") {
+		std::string send_string = "";
+		if(user->rights == WRITE) {
+			int status;
+			std::string dirString = currDir + "/" + command[1];
+			status = mkdir(dirString.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH | S_IWOTH);
+			if(0 == status) {
+				send_string = "257 " + dirString + " created OK\r\n";
+			} else {
+				send_string = "550 STORE not performed due to unknown reason\r\n"; //FIXME
+			}
+		} else {
+			send_string = "550 STORE refused due to user access rights\r\n";
+		}
+
+		SendResponse(send_string, controlFd);
+
+	} else if (command[0] == "RMD") {
+		std::string send_string = "";
+		if(user->rights == WRITE) {
+			int status;
+			std::string dirString = currDir + "/" + command[1];
+			status = rmdir(dirString.c_str());
+			if(0 == status) {
+				send_string = "250 " + dirString + " removed OK\r\n";
+			} else {
+				send_string = "550 RMD not performed due to unknown reason\r\n"; //FIXME
+			}
+		} else {
+			send_string = "550 RMD refused due to user access rights\r\n";
+		}
+
+		SendResponse(send_string, controlFd);
 	} else if (command[0].find("ABOR") != std::string::npos) {
 		transferActive = false;
 		std::string send_string = "426 Abort ok\r\n";
 		SendResponse(send_string, controlFd);
 	} else if ("QUIT" == command[0]) {
-		printf("Sending 221 QUIT response\n");
 		std::string send_string = "221 Bye Bye\r\n";
 		SendResponse(send_string, controlFd);
 
@@ -321,8 +331,6 @@ void ClientConnectionHandler::HandleControlMessage() {
 				new ClientStatusChangeEventData(controlFd));
 		invalid = true;
 	} else {
-		printf("Sending 500 not implemented response to: %s\n",
-				command[0].c_str());
 		std::string send_string = "500 Not implemented\r\n";
 		SendResponse(send_string, controlFd);
 	}
@@ -335,6 +343,8 @@ void ClientConnectionHandler::SendResponse(const std::string& response,
 	sendData.data = new char[sendData.dataSize];
 
 	memcpy(sendData.data, response.c_str(), sendData.dataSize);
+
+	printf("Sending %s\n", response.c_str());
 
 	socketApi.sendData(fileDescriptor, sendData);
 
