@@ -52,6 +52,7 @@ private:
 	ClientConnMapT clientConnections;
 	std::mutex fileDescriptorMutex;
 	ConfigHandler config;
+	bool running;
 };
 
 

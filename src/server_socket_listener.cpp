@@ -6,14 +6,16 @@
  */
 
 #include "../inc/server_socket_listener.h"
+#include "../inc/admin_interface_events.h"
 #include "../inc/thread_fwk/jobdispatcher.h"
 #include <string>
 #include <sys/time.h>
 #include <algorithm>
 
-ServerSocketListener::ServerSocketListener() {
+ServerSocketListener::ServerSocketListener() : running(true) {
 	JobDispatcher::GetApi()->SubscribeToEvent(CLIENT_DISCONNECTED_EVENT, this);
 	JobDispatcher::GetApi()->SubscribeToEvent(CLIENT_INACTIVE_EVENT, this);
+	JobDispatcher::GetApi()->SubscribeToEvent(FTP_SHUT_DOWN_EVENT, this);
 }
 
 void ServerSocketListener::Execute() {
@@ -23,7 +25,7 @@ void ServerSocketListener::Execute() {
 	JobDispatcher::GetApi()->Log("FTPServer waiting for connections on port %s",
 			"3370");
 
-	while (true) {
+	while (running) {
 		observedFds.clear();
 		observedFds.push_back(serverFd);
 		ClientConnMapT::iterator connection = clientConnections.begin();
@@ -101,6 +103,8 @@ void ServerSocketListener::Execute() {
 			connection++;
 		}
 	}
+
+	JobDispatcher::GetApi()->RaiseEvent(FTP_SHUT_DOWN_EVENT_RSP, nullptr);
 }
 
 void ServerSocketListener::HandleEvent(const uint32_t eventNo,
@@ -123,5 +127,7 @@ void ServerSocketListener::HandleEvent(const uint32_t eventNo,
 		if (clientConnections.end() != connection) {
 			connection->second->active = false;
 		}
+	} else if(FTP_SHUT_DOWN_EVENT == eventNo) {
+		running = false;
 	}
 }
