@@ -1,21 +1,27 @@
-[2016-08-25 22:25:27.057941000]FTPServer starting...
-[2016-08-25 22:25:27.059077000]FTPServer waiting for connections on port 3370
-[2016-08-25 22:25:43.141635000]FTPServer new connection established. clientFd: 5
-[2016-08-25 22:25:43.141687000]Sending 220 OK.
+[2016-08-25 22:37:17.131776000]FTPServer starting...
+[2016-08-25 22:37:17.132912000]FTPServer waiting for connections on port 3370
+[2016-08-25 22:37:27.555768000]FTPServer new connection established. clientFd: 5
+[2016-08-25 22:37:27.555818000]Sending 220 OK.
 
 
-[2016-08-25 22:25:44.486513000]Sending 330 OK, send password
+[2016-08-25 22:37:28.788235000]Sending 330 OK, send password
 
 
-[2016-08-25 22:25:46.224374000]Sending 230 OK, user janne logged in
+[2016-08-25 22:37:30.601060000]Sending 530, user/passwd not correct or ftp directory not configured right
 
 
-[2016-08-25 22:25:46.329716000]Sending 500 SYST - Not implemented
+[2016-08-25 22:37:31.131980000]Sending 530 No action taken due to not logged in
 
 
-[2016-08-25 22:25:46.434777000]Sending 500 FEAT - Not implemented
+[2016-08-25 22:37:31.236102000]Sending 530 No action taken due to not logged in
 
 
-[2016-08-25 22:25:46.539353000]Sending 257 "/Users/janne"
+[2016-08-25 22:37:31.339771000]Sending 530 No action taken due to not logged in
+
+
+[2016-08-25 22:37:31.439776000]Sending 530 No action taken due to not logged in
+
+
+[2016-08-25 22:37:38.977782000]Sending 221 Bye Bye
 
 

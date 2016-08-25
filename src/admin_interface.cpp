@@ -18,7 +18,7 @@ AdminInterface::AdminInterface() : running(true) {
 	menuStr += "Available commands\n";
 	menuStr += "Shutdown FTP server -     exit\n";
 	menuStr += "List active connections - list\n\n";
-	menuStr += "Command: ";
+	menuStr += "Command: \n";
 }
 
 void AdminInterface::Execute() {
@@ -62,11 +62,11 @@ void AdminInterface::HandleEvent(const uint32_t eventNo, const EventDataBase* da
 		for( ; screenIter != screenBuf.end(); ++screenIter) {
 			std::cout<<*screenIter<<std::endl;
 		}
-		std::cout<<menuStr<<std::endl;
+		std::cout<<menuStr;
 	} else if(FTP_LIST_CONNECTIONS_EVENT_RSP == eventNo) {
 		std::lock_guard<std::mutex> printLock(printMutex);
 
-		screenBuf.push_back("Connections:\n");
+		screenBuf.push_back("\nConnections:");
 
 		const ListConnectionsEventData* connectionsData = static_cast<const ListConnectionsEventData*>(dataPtr);
 		screenBuf.push_back(connectionsData->str);
@@ -80,6 +80,6 @@ void AdminInterface::HandleEvent(const uint32_t eventNo, const EventDataBase* da
 		for( ; screenIter != screenBuf.end(); ++screenIter) {
 			std::cout<<*screenIter<<std::endl;
 		}
-		std::cout<<menuStr<<std::endl;
+		std::cout<<menuStr;
 	}
 }
