@@ -304,7 +304,22 @@ void ClientConnectionHandler::HandleControlMessage() {
 
 			socketApi.disconnect(dataFd);
 		}
+	} else if (command[0] == "DELE") {
+		std::string send_string = "";
+		if(user->rights == WRITE) {
+			int status;
+			std::string fileString = currDir + "/" + command[1];
+			status = remove(fileString.c_str());
+			if(0 == status) {
+				send_string = "250 " + fileString + " deleted OK\r\n";
+			} else {
+				send_string = "550 DELE not performed due to unknown reason\r\n"; //FIXME
+			}
+		} else {
+			send_string = "550 DELE refused due to user access rights\r\n";
+		}
 
+		SendResponse(send_string, controlFd);
 	} else if (command[0] == "MKD") {
 		std::string send_string = "";
 		if(user->rights == WRITE) {
@@ -327,7 +342,7 @@ void ClientConnectionHandler::HandleControlMessage() {
 		if(user->rights == WRITE) {
 			int status;
 			std::string dirString = currDir + "/" + command[1];
-			status = rmdir(dirString.c_str());
+			status = remove(dirString.c_str());
 			if(0 == status) {
 				send_string = "250 " + dirString + " removed OK\r\n";
 			} else {
