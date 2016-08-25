@@ -36,6 +36,7 @@ private:
 	bool transferActive;
 	ConfigHandler& config;
 	User* user;
+	bool loggedIn;
 
 	void SendResponse(const std::string& response, int fileDescriptor);
 	std::vector<std::string> SplitString(const std::string& string, const std::string& delimiter);

@@ -30,7 +30,7 @@ ClientConnectionHandler::ClientConnectionHandler(int fileDescriptor,
 		ConfigHandler& config) :
 		active(false), invalid(false), controlFd(fileDescriptor), ftpDir(""), currDir(
 				ftpDir), dataFd(-1), transferMode("A"), transferActive(false), config(
-				config), user(nullptr) {
+				config), user(nullptr), loggedIn(false) {
 
 	JobDispatcher::GetApi()->SubscribeToEvent(fileDescriptor, this);
 
@@ -62,23 +62,37 @@ void ClientConnectionHandler::HandleEvent(unsigned int eventNo,
 void ClientConnectionHandler::HandleControlMessage() {
 	std::vector<std::string> command = GetCommand();
 
-	if ("USER" == command[0]) {
-		user = config.GetUser(command[1]);
+	if (!loggedIn) {
+		if ("USER" == command[0]) {
+			user = config.GetUser(command[1]);
 
-		std::string send_string = "330 OK, send password\r\n";
-		SendResponse(send_string, controlFd);
-	} else if ("PASS" == command[0]) {
-		std::string send_string =
-				"530, user/passwd not correct or ftp directory not configured right";
-		if (user != nullptr) {
-			if (user->passwd == command[1]) {
-				send_string = "230 OK, user logged in";
-				ftpDir = user->homeDir;
-				currDir = ftpDir;
+			std::string send_string = "330 OK, send password\r\n";
+			SendResponse(send_string, controlFd);
+		} else if ("PASS" == command[0]) {
+			std::string send_string =
+					"530, user/passwd not correct or ftp directory not configured right";
+			if (user != nullptr) {
+				if (user->passwd == command[1]) {
+					send_string = "230 OK, user logged in";
+					ftpDir = user->homeDir;
+					currDir = ftpDir;
+					loggedIn = true;
+				}
 			}
+			send_string += "\r\n";
+			SendResponse(send_string, controlFd);
+		} else if ("QUIT" == command[0]) {
+			std::string send_string = "221 Bye Bye\r\n";
+			SendResponse(send_string, controlFd);
+
+			JobDispatcher::GetApi()->UnsubscribeToEvent(controlFd, this);
+			JobDispatcher::GetApi()->RaiseEvent(CLIENT_DISCONNECTED_EVENT,
+					new ClientStatusChangeEventData(controlFd));
+			invalid = true;
+		} else {
+			std::string send_string = "530 No action taken due to not logged in\r\n";
+			SendResponse(send_string, controlFd);
 		}
-		send_string += "\r\n";
-		SendResponse(send_string, controlFd);
 	} else if ("PWD" == command[0]) {
 		std::string send_string = "257 \"" + currDir + "\"\r\n";
 		SendResponse(send_string, controlFd);

@@ -108,7 +108,6 @@ void ServerSocketListener::DisconnectInactiveConnections() {
 
 			delete connection->second;
 			connection = clientConnections.erase(connection);
-			JobDispatcher::GetApi()->RaiseEvent(FTP_REFRESH_SCREEN_EVENT, new RefreshScreenEventData("Disconnected a client"));
 			continue;
 		}
 		connection++;
