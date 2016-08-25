@@ -1,24 +1,159 @@
-[2016-08-25 19:53:54.841654000]FTPServer starting...
-[2016-08-25 19:53:54.842832000]FTPServer waiting for connections on port 3370
-[2016-08-25 19:53:57.626216000]FTPServer new connection established. clientFd: 5
-[2016-08-25 19:53:57.626268000]Sending 220 OK.
+[2016-08-25 20:12:51.362357524]FTPServer starting...
+[2016-08-25 20:12:51.364959390]FTPServer waiting for connections on port 3370
+[2016-08-25 20:13:00.011158535]FTPServer new connection established. clientFd: 4
+[2016-08-25 20:13:00.011872908]Sending 220 OK.
 
 
-[2016-08-25 19:53:59.695350000]Sending 330 OK, send password
+[2016-08-25 20:13:01.944058739]Sending 330 OK, send password
 
 
-[2016-08-25 19:54:01.101222000]Sending 230 OK, user logged in
+[2016-08-25 20:13:05.545231524]Sending 230 OK, user logged in
 
 
-[2016-08-25 19:54:01.202494000]Sending 500 SYST - Not implemented
+[2016-08-25 20:13:05.548858126]Sending 500 SYST - Not implemented
 
 
-[2016-08-25 19:54:01.307658000]Sending 500 FEAT - Not implemented
+[2016-08-25 20:13:05.649040381]Sending 500 FEAT - Not implemented
 
 
-[2016-08-25 19:54:01.407748000]Sending 257 "/Users/janne"
+[2016-08-25 20:13:05.749242949]Sending 257 "/home/pi"
 
 
-[2016-08-25 19:54:02.240234000]Sending 221 Bye Bye
+[2016-08-25 20:13:18.817245086]Sending 500 EPSV - Not implemented
+
+
+[2016-08-25 20:13:18.820730647]Sending 500 PASV - Not implemented
+
+
+[2016-08-25 20:13:18.826206149]Sending 200, PORT command ok
+
+
+[2016-08-25 20:13:18.945948909]Sending 150 LIST executed ok, data follows
+
+
+[2016-08-25 20:13:18.947900100]Sending total 64
+drwxr-xr-x 2 pi   pi    4096 Nov 21  2015 Desktop
+drwxr-xr-x 5 pi   pi    4096 Nov 21  2015 Documents
+drwxr-xr-x 2 pi   pi    4096 Jul  6 11:38 Downloads
+drwxr-xr-x 2 pi   pi    4096 Nov 21  2015 Music
+drwxr-xr-x 3 pi   pi    4096 Apr 18 20:42 Pictures
+drwxr-xr-x 2 pi   pi    4096 Nov 21  2015 Public
+drwxr-xr-x 2 pi   pi    4096 Nov 21  2015 Templates
+drwxr-xr-x 2 pi   pi    4096 Nov 21  2015 Videos
+-rwxr-xr-x 1 root root    81 Apr 19 18:30 ktop
+-rw-r--r-- 1 pi   pi   10938 Apr 19 18:30 kweb_about_c.html
+drwxr-xr-x 2 pi   pi    4096 Feb 13  2016 launchers
+drwxr-xr-x 4 pi   pi    4096 Jul  4 11:45 oldconffiles
+drwxr-xr-x 2 pi   pi    4096 Nov 21  2015 python_games
+drwxrwxrwt 4 root root    80 Aug 25 20:06 ramdisk
+drwxr-xr-x 9 pi   pi    4096 Apr 19 18:31 youtube-dl
+
+
+
+
+[2016-08-25 20:13:18.948296818]Sending 226 LIST data send finished
+
+
+[2016-08-25 20:13:31.351481779]Sending 250 CWD ok
+
+
+[2016-08-25 20:13:31.430583795]Sending 257 "/home/pi/Downloads"
+
+
+[2016-08-25 20:13:31.904987404]Sending 200, PORT command ok
+
+
+[2016-08-25 20:13:32.023160222]Sending 150 LIST executed ok, data follows
+
+
+[2016-08-25 20:13:32.023669491]Sending total 4
+-rwxr-xr-x 1 pi pi 2929 Jul  6 11:12 main.py
+
+
+
+
+[2016-08-25 20:13:32.026271097]Sending 226 LIST data send finished
+
+
+[2016-08-25 20:13:40.365698788]Sending 250 CWD ok
+
+
+[2016-08-25 20:13:40.465767294]Sending 257 "/home/pi"
+
+
+[2016-08-25 20:13:42.319696934]Sending 200, PORT command ok
+
+
+[2016-08-25 20:13:42.438649072]Sending 150 LIST executed ok, data follows
+
+
+[2016-08-25 20:13:42.439192455]Sending total 64
+drwxr-xr-x 2 pi   pi    4096 Nov 21  2015 Desktop
+drwxr-xr-x 5 pi   pi    4096 Nov 21  2015 Documents
+drwxr-xr-x 2 pi   pi    4096 Jul  6 11:38 Downloads
+drwxr-xr-x 2 pi   pi    4096 Nov 21  2015 Music
+drwxr-xr-x 3 pi   pi    4096 Apr 18 20:42 Pictures
+drwxr-xr-x 2 pi   pi    4096 Nov 21  2015 Public
+drwxr-xr-x 2 pi   pi    4096 Nov 21  2015 Templates
+drwxr-xr-x 2 pi   pi    4096 Nov 21  2015 Videos
+-rwxr-xr-x 1 root root    81 Apr 19 18:30 ktop
+-rw-r--r-- 1 pi   pi   10938 Apr 19 18:30 kweb_about_c.html
+drwxr-xr-x 2 pi   pi    4096 Feb 13  2016 launchers
+drwxr-xr-x 4 pi   pi    4096 Jul  4 11:45 oldconffiles
+drwxr-xr-x 2 pi   pi    4096 Nov 21  2015 python_games
+drwxrwxrwt 4 root root    80 Aug 25 20:06 ramdisk
+drwxr-xr-x 9 pi   pi    4096 Apr 19 18:31 youtube-dl
+
+
+
+
+[2016-08-25 20:13:42.440383909]Sending 226 LIST data send finished
+
+
+[2016-08-25 20:13:45.211532648]Sending 250 CWD ok
+
+
+[2016-08-25 20:13:45.291707837]Sending 257 "/home/pi/Downloads"
+
+
+[2016-08-25 20:13:48.840685638]Sending 250 CWD ok
+
+
+[2016-08-25 20:13:48.940786644]Sending 257 "/home/pi"
+
+
+[2016-08-25 20:13:49.904515372]Sending 200, PORT command ok
+
+
+[2016-08-25 20:13:50.023363083]Sending 150 LIST executed ok, data follows
+
+
+[2016-08-25 20:13:50.023890790]Sending total 64
+drwxr-xr-x 2 pi   pi    4096 Nov 21  2015 Desktop
+drwxr-xr-x 5 pi   pi    4096 Nov 21  2015 Documents
+drwxr-xr-x 2 pi   pi    4096 Jul  6 11:38 Downloads
+drwxr-xr-x 2 pi   pi    4096 Nov 21  2015 Music
+drwxr-xr-x 3 pi   pi    4096 Apr 18 20:42 Pictures
+drwxr-xr-x 2 pi   pi    4096 Nov 21  2015 Public
+drwxr-xr-x 2 pi   pi    4096 Nov 21  2015 Templates
+drwxr-xr-x 2 pi   pi    4096 Nov 21  2015 Videos
+-rwxr-xr-x 1 root root    81 Apr 19 18:30 ktop
+-rw-r--r-- 1 pi   pi   10938 Apr 19 18:30 kweb_about_c.html
+drwxr-xr-x 2 pi   pi    4096 Feb 13  2016 launchers
+drwxr-xr-x 4 pi   pi    4096 Jul  4 11:45 oldconffiles
+drwxr-xr-x 2 pi   pi    4096 Nov 21  2015 python_games
+drwxrwxrwt 4 root root    80 Aug 25 20:06 ramdisk
+drwxr-xr-x 9 pi   pi    4096 Apr 19 18:31 youtube-dl
+
+
+
+
+[2016-08-25 20:13:50.025216097]Sending 226 LIST data send finished
+
+
+[2016-08-25 20:14:18.188697446]Sending 550 RMD refused due to user access rights
+
+
+[2016-08-25 20:14:28.648404133]Sending 500 DELE - Not implemented
 
 
