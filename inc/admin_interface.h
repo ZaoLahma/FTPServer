@@ -12,6 +12,8 @@
 #include "thread_fwk/eventlistenerbase.h"
 #include <condition_variable>
 #include <mutex>
+#include <vector>
+#include <string>
 
 class AdminInterface : public JobBase, public EventListenerBase {
 public:
@@ -25,6 +27,9 @@ private:
 	bool running;
 	std::mutex shuttingDownMutex;
 	std::condition_variable shuttingDownCondition;
+	std::mutex printMutex;
+	std::vector<std::string> screenBuf;
+	std::string menuStr;
 };
 
 #endif /* INC_ADMIN_INTERFACE_H_ */

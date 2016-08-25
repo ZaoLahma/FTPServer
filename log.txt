@@ -1,2 +1,24 @@
-[2016-08-24 21:41:16.556126000]FTPServer starting...
-[2016-08-24 21:41:16.557278000]FTPServer waiting for connections on port 3370
+[2016-08-25 19:53:54.841654000]FTPServer starting...
+[2016-08-25 19:53:54.842832000]FTPServer waiting for connections on port 3370
+[2016-08-25 19:53:57.626216000]FTPServer new connection established. clientFd: 5
+[2016-08-25 19:53:57.626268000]Sending 220 OK.
+
+
+[2016-08-25 19:53:59.695350000]Sending 330 OK, send password
+
+
+[2016-08-25 19:54:01.101222000]Sending 230 OK, user logged in
+
+
+[2016-08-25 19:54:01.202494000]Sending 500 SYST - Not implemented
+
+
+[2016-08-25 19:54:01.307658000]Sending 500 FEAT - Not implemented
+
+
+[2016-08-25 19:54:01.407748000]Sending 257 "/Users/janne"
+
+
+[2016-08-25 19:54:02.240234000]Sending 221 Bye Bye
+
+

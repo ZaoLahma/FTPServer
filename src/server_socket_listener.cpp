@@ -18,61 +18,65 @@ ServerSocketListener::ServerSocketListener() : running(true) {
 	JobDispatcher::GetApi()->SubscribeToEvent(FTP_SHUT_DOWN_EVENT, this);
 }
 
+ServerSocketListener::~ServerSocketListener() {
+	JobDispatcher::GetApi()->UnsubscribeToEvent(CLIENT_DISCONNECTED_EVENT, this);
+	JobDispatcher::GetApi()->UnsubscribeToEvent(CLIENT_INACTIVE_EVENT, this);
+	JobDispatcher::GetApi()->UnsubscribeToEvent(FTP_SHUT_DOWN_EVENT, this);
+
+
+}
+
 void ServerSocketListener::Execute() {
 	int serverFd = socketAPI.getServerSocketFileDescriptor("3370");
-	observedFds.push_back(serverFd);
 
 	JobDispatcher::GetApi()->Log("FTPServer waiting for connections on port %s",
 			"3370");
 
 	while (running) {
-		observedFds.clear();
-		observedFds.push_back(serverFd);
+		fd_set rfds;
+		FD_ZERO(&rfds);
+		FD_SET(serverFd, &rfds);
+
+		int32_t maxFd = serverFd;
+
 		ClientConnMapT::iterator connection = clientConnections.begin();
 		for (; connection != clientConnections.end(); ++connection) {
 			if (false == connection->second->active) {
-				//printf("Adding %d to observedFds\n", connection->second->controlFd);
-				observedFds.push_back(connection->second->controlFd);
+				FD_SET(connection->second->controlFd, &rfds);
+				if(connection->second->controlFd > maxFd) {
+					maxFd = connection->second->controlFd;
+				}
 			}
-		}
-
-		std::vector<int>::iterator maxIter = std::max(observedFds.begin(),
-				observedFds.end() - 1);
-		std::vector<int>::iterator fdIter = observedFds.begin();
-
-		fd_set rfds;
-		FD_ZERO(&rfds);
-		for (; fdIter != observedFds.end(); ++fdIter) {
-			FD_SET(*fdIter, &rfds);
 		}
 
 		timeval timeout;
 		timeout.tv_usec = 100000;
 		timeout.tv_sec = 0;
-		int retval = select(*maxIter + 1, &rfds, NULL, NULL, &timeout);
+
+		int retval = select(maxFd + 1, &rfds, NULL, NULL, &timeout);
 
 		if (retval > 0) {
-			std::vector<int> newFds;
-			fdIter = observedFds.begin();
-			for (; fdIter != observedFds.end(); ++fdIter) {
-				if (FD_ISSET(*fdIter, &rfds)) {
-					if (*fdIter == serverFd) {
-						int clientFd = socketAPI.waitForConnection(serverFd);
-						JobDispatcher::GetApi()->Log(
-								"FTPServer new connection established. clientFd: %d",
-								clientFd);
+			/* We have something on a controlFd to deal with */
+			if(FD_ISSET(serverFd, &rfds)) {
+				/* Client connecting to server */
+				int clientFd = socketAPI.waitForConnection(serverFd);
+				JobDispatcher::GetApi()->Log(
+						"FTPServer new connection established. clientFd: %d",
+						clientFd);
 
-						ClientConnectionHandler* clientConn =
-								new ClientConnectionHandler(clientFd, config);
-						clientConnections[clientFd] = clientConn;
-					} else {
-						ClientConnMapT::iterator connection =
-								clientConnections.find(*fdIter);
-						if (false == connection->second->active) {
-							connection->second->active = true;
-							JobDispatcher::GetApi()->RaiseEvent(*fdIter,
-									nullptr);
-						}
+				ClientConnectionHandler* clientConn =
+						new ClientConnectionHandler(clientFd, config);
+				clientConnections[clientFd] = clientConn;
+			}
+
+			/* Check if we have anything waiting on any alread established connections */
+			connection = clientConnections.begin();
+			for (; connection != clientConnections.end(); ++connection) {
+				if (FD_ISSET(connection->second->controlFd, &rfds)) {
+					if (false == connection->second->active) {
+						connection->second->active = true;
+						JobDispatcher::GetApi()->RaiseEvent(connection->second->controlFd,
+								nullptr);
 					}
 				}
 			}
@@ -84,50 +88,46 @@ void ServerSocketListener::Execute() {
 			break;
 		}
 
-		std::lock_guard<std::mutex> fileDescriptorLock(fileDescriptorMutex);
-		connection = clientConnections.begin();
-		while (connection != clientConnections.end()) {
-			if (true == connection->second->invalid) {
-				fdIter = std::find(observedFds.begin(), observedFds.end() - 1,
-						connection->second->controlFd);
-				if (observedFds.end() != fdIter) {
-					observedFds.erase(fdIter);
-				}
-				socketAPI.disconnect(connection->second->controlFd);
 
-				delete connection->second;
-				connection = clientConnections.erase(connection);
-				printf("Disconnected a client\n");
-				continue;
-			}
-			connection++;
-		}
+		/* Clean up connections that have been disconnected */
+		DisconnectInactiveConnections();
 	}
+
+	/* Disconnect any lingering still active connections during shut down procedure */
+	DisconnectInactiveConnections();
 
 	JobDispatcher::GetApi()->RaiseEvent(FTP_SHUT_DOWN_EVENT_RSP, nullptr);
 }
 
+void ServerSocketListener::DisconnectInactiveConnections() {
+	std::lock_guard<std::mutex> fileDescriptorLock(fileDescriptorMutex);
+	ClientConnMapT::iterator connection = clientConnections.begin();
+	while (connection != clientConnections.end()) {
+		if (true == connection->second->invalid) {
+			socketAPI.disconnect(connection->second->controlFd);
+
+			delete connection->second;
+			connection = clientConnections.erase(connection);
+			JobDispatcher::GetApi()->RaiseEvent(FTP_REFRESH_SCREEN_EVENT, new RefreshScreenEventData("Disconnected a client"));
+			continue;
+		}
+		connection++;
+	}
+}
+
 void ServerSocketListener::HandleEvent(const uint32_t eventNo,
 		const EventDataBase* dataPtr) {
-	std::lock_guard<std::mutex> fileDescriptorLock(fileDescriptorMutex);
 	if (CLIENT_DISCONNECTED_EVENT == eventNo) {
-		ClientStatusChangeEventData* clientDisconnected =
-				(ClientStatusChangeEventData*) (dataPtr);
 
-		ClientConnMapT::iterator connection = clientConnections.find(
-				clientDisconnected->fileDescriptor);
-		connection->second->invalid = true;
 	} else if (CLIENT_INACTIVE_EVENT == eventNo) {
-		printf("Received client inactive event\n");
-		ClientStatusChangeEventData* clientDisconnected =
-				(ClientStatusChangeEventData*) (dataPtr);
 
-		ClientConnMapT::iterator connection = clientConnections.find(
-				clientDisconnected->fileDescriptor);
-		if (clientConnections.end() != connection) {
-			connection->second->active = false;
-		}
 	} else if(FTP_SHUT_DOWN_EVENT == eventNo) {
+		/* Mark all connections as inactive to force a disconnect from the other thread */
+		std::lock_guard<std::mutex> fileDescriptorLock(fileDescriptorMutex);
+		ClientConnMapT::iterator connection = clientConnections.begin();
+		for( ; connection != clientConnections.end(); ++connection) {
+			connection->second->invalid = true;
+		}
 		running = false;
 	}
 }

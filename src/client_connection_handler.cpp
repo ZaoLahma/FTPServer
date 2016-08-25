@@ -8,6 +8,7 @@
 #include "../inc/client_connection_handler.h"
 #include "../inc/thread_fwk/jobdispatcher.h"
 #include "../inc/server_socket_listener.h"
+#include "../inc/admin_interface_events.h"
 #include <string>
 #include <cstdlib>
 #include <stdio.h>
@@ -45,6 +46,11 @@ void ClientConnectionHandler::HandleEvent(unsigned int eventNo,
 	if (true == invalid) {
 		return;
 	}
+
+	/*
+	 * This method is called when there's something in the control channel
+	 * for this connection to handle.
+	 */
 
 	HandleControlMessage();
 
@@ -331,7 +337,7 @@ void ClientConnectionHandler::HandleControlMessage() {
 				new ClientStatusChangeEventData(controlFd));
 		invalid = true;
 	} else {
-		std::string send_string = "500 Not implemented\r\n";
+		std::string send_string = "500 " + command[0] + " - Not implemented\r\n";
 		SendResponse(send_string, controlFd);
 	}
 }
@@ -344,7 +350,8 @@ void ClientConnectionHandler::SendResponse(const std::string& response,
 
 	memcpy(sendData.data, response.c_str(), sendData.dataSize);
 
-	printf("Sending %s\n", response.c_str());
+	JobDispatcher::GetApi()->Log("Sending %s\n", response.c_str());
+	JobDispatcher::GetApi()->RaiseEvent(FTP_REFRESH_SCREEN_EVENT, new RefreshScreenEventData("Sending " + response));
 
 	socketApi.sendData(fileDescriptor, sendData);
 

@@ -8,24 +8,24 @@
 #include "../inc/admin_interface.h"
 #include "../inc/thread_fwk/jobdispatcher.h"
 #include "../inc/admin_interface_events.h"
-#include <string>
 #include <iostream>
 
 AdminInterface::AdminInterface() : running(true) {
 	JobDispatcher::GetApi()->SubscribeToEvent(FTP_SHUT_DOWN_EVENT_RSP, this);
+	JobDispatcher::GetApi()->SubscribeToEvent(FTP_REFRESH_SCREEN_EVENT, this);
+	menuStr = "\n--------------------------------------------\n";
+	menuStr += "Available commands\n";
+	menuStr += "Shutdown FTP server - exit\n\n";
+	menuStr += "Command: ";
 }
 
 void AdminInterface::Execute() {
-	std::string screen;
 	std::string userInput;
 	while(running) {
-		screen = "Commands: \n";
-		screen += "Exit\n";
-
-		printf("%s\n", screen.c_str());
+		JobDispatcher::GetApi()->RaiseEvent(FTP_REFRESH_SCREEN_EVENT, nullptr);
 		std::cin>>userInput;
 
-		if("Exit" == userInput) {
+		if("exit" == userInput) {
 			running = false;
 			JobDispatcher::GetApi()->RaiseEvent(FTP_SHUT_DOWN_EVENT, nullptr);
 			break;
@@ -41,5 +41,23 @@ void AdminInterface::HandleEvent(const uint32_t eventNo, const EventDataBase* da
 	if(eventNo == FTP_SHUT_DOWN_EVENT_RSP) {
 		std::unique_lock<std::mutex> shuttingDownLock(shuttingDownMutex);
 		shuttingDownCondition.notify_one();
+	} else if(FTP_REFRESH_SCREEN_EVENT == eventNo) {
+		std::lock_guard<std::mutex> printLock(printMutex);
+
+		if(nullptr != dataPtr ){
+			const RefreshScreenEventData* screenData = static_cast<const RefreshScreenEventData*>(dataPtr);
+			screenBuf.push_back(screenData->str);
+		}
+
+		if(screenBuf.size() > 40) {
+			screenBuf.erase(screenBuf.begin());
+		}
+
+		printf("\033c");
+		std::vector<std::string>::iterator screenIter = screenBuf.begin();
+		for( ; screenIter != screenBuf.end(); ++screenIter) {
+			std::cout<<*screenIter<<std::endl;
+		}
+		std::cout<<menuStr<<std::endl;
 	}
 }

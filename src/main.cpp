@@ -16,5 +16,8 @@ int main(void) {
 	JobDispatcher::GetApi()->ExecuteJob(new AdminInterface());
 
 	JobDispatcher::GetApi()->WaitForExecutionFinished();
+
+	JobDispatcher::DropInstance();
+
 	return 0;
 }

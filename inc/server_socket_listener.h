@@ -41,6 +41,7 @@ private:
 class ServerSocketListener : public JobBase, public EventListenerBase {
 public:
 	ServerSocketListener();
+	~ServerSocketListener();
 	void Execute();
 	void HandleEvent(const uint32_t eventNo, const EventDataBase* dataPtr);
 
@@ -53,6 +54,7 @@ private:
 	std::mutex fileDescriptorMutex;
 	ConfigHandler config;
 	bool running;
+	void DisconnectInactiveConnections();
 };
 
 
