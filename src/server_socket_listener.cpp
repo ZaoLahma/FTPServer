@@ -22,8 +22,6 @@ ServerSocketListener::~ServerSocketListener() {
 	JobDispatcher::GetApi()->UnsubscribeToEvent(CLIENT_DISCONNECTED_EVENT, this);
 	JobDispatcher::GetApi()->UnsubscribeToEvent(CLIENT_INACTIVE_EVENT, this);
 	JobDispatcher::GetApi()->UnsubscribeToEvent(FTP_SHUT_DOWN_EVENT, this);
-
-
 }
 
 void ServerSocketListener::Execute() {
@@ -54,6 +52,8 @@ void ServerSocketListener::Execute() {
 		timeout.tv_sec = 0;
 
 		int retval = select(maxFd + 1, &rfds, NULL, NULL, &timeout);
+
+		std::lock_guard<std::mutex> fileDescriptorLock(fileDescriptorMutex);
 
 		if (retval > 0) {
 			/* We have something on a controlFd to deal with */
@@ -100,7 +100,6 @@ void ServerSocketListener::Execute() {
 }
 
 void ServerSocketListener::DisconnectInactiveConnections() {
-	std::lock_guard<std::mutex> fileDescriptorLock(fileDescriptorMutex);
 	ClientConnMapT::iterator connection = clientConnections.begin();
 	while (connection != clientConnections.end()) {
 		if (true == connection->second->invalid) {
