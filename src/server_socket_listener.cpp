@@ -16,12 +16,14 @@ ServerSocketListener::ServerSocketListener() : running(true) {
 	JobDispatcher::GetApi()->SubscribeToEvent(CLIENT_DISCONNECTED_EVENT, this);
 	JobDispatcher::GetApi()->SubscribeToEvent(CLIENT_INACTIVE_EVENT, this);
 	JobDispatcher::GetApi()->SubscribeToEvent(FTP_SHUT_DOWN_EVENT, this);
+	JobDispatcher::GetApi()->SubscribeToEvent(FTP_LIST_CONNECTIONS_EVENT, this);
 }
 
 ServerSocketListener::~ServerSocketListener() {
 	JobDispatcher::GetApi()->UnsubscribeToEvent(CLIENT_DISCONNECTED_EVENT, this);
 	JobDispatcher::GetApi()->UnsubscribeToEvent(CLIENT_INACTIVE_EVENT, this);
 	JobDispatcher::GetApi()->UnsubscribeToEvent(FTP_SHUT_DOWN_EVENT, this);
+	JobDispatcher::GetApi()->UnsubscribeToEvent(FTP_LIST_CONNECTIONS_EVENT, this);
 }
 
 void ServerSocketListener::Execute() {
@@ -127,5 +129,17 @@ void ServerSocketListener::HandleEvent(const uint32_t eventNo,
 			connection->second->invalid = true;
 		}
 		running = false;
+	} else if(FTP_LIST_CONNECTIONS_EVENT == eventNo) {
+		std::lock_guard<std::mutex> fileDescriptorLock(fileDescriptorMutex);
+
+		std::string response_string = "";
+
+		ClientConnMapT::iterator connection = clientConnections.begin();
+		for( ; connection != clientConnections.end(); ++connection) {
+			if(connection->second->invalid == false) {
+				response_string += std::to_string(connection->second->controlFd) + "\n";
+			}
+		}
+		JobDispatcher::GetApi()->RaiseEvent(FTP_LIST_CONNECTIONS_EVENT_RSP, new ListConnectionsEventData(response_string));
 	}
 }

@@ -73,7 +73,7 @@ void ClientConnectionHandler::HandleControlMessage() {
 					"530, user/passwd not correct or ftp directory not configured right";
 			if (user != nullptr) {
 				if (user->passwd == command[1]) {
-					send_string = "230 OK, user logged in";
+					send_string = "230 OK, user " + user->userName + " logged in";
 					ftpDir = user->homeDir;
 					currDir = ftpDir;
 					loggedIn = true;
