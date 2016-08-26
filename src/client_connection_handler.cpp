@@ -43,6 +43,8 @@ void ClientConnectionHandler::HandleEvent(unsigned int eventNo,
 		const EventDataBase* dataPtr) {
 	std::lock_guard<std::mutex> execLock(execMutex);
 
+	noOfCycles = 0;
+
 	if (true == invalid) {
 		return;
 	}
@@ -410,6 +412,8 @@ std::vector<std::string> ClientConnectionHandler::SplitString(
 }
 
 bool ClientConnectionHandler::CheckControlChannel() {
+	noOfCycles = 0;
+
 	fd_set rfds;
 	FD_ZERO(&rfds);
 
@@ -455,4 +459,19 @@ std::vector<std::string> ClientConnectionHandler::GetCommand() {
 	}
 
 	return command;
+}
+
+void ClientConnectionHandler::DisconnectIfInactive() {
+	std::lock_guard<std::mutex> execLock(execMutex);
+	noOfCycles++;
+
+	if(noOfCycles > 10 * 60 * 10) { //10 minute timeout
+		std::string send_string = "221 Disconnected due to inactivity\r\n";
+		SendResponse(send_string, controlFd);
+
+		JobDispatcher::GetApi()->UnsubscribeToEvent(controlFd, this);
+		JobDispatcher::GetApi()->RaiseEvent(CLIENT_DISCONNECTED_EVENT,
+				new ClientStatusChangeEventData(controlFd));
+		invalid = true;
+	}
 }

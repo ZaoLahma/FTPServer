@@ -90,7 +90,6 @@ void ServerSocketListener::Execute() {
 			break;
 		}
 
-
 		/* Clean up connections that have been disconnected */
 		DisconnectInactiveConnections();
 	}
@@ -104,6 +103,7 @@ void ServerSocketListener::Execute() {
 void ServerSocketListener::DisconnectInactiveConnections() {
 	ClientConnMapT::iterator connection = clientConnections.begin();
 	while (connection != clientConnections.end()) {
+		connection->second->DisconnectIfInactive();
 		if (true == connection->second->invalid) {
 			socketAPI.disconnect(connection->second->controlFd);
 
@@ -137,7 +137,7 @@ void ServerSocketListener::HandleEvent(const uint32_t eventNo,
 		ClientConnMapT::iterator connection = clientConnections.begin();
 		for( ; connection != clientConnections.end(); ++connection) {
 			if(connection->second->invalid == false) {
-				response_string += std::to_string(connection->second->controlFd) + "\n";
+				response_string += "controlFD: " + std::to_string(connection->second->controlFd) + "\n";
 			}
 		}
 		JobDispatcher::GetApi()->RaiseEvent(FTP_LIST_CONNECTIONS_EVENT_RSP, new ListConnectionsEventData(response_string));

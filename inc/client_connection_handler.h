@@ -19,6 +19,7 @@ public:
 	ClientConnectionHandler(int fileDescriptor, ConfigHandler& config);
 	~ClientConnectionHandler();
 	void HandleEvent(const uint32_t eventNo, const EventDataBase* dataPtr);
+	void DisconnectIfInactive();
 
 	bool active;
 	bool invalid;
@@ -37,6 +38,7 @@ private:
 	ConfigHandler& config;
 	User* user;
 	bool loggedIn;
+	uint32_t noOfCycles;
 
 	void SendResponse(const std::string& response, int fileDescriptor);
 	std::vector<std::string> SplitString(const std::string& string, const std::string& delimiter);
