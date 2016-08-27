@@ -464,7 +464,7 @@ std::vector<std::string> ClientConnectionHandler::GetCommand() {
 void ClientConnectionHandler::DisconnectIfInactive() {
 	std::lock_guard<std::mutex> execLock(execMutex);
 
-	if(true == inactiveTooLong) { //10 minute timeout
+	if(true == inactiveTooLong) {
 		std::string send_string = "221 Disconnected due to inactivity\r\n";
 		SendResponse(send_string, controlFd);
 
