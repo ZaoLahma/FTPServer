@@ -148,7 +148,6 @@ void ServerSocketListener::HandleEvent(const uint32_t eventNo,
 	} else if (FTP_CLIENT_INACTIVE_CHECK_TIMEOUT == eventNo) {
 		std::lock_guard<std::mutex> fileDescriptorLock(fileDescriptorMutex);
 		noOfCycles++;
-		JobDispatcher::GetApi()->Log("noOfCycles: %d", noOfCycles);
 		if(noOfCycles > 2 * 60 * 5) {
 			noOfCycles = 0;
 			ClientConnMapT::iterator connection = clientConnections.begin();
@@ -158,6 +157,6 @@ void ServerSocketListener::HandleEvent(const uint32_t eventNo,
 				}
 			}
 		}
+		JobDispatcher::GetApi()->RaiseEventIn(FTP_CLIENT_INACTIVE_CHECK_TIMEOUT, nullptr, 500);
 	}
-	JobDispatcher::GetApi()->RaiseEventIn(FTP_CLIENT_INACTIVE_CHECK_TIMEOUT, nullptr, 500);
 }
