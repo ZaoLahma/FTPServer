@@ -54,6 +54,7 @@ private:
 	std::mutex fileDescriptorMutex;
 	ConfigHandler config;
 	bool running;
+	uint32_t noOfCycles;
 	void DisconnectInactiveConnections();
 };
 
