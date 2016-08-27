@@ -12,11 +12,16 @@
 #include <sys/time.h>
 #include <algorithm>
 
+#define FTP_CLIENT_INACTIVE_CHECK_TIMEOUT 0x30001000
+
 ServerSocketListener::ServerSocketListener() : running(true) {
 	JobDispatcher::GetApi()->SubscribeToEvent(CLIENT_DISCONNECTED_EVENT, this);
 	JobDispatcher::GetApi()->SubscribeToEvent(CLIENT_INACTIVE_EVENT, this);
 	JobDispatcher::GetApi()->SubscribeToEvent(FTP_SHUT_DOWN_EVENT, this);
 	JobDispatcher::GetApi()->SubscribeToEvent(FTP_LIST_CONNECTIONS_EVENT, this);
+	JobDispatcher::GetApi()->SubscribeToEvent(FTP_CLIENT_INACTIVE_CHECK_TIMEOUT, this);
+
+	JobDispatcher::GetApi()->RaiseEventIn(FTP_CLIENT_INACTIVE_CHECK_TIMEOUT, nullptr, 60000);
 }
 
 ServerSocketListener::~ServerSocketListener() {
@@ -24,6 +29,7 @@ ServerSocketListener::~ServerSocketListener() {
 	JobDispatcher::GetApi()->UnsubscribeToEvent(CLIENT_INACTIVE_EVENT, this);
 	JobDispatcher::GetApi()->UnsubscribeToEvent(FTP_SHUT_DOWN_EVENT, this);
 	JobDispatcher::GetApi()->UnsubscribeToEvent(FTP_LIST_CONNECTIONS_EVENT, this);
+	JobDispatcher::GetApi()->UnsubscribeToEvent(FTP_CLIENT_INACTIVE_CHECK_TIMEOUT, this);
 }
 
 void ServerSocketListener::Execute() {
@@ -103,10 +109,8 @@ void ServerSocketListener::Execute() {
 void ServerSocketListener::DisconnectInactiveConnections() {
 	ClientConnMapT::iterator connection = clientConnections.begin();
 	while (connection != clientConnections.end()) {
-		connection->second->DisconnectIfInactive();
 		if (true == connection->second->invalid) {
 			socketAPI.disconnect(connection->second->controlFd);
-
 			delete connection->second;
 			connection = clientConnections.erase(connection);
 			continue;
@@ -141,5 +145,14 @@ void ServerSocketListener::HandleEvent(const uint32_t eventNo,
 			}
 		}
 		JobDispatcher::GetApi()->RaiseEvent(FTP_LIST_CONNECTIONS_EVENT_RSP, new ListConnectionsEventData(response_string));
+	} else if (FTP_CLIENT_INACTIVE_CHECK_TIMEOUT == eventNo) {
+		std::lock_guard<std::mutex> fileDescriptorLock(fileDescriptorMutex);
+		ClientConnMapT::iterator connection = clientConnections.begin();
+		for( ; connection != clientConnections.end(); ++connection) {
+			if(connection->second->invalid == false) {
+				connection->second->DisconnectIfInactive();
+			}
+		}
 	}
+	JobDispatcher::GetApi()->RaiseEventIn(FTP_CLIENT_INACTIVE_CHECK_TIMEOUT, nullptr, 60000);
 }

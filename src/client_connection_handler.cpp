@@ -30,7 +30,7 @@ ClientConnectionHandler::ClientConnectionHandler(int fileDescriptor,
 		ConfigHandler& config) :
 		active(false), invalid(false), controlFd(fileDescriptor), ftpDir(""), currDir(
 				ftpDir), dataFd(-1), transferMode("A"), transferActive(false), config(
-				config), user(nullptr), loggedIn(false) {
+				config), user(nullptr), loggedIn(false), inactiveTooLong(false) {
 
 	JobDispatcher::GetApi()->SubscribeToEvent(fileDescriptor, this);
 
@@ -43,7 +43,7 @@ void ClientConnectionHandler::HandleEvent(unsigned int eventNo,
 		const EventDataBase* dataPtr) {
 	std::lock_guard<std::mutex> execLock(execMutex);
 
-	noOfCycles = 0;
+	inactiveTooLong = false;
 
 	if (true == invalid) {
 		return;
@@ -412,7 +412,7 @@ std::vector<std::string> ClientConnectionHandler::SplitString(
 }
 
 bool ClientConnectionHandler::CheckControlChannel() {
-	noOfCycles = 0;
+	inactiveTooLong = false;
 
 	fd_set rfds;
 	FD_ZERO(&rfds);
@@ -463,9 +463,8 @@ std::vector<std::string> ClientConnectionHandler::GetCommand() {
 
 void ClientConnectionHandler::DisconnectIfInactive() {
 	std::lock_guard<std::mutex> execLock(execMutex);
-	noOfCycles++;
 
-	if(noOfCycles > 10 * 60 * 10) { //10 minute timeout
+	if(true == inactiveTooLong) { //10 minute timeout
 		std::string send_string = "221 Disconnected due to inactivity\r\n";
 		SendResponse(send_string, controlFd);
 
@@ -474,4 +473,6 @@ void ClientConnectionHandler::DisconnectIfInactive() {
 				new ClientStatusChangeEventData(controlFd));
 		invalid = true;
 	}
+
+	inactiveTooLong = true;
 }

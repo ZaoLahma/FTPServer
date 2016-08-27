@@ -38,7 +38,7 @@ private:
 	ConfigHandler& config;
 	User* user;
 	bool loggedIn;
-	uint32_t noOfCycles;
+	bool inactiveTooLong;
 
 	void SendResponse(const std::string& response, int fileDescriptor);
 	std::vector<std::string> SplitString(const std::string& string, const std::string& delimiter);

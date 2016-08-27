@@ -1,37 +1,37 @@
-[2016-08-26 15:56:24.454920000]FTPServer starting...
-[2016-08-26 15:56:24.455992000]FTPServer waiting for connections on port 3370
-[2016-08-26 15:56:29.453141000]FTPServer new connection established. clientFd: 5
-[2016-08-26 15:56:29.453191000]Sending 220 OK.
+[2016-08-27 19:48:50.703051000]FTPServer starting...
+[2016-08-27 19:48:50.704052000]FTPServer waiting for connections on port 3370
+[2016-08-27 19:48:55.460091000]FTPServer new connection established. clientFd: 5
+[2016-08-27 19:48:55.460134000]Sending 220 OK.
 
 
-[2016-08-26 15:56:30.613513000]Sending 330 OK, send password
+[2016-08-27 19:48:57.203105000]Sending 330 OK, send password
 
 
-[2016-08-26 15:56:31.970216000]Sending 230 OK, user janne logged in
+[2016-08-27 19:48:58.622538000]Sending 230 OK, user janne logged in
 
 
-[2016-08-26 15:56:32.075476000]Sending 500 SYST - Not implemented
+[2016-08-27 19:48:58.727789000]Sending 500 SYST - Not implemented
 
 
-[2016-08-26 15:56:32.180622000]Sending 500 FEAT - Not implemented
+[2016-08-27 19:48:58.830062000]Sending 500 FEAT - Not implemented
 
 
-[2016-08-26 15:56:32.284685000]Sending 257 "/Users/janne"
+[2016-08-27 19:48:58.934545000]Sending 257 "/Users/janne"
 
 
-[2016-08-26 15:56:34.864059000]Sending 500 EPSV - Not implemented
+[2016-08-27 19:48:59.906506000]Sending 500 EPSV - Not implemented
 
 
-[2016-08-26 15:56:34.969290000]Sending 500 PASV - Not implemented
+[2016-08-27 19:49:00.010989000]Sending 500 PASV - Not implemented
 
 
-[2016-08-26 15:56:35.076256000]Sending 200, PORT command ok
+[2016-08-27 19:49:00.113144000]Sending 200, PORT command ok
 
 
-[2016-08-26 15:56:35.194333000]Sending 150 LIST executed ok, data follows
+[2016-08-27 19:49:00.230031000]Sending 150 LIST executed ok, data follows
 
 
-[2016-08-26 15:56:35.194403000]Sending total 0
+[2016-08-27 19:49:00.230139000]Sending total 0
 drwxr-xr-x   4 janne  staff   136 Jul 28 12:39 AndroidStudioProjects
 drwx------   6 janne  staff   204 Jan 28  2016 Applications
 drwx------+  3 janne  staff   102 Apr 30  2015 Desktop
@@ -50,9 +50,9 @@ drwxr-xr-x   4 janne  staff   136 Feb 15  2016 eclipse
 
 
 
-[2016-08-26 15:56:35.194485000]Sending 226 LIST data send finished
+[2016-08-27 19:49:00.230239000]Sending 226 LIST data send finished
 
 
-[2016-08-26 15:57:30.208403000]Sending 221 Disconnected due to inactivity
+[2016-08-27 19:49:57.210757000]Sending 221 Disconnected due to inactivity
 
 
