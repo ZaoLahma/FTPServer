@@ -16,15 +16,16 @@ AdminInterface::AdminInterface() : running(true) {
 	JobDispatcher::GetApi()->SubscribeToEvent(FTP_LIST_CONNECTIONS_EVENT_RSP, this);
 	menuStr = "\n--------------------------------------------\n";
 	menuStr += "Available commands\n";
-	menuStr += "Shutdown FTP server -     exit\n";
+	menuStr += "Shutdown FTP server     - exit\n";
 	menuStr += "List active connections - list\n\n";
-	menuStr += "Command: \n";
+	menuStr += "Command: ";
 }
 
 void AdminInterface::Execute() {
 	std::string userInput;
 	while(running) {
 		JobDispatcher::GetApi()->RaiseEvent(FTP_REFRESH_SCREEN_EVENT, nullptr);
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 		std::cin>>userInput;
 
 		if("exit" == userInput) {
