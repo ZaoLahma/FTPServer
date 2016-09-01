@@ -10,6 +10,8 @@
 #include "../inc/admin_interface.h"
 
 int main(void) {
+	JobDispatcher::GetApi()->AddExecGroup(DEFAULT_EXEC_GROUP_ID, 0);
+
 	JobDispatcher::GetApi()->Log("FTPServer starting...");
 
 	JobDispatcher::GetApi()->ExecuteJob(new ServerSocketListener());

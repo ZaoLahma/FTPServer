@@ -14,11 +14,12 @@
 #define READ  0x1
 #define WRITE 0x2
 
-struct User {
-	std::string userName;
-	std::string homeDir;
-	std::string passwd;
-	unsigned int rights;
+class User {
+public:
+	std::string userName = "";
+	std::string homeDir = "";
+	std::string passwd = "";
+	uint32_t rights = READ;
 };
 
 class ConfigHandler {

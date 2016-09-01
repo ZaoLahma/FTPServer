@@ -19,10 +19,12 @@
 
 #include "eventlistenerbase.h"
 #include "internal/timerstorage.h"
-#include "internal/worker.h"
+#include "internal/jobqueueworkercontainer.h"
+
 #include "jobbase.h"
 
 #define TIMEOUT_EVENT_ID 0x0 //Move me to appropriate place
+#define DEFAULT_EXEC_GROUP_ID 0
 
 class JobDispatcher
 {
@@ -37,9 +39,15 @@ public:
 	//API
 	void Log(const char* formatString, ...);
 
+	void AddExecGroup(uint32_t groupId, uint32_t maxNoOfThreads);
+
 	void ExecuteJob(JobBase* jobPtr);
 
+	void ExecuteJobInGroup(JobBase* jobPtr, uint32_t groupId);
+
 	void ExecuteJobIn(JobBase* jobPtr, const uint32_t ms);
+
+	void ExecuteJobInGroupIn(JobBase* jobPtr, uint32_t groupId, uint32_t ms);
 
 	void SubscribeToEvent(const uint32_t eventNo, EventListenerBase* eventListenerPtr);
 
@@ -61,19 +69,12 @@ private:
 	//Private attrbutes
 	uint32_t noOfCores;
 
-	std::mutex workerCreationMutex;
-
 	std::mutex eventListenersAccessMutex;
 
 	std::mutex executionFinishedNotificationMutex;
-	std::unique_lock<std::mutex> executionFinishedNotificationLock;
 	std::condition_variable executionFinishedNotification;
 
-	typedef std::vector<Worker*> WorkerPtrVector;
-
-	WorkerPtrVector workers;
-
-	JobQueue* jobQueuePtr;
+	JobQueueWorkerContainer* jobQueueContainer;
 
 	EventNoToEventListenersMap eventEventListeners;
 

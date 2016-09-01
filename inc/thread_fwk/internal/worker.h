@@ -11,6 +11,8 @@
 #include <atomic>
 #include "jobqueue.h"
 #include "threadobject.h"
+#include <thread>
+#include <condition_variable>
 
 class Worker : public ThreadObject
 {
@@ -32,7 +34,6 @@ private:
 	uint32_t noOfJobsExecuted;
 	JobQueue* queuePtr;
 	std::mutex executionNotificationMutex;
-	std::unique_lock<std::mutex> executionLock;
 	std::condition_variable executionNotification;
 
 	std::atomic<bool> isIdling;
@@ -40,6 +41,6 @@ private:
 	void run();
 };
 
-
+typedef std::vector<Worker*> WorkerPtrVectorT;
 
 #endif /* INC_INTERNAL_WORKER_H_ */

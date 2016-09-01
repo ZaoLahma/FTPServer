@@ -16,7 +16,7 @@
 class JobTimer : public TimerBase
 {
 public:
-	JobTimer(JobBase* _jobPtr, const uint32_t _ms);
+	JobTimer(JobBase* _jobPtr, const uint32_t _ms, uint32_t groupId = 0);
 
 	void TimerFunction();
 
@@ -25,6 +25,7 @@ protected:
 private:
 	JobTimer();
 	JobBase* jobPtr;
+	uint32_t groupId;
 };
 
 

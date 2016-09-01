@@ -11,7 +11,7 @@
 #include "thread_fwk/jobbase.h"
 #include "thread_fwk/eventlistenerbase.h"
 #include "socket_wrapper/socket_api.h"
-#include "client_connection_handler.h"
+#include "client_connection.h"
 
 #include <vector>
 #include <mutex>
