@@ -27,7 +27,7 @@ typedef std::map<uint32_t, JobQueueWorkerData> JobQueueMapT;
 class JobQueueWorkerContainer
 {
 public:
-	JobQueueWorkerContainer(uint32_t noOfCores);
+	JobQueueWorkerContainer();
 	~JobQueueWorkerContainer();
 	void AddExecGroup(uint32_t groupId, uint32_t maxNoOfThreads);
 	void ScheduleJob(uint32_t groupId, JobBase* jobBase);
@@ -35,7 +35,6 @@ public:
 protected:
 
 private:
-	JobQueueWorkerContainer();
 	void CreateExecGroup(uint32_t groupId, uint32_t maxNoOfThreads);
 
 	JobQueueMapT queueMap;

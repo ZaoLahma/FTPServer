@@ -11,12 +11,13 @@
 #include <cinttypes>
 
 #include "../jobbase.h"
+#include "../defaultexecgroups.h"
 #include "timerbase.h"
 
 class JobTimer : public TimerBase
 {
 public:
-	JobTimer(JobBase* _jobPtr, const uint32_t _ms, uint32_t groupId = 0);
+	JobTimer(JobBase* _jobPtr, const uint32_t _ms, uint32_t groupId = DEFAULT_EXEC_GROUP_ID);
 
 	void TimerFunction();
 

@@ -18,13 +18,14 @@
 #include <condition_variable>
 
 #include "eventlistenerbase.h"
+#include "defaultexecgroups.h"
+#include "jobbase.h"
+
 #include "internal/timerstorage.h"
 #include "internal/jobqueueworkercontainer.h"
 
-#include "jobbase.h"
 
 #define TIMEOUT_EVENT_ID 0x0 //Move me to appropriate place
-#define DEFAULT_EXEC_GROUP_ID 0
 
 class JobDispatcher
 {

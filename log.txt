@@ -1,66 +1,50 @@
-[2016-09-01 20:53:24.733414000]FTPServer starting...
-[2016-09-01 20:53:24.734546000]FTPServer waiting for connections on port 3370
-[2016-09-01 20:53:27.741367000]FTPServer new connection established. clientFd: 5
-[2016-09-01 20:53:27.741405000]Sending 220 OK.
+[2016-09-02 18:02:24.792689000]FTPServer starting...
+[2016-09-02 18:02:24.793758000]FTPServer waiting for connections on port 3370
+[2016-09-02 18:02:31.723467000]FTPServer new connection established. clientFd: 5
+[2016-09-02 18:02:31.725291000]Sending 220 OK.
 
 
-[2016-09-01 20:53:29.005307000]Sending 330 OK, send password
+[2016-09-02 18:02:33.066978000]Sending 330 OK, send password
 
 
-[2016-09-01 20:53:30.513189000]Sending 530, user/passwd not correct
+[2016-09-02 18:02:34.925978000]Sending 230 OK, user janne logged in
 
 
-[2016-09-01 20:53:32.627191000]Sending 221 Bye Bye
+[2016-09-02 18:02:35.028787000]Command: SYST not implemented
+[2016-09-02 18:02:35.028836000]Sending 500 - Not implemented
 
 
-[2016-09-01 20:53:32.627500000]Sending 500 - Not implemented
+[2016-09-02 18:02:35.132547000]Command: FEAT not implemented
+[2016-09-02 18:02:35.132601000]Sending 500 - Not implemented
 
 
-[2016-09-01 20:53:37.750805000]FTPServer new connection established. clientFd: 5
-[2016-09-01 20:53:37.750844000]Sending 220 OK.
+[2016-09-02 18:02:35.234422000]Command: PWD not implemented
+[2016-09-02 18:02:35.234480000]Sending 500 - Not implemented
 
 
-[2016-09-01 20:53:39.075975000]Sending 330 OK, send password
+[2016-09-02 18:02:36.156892000]Command: EPSV not implemented
+[2016-09-02 18:02:36.156933000]Sending 500 - Not implemented
 
 
-[2016-09-01 20:53:41.392913000]Sending 230 OK, user janne logged in
+[2016-09-02 18:02:36.258698000]Command: PASV not implemented
+[2016-09-02 18:02:36.258748000]Sending 500 - Not implemented
 
 
-[2016-09-01 20:53:41.494858000]Command: SYST not implemented
-[2016-09-01 20:53:41.494925000]Sending 500 - Not implemented
+[2016-09-02 18:02:36.362605000]Command: PORT not implemented
+[2016-09-02 18:02:36.362662000]Sending 500 - Not implemented
 
 
-[2016-09-01 20:53:41.598762000]Command: FEAT not implemented
-[2016-09-01 20:53:41.598857000]Sending 500 - Not implemented
+[2016-09-02 18:02:36.466977000]Command: LIST not implemented
+[2016-09-02 18:02:36.467029000]Sending 500 - Not implemented
 
 
-[2016-09-01 20:53:41.700383000]Command: PWD not implemented
-[2016-09-01 20:53:41.700436000]Sending 500 - Not implemented
+[2016-09-02 18:02:36.876028000]Command: PWD not implemented
+[2016-09-02 18:02:36.876072000]Sending 500 - Not implemented
 
 
-[2016-09-01 20:53:43.237953000]Command: EPSV not implemented
-[2016-09-01 20:53:43.237993000]Sending 500 - Not implemented
+[2016-09-02 18:02:42.060852000]Sending 221 Bye Bye
 
 
-[2016-09-01 20:53:43.341702000]Command: PASV not implemented
-[2016-09-01 20:53:43.341798000]Sending 500 - Not implemented
-
-
-[2016-09-01 20:53:43.445320000]Command: PORT not implemented
-[2016-09-01 20:53:43.445371000]Sending 500 - Not implemented
-
-
-[2016-09-01 20:53:43.549748000]Command: LIST not implemented
-[2016-09-01 20:53:43.549795000]Sending 500 - Not implemented
-
-
-[2016-09-01 20:53:44.474646000]Command: PWD not implemented
-[2016-09-01 20:53:44.474693000]Sending 500 - Not implemented
-
-
-[2016-09-01 20:53:49.409676000]Sending 221 Bye Bye
-
-
-[2016-09-01 20:53:49.409807000]Sending 500 - Not implemented
+[2016-09-02 18:02:42.060968000]Sending 500 - Not implemented
 
 
