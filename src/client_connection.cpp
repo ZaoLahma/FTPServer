@@ -11,6 +11,7 @@
 #include "../inc/server_socket_listener.h"
 #include "../inc/retr_job.h"
 #include "../inc/ftp_thread_model.h"
+#include "../inc/ftp_utils.h"
 #include <dirent.h>
 
 ClientConnection::ClientConnection(int32_t _controlFd, ConfigHandler& _configHandler) :
@@ -23,9 +24,16 @@ loggedIn(false),
 binaryFlag(false){
 	JobDispatcher::GetApi()->SubscribeToEvent(controlFd, this);
 
+	JobDispatcher::GetApi()->SubscribeToEvent(DATA_TRANSFER_COMPLETE_EVENT_NO, this);
+
 	std::string initConnStr = "220 OK.";
 
-	SendResponse(initConnStr, controlFd);
+	FTPUtils::SendString(initConnStr, controlFd, socketApi);
+}
+
+ClientConnection::~ClientConnection() {
+	JobDispatcher::GetApi()->UnsubscribeToEvent(controlFd, this);
+	JobDispatcher::GetApi()->UnsubscribeToEvent(DATA_TRANSFER_COMPLETE_EVENT_NO, this);
 }
 
 void ClientConnection::HandleEvent(const uint32_t eventNo, const EventDataBase* dataPtr) {
@@ -49,7 +57,7 @@ void ClientConnection::HandleEvent(const uint32_t eventNo, const EventDataBase* 
 		break;
 		case FTPCommandEnum::NOT_IMPLEMENTED: {
 			std::string send_string = "500 - Not implemented";
-			SendResponse(send_string, controlFd);
+			FTPUtils::SendString(send_string, controlFd, socketApi);
 		}
 		break;
 		default:
@@ -79,7 +87,7 @@ void ClientConnection::HandleEvent(const uint32_t eventNo, const EventDataBase* 
 			break;
 			case FTPCommandEnum::NOT_IMPLEMENTED: {
 				std::string send_string = "500 - Not implemented";
-				SendResponse(send_string, controlFd);
+				FTPUtils::SendString(send_string, controlFd, socketApi);
 			}
 			break;
 			default:
@@ -171,28 +179,11 @@ std::vector<std::string> ClientConnection::SplitString(const std::string& str,
 	return retVal;
 }
 
-void ClientConnection::SendResponse(const std::string& response, int fileDescriptor) {
-	std::string stringToSend = response;
-	stringToSend += "\r\n";
-	SocketBuf sendData;
-	sendData.dataSize = strlen(stringToSend.c_str());
-	sendData.data = new char[sendData.dataSize];
-
-	memcpy(sendData.data, stringToSend.c_str(), sendData.dataSize);
-
-	JobDispatcher::GetApi()->Log("Sending %s\n", stringToSend.c_str());
-	JobDispatcher::GetApi()->RaiseEvent(FTP_REFRESH_SCREEN_EVENT, new RefreshScreenEventData("Sending " + stringToSend));
-
-	socketApi.sendData(fileDescriptor, sendData);
-
-	delete[] sendData.data;
-}
-
 void ClientConnection::HandleUserCommand(const FTPCommand& command) {
 	user = configHandler.GetUser(command.args);
 
 	std::string send_string = "330 OK, send password";
-	SendResponse(send_string, controlFd);
+	FTPUtils::SendString(send_string, controlFd, socketApi);
 }
 
 void ClientConnection::HandlePassCommand(const FTPCommand& command) {
@@ -206,7 +197,7 @@ void ClientConnection::HandlePassCommand(const FTPCommand& command) {
 
 		}
 	}
-	SendResponse(send_string, controlFd);
+	FTPUtils::SendString(send_string, controlFd, socketApi);
 }
 
 void ClientConnection::HandlePortCommand(const FTPCommand& command) {
@@ -222,7 +213,7 @@ void ClientConnection::HandlePortCommand(const FTPCommand& command) {
 	dataFd = socketApi.getClientSocketFileDescriptor(clientAddress, std::to_string(clientPort));
 
 	JobDispatcher::GetApi()->Log("dataFd: %d", dataFd);
-	SendResponse(send_string, controlFd);
+	FTPUtils::SendString(send_string, controlFd, socketApi);
 }
 
 void ClientConnection::HandleListCommand(const FTPCommand& command) {
@@ -253,12 +244,12 @@ void ClientConnection::HandleListCommand(const FTPCommand& command) {
 	response += "\r\n";
 
 	std::string send_string = "150 LIST executed ok, data follows";
-	SendResponse(send_string, controlFd);
+	FTPUtils::SendString(send_string, controlFd, socketApi);
 
-	SendResponse(response, dataFd);
+	FTPUtils::SendString(response, dataFd, socketApi);
 
 	send_string = "226 LIST data send finished";
-	SendResponse(send_string, controlFd);
+	FTPUtils::SendString(send_string, controlFd, socketApi);
 
 	socketApi.disconnect(dataFd);
 	dataFd = -1;
@@ -266,12 +257,12 @@ void ClientConnection::HandleListCommand(const FTPCommand& command) {
 
 void ClientConnection::HandleRetrCommand(const FTPCommand& command) {
 	std::string filePath = currDir + "/" + command.args;
-	JobDispatcher::GetApi()->ExecuteJobInGroup(new RetrJob(filePath, dataFd), DATA_CHANNEL_THREAD_GROUP_ID);
+	JobDispatcher::GetApi()->ExecuteJobInGroup(new RetrJob(filePath, dataFd, controlFd, binaryFlag), DATA_CHANNEL_THREAD_GROUP_ID);
 }
 
 void ClientConnection::HandleQuitCommand() {
 	std::string send_string = "221 Bye Bye";
-	SendResponse(send_string, controlFd);
+	FTPUtils::SendString(send_string, controlFd, socketApi);
 
 	JobDispatcher::GetApi()->UnsubscribeToEvent(controlFd, this);
 	JobDispatcher::GetApi()->RaiseEvent(CLIENT_DISCONNECTED_EVENT, new ClientStatusChangeEventData(controlFd));
@@ -279,5 +270,5 @@ void ClientConnection::HandleQuitCommand() {
 
 void ClientConnection::HandlePwdCommand() {
 	std::string send_string = "257 \"" + currDir + "\"";
-	SendResponse(send_string, controlFd);
+	FTPUtils::SendString(send_string, controlFd, socketApi);
 }

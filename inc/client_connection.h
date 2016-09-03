@@ -32,6 +32,7 @@ public:
 class ClientConnection : public EventListenerBase {
 public:
 	ClientConnection(int32_t controlFd, ConfigHandler& configHandler);
+	~ClientConnection();
 	void HandleEvent(const uint32_t eventNo, const EventDataBase* dataPtr);
 
 	bool active;
@@ -52,7 +53,6 @@ private:
 	FTPCommand GetCommand();
 	std::vector<std::string> SplitString(const std::string& string, const std::string& delimiter);
 	std::string GetControlChannelData();
-	void SendResponse(const std::string& response, int fileDescriptor);
 
 	void HandleUserCommand(const FTPCommand& command);
 	void HandlePassCommand(const FTPCommand& command);
