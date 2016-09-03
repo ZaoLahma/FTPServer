@@ -256,7 +256,7 @@ void ClientConnection::HandleListCommand(const FTPCommand& command) {
 }
 
 void ClientConnection::HandleRetrCommand(const FTPCommand& command) {
-	std::string filePath = currDir + "/" + command.args;
+	std::string filePath = command.args;
 	JobDispatcher::GetApi()->ExecuteJobInGroup(new RetrJob(filePath, dataFd, controlFd, binaryFlag), DATA_CHANNEL_THREAD_GROUP_ID);
 }
 
