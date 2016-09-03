@@ -1,42 +1,42 @@
-[2016-09-03 16:48:27.709321000]FTPServer starting...
-[2016-09-03 16:48:27.710347000]FTPServer waiting for connections on port 3370
-[2016-09-03 16:48:32.119889000]FTPServer new connection established. clientFd: 5
-[2016-09-03 16:48:32.119939000]Sending 220 OK.
+[2016-09-03 17:33:47.323289000]FTPServer starting...
+[2016-09-03 17:33:47.324461000]FTPServer waiting for connections on port 3370
+[2016-09-03 17:33:50.642815000]FTPServer new connection established. clientFd: 5
+[2016-09-03 17:33:50.642855000]Sending 220 OK.
 
 
-[2016-09-03 16:48:34.473600000]Sending 330 OK, send password
+[2016-09-03 17:33:51.946323000]Sending 330 OK, send password
 
 
-[2016-09-03 16:48:36.012319000]Sending 230 OK, user janne logged in
+[2016-09-03 17:33:53.465240000]Sending 230 OK, user janne logged in
 
 
-[2016-09-03 16:48:36.117523000]Command: SYST not implemented
-[2016-09-03 16:48:36.117575000]Sending 500 - Not implemented
+[2016-09-03 17:33:53.570446000]Command: SYST not implemented
+[2016-09-03 17:33:53.570500000]Sending 500 - Not implemented
 
 
-[2016-09-03 16:48:36.222721000]Command: FEAT not implemented
-[2016-09-03 16:48:36.222771000]Sending 500 - Not implemented
+[2016-09-03 17:33:53.672516000]Command: FEAT not implemented
+[2016-09-03 17:33:53.672570000]Sending 500 - Not implemented
 
 
-[2016-09-03 16:48:36.325795000]Sending 257 "/Users/janne"
+[2016-09-03 17:33:53.776696000]Sending 257 "/Users/janne"
 
 
-[2016-09-03 16:48:37.312230000]Command: EPSV not implemented
-[2016-09-03 16:48:37.312273000]Sending 500 - Not implemented
+[2016-09-03 17:34:02.389070000]Command: EPSV not implemented
+[2016-09-03 17:34:02.389129000]Sending 500 - Not implemented
 
 
-[2016-09-03 16:48:37.414119000]Command: PASV not implemented
-[2016-09-03 16:48:37.414170000]Sending 500 - Not implemented
+[2016-09-03 17:34:02.494281000]Command: PASV not implemented
+[2016-09-03 17:34:02.494331000]Sending 500 - Not implemented
 
 
-[2016-09-03 16:48:37.516637000]dataFd: 6
-[2016-09-03 16:48:37.516677000]Sending 200 PORT command successful
+[2016-09-03 17:34:02.598360000]dataFd: 6
+[2016-09-03 17:34:02.598413000]Sending 200 PORT command successful
 
 
-[2016-09-03 16:48:37.628830000]Sending 150 LIST executed ok, data follows
+[2016-09-03 17:34:02.707976000]Sending 150 LIST executed ok, data follows
 
 
-[2016-09-03 16:48:37.628906000]Sending total 0
+[2016-09-03 17:34:02.708075000]Sending total 0
 drwxr-xr-x   4 janne  staff   136 Jul 28 12:39 AndroidStudioProjects
 drwx------   6 janne  staff   204 Jan 28  2016 Applications
 drwx------+  3 janne  staff   102 Apr 30  2015 Desktop
@@ -56,9 +56,34 @@ drwxr-xr-x   4 janne  staff   136 Feb 15  2016 eclipse
 
 
 
-[2016-09-03 16:48:37.628979000]Sending 226 LIST data send finished
+[2016-09-03 17:34:02.708143000]Sending 226 LIST data send finished
 
 
-[2016-09-03 16:48:40.786049000]Sending 221 Bye Bye
+[2016-09-03 17:34:06.008553000]dataFd: 6
+[2016-09-03 17:34:06.008590000]Sending 200 PORT command successful
+
+
+[2016-09-03 17:34:06.121275000]Sending 150 LIST executed ok, data follows
+
+
+[2016-09-03 17:34:06.121388000]Sending total 1528
+drwxr-xr-x@ 11 janne  staff     374 Aug  8 18:20 Photos Library.photoslibrary
+-rw-r-----@  1 janne  staff  311955 Nov 16  2015 abstract-black-low-poly-wallpaper-for-2560x1600-61-303.jpg
+-rw-r-----@  1 janne  staff  194181 Nov 16  2015 orange-polygons-wallpaper-for-2560x1600-61-874.jpg
+-rw-r-----@  1 janne  staff  269474 Nov 16  2015 star-river-wallpaper-for-2560x1600-61-293.jpg
+
+
+
+
+
+[2016-09-03 17:34:06.121432000]Sending 226 LIST data send finished
+
+
+[2016-09-03 17:34:21.198961000]Command: SIZE not implemented
+[2016-09-03 17:34:21.198999000]Sending 500 - Not implemented
+
+
+[2016-09-03 17:34:21.304470000]dataFd: 6
+[2016-09-03 17:34:21.304519000]Sending 200 PORT command successful
 
 

@@ -9,6 +9,8 @@
 #include "../inc/admin_interface_events.h"
 #include "../inc/thread_fwk/jobdispatcher.h"
 #include "../inc/server_socket_listener.h"
+#include "../inc/retr_job.h"
+#include "../inc/ftp_thread_model.h"
 #include <dirent.h>
 
 ClientConnection::ClientConnection(int32_t _controlFd, ConfigHandler& _configHandler) :
@@ -17,7 +19,8 @@ controlFd(_controlFd),
 dataFd(-1),
 user(nullptr),
 configHandler(_configHandler),
-loggedIn(false) {
+loggedIn(false),
+binaryFlag(false){
 	JobDispatcher::GetApi()->SubscribeToEvent(controlFd, this);
 
 	std::string initConnStr = "220 OK.";
@@ -70,6 +73,10 @@ void ClientConnection::HandleEvent(const uint32_t eventNo, const EventDataBase* 
 				HandlePwdCommand();
 			}
 			break;
+			case FTPCommandEnum::RETR: {
+				HandleRetrCommand(command);
+			}
+			break;
 			case FTPCommandEnum::NOT_IMPLEMENTED: {
 				std::string send_string = "500 - Not implemented";
 				SendResponse(send_string, controlFd);
@@ -108,6 +115,9 @@ FTPCommand ClientConnection::GetCommand() {
 		if(command.size() > 1) {
 			retVal.args = command[1];
 		}
+	} else if(command[0] == "RETR") {
+		retVal.ftpCommand = FTPCommandEnum::RETR;
+		retVal.args = command[1];
 	} else {
 		JobDispatcher::GetApi()->Log("Command: %s not implemented", command[0].c_str());
 	}
@@ -252,6 +262,11 @@ void ClientConnection::HandleListCommand(const FTPCommand& command) {
 
 	socketApi.disconnect(dataFd);
 	dataFd = -1;
+}
+
+void ClientConnection::HandleRetrCommand(const FTPCommand& command) {
+	std::string filePath = currDir + "/" + command.args;
+	JobDispatcher::GetApi()->ExecuteJobInGroup(new RetrJob(filePath, dataFd), DATA_CHANNEL_THREAD_GROUP_ID);
 }
 
 void ClientConnection::HandleQuitCommand() {

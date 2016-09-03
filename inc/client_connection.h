@@ -19,6 +19,7 @@ enum FTPCommandEnum {
 	PWD,
 	PORT,
 	LIST,
+	RETR,
 	QUIT
 };
 
@@ -46,6 +47,7 @@ private:
 	ConfigHandler& configHandler;
 	std::string currDir;
 	bool loggedIn;
+	bool binaryFlag;
 
 	FTPCommand GetCommand();
 	std::vector<std::string> SplitString(const std::string& string, const std::string& delimiter);
@@ -56,6 +58,7 @@ private:
 	void HandlePassCommand(const FTPCommand& command);
 	void HandlePortCommand(const FTPCommand& command);
 	void HandleListCommand(const FTPCommand& command);
+	void HandleRetrCommand(const FTPCommand& command);
 	void HandleQuitCommand();
 	void HandlePwdCommand();
 };
