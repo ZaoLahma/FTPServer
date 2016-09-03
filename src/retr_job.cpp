@@ -28,7 +28,7 @@ void RetrJob::Execute() {
 	int length = fileStream.tellg();
 	fileStream.seekg(0, fileStream.beg);
 
-	std::string send_string = "150 RETR executed ok, data follows\r\n";
+	std::string send_string = "150 RETR executed ok, data follows";
 	FTPUtils::SendString(send_string, controlFd, socketApi);
 
 	JobDispatcher::GetApi()->Log("filePath: %s, size: %d", filePath.c_str(), length);
@@ -49,11 +49,11 @@ void RetrJob::Execute() {
 
 	delete sendBuf.data;
 
-	send_string = "226 RETR data send finished\r\n";
-	FTPUtils::SendString(send_string, controlFd, socketApi);
-
 	socketApi.disconnect(dataFd);
 	dataFd = -1;
+
+	send_string = "226 RETR data send finished";
+	FTPUtils::SendString(send_string, controlFd, socketApi);
 }
 
 void RetrJob::HandleEvent(const uint32_t eventNo, const EventDataBase* dataPtr) {
