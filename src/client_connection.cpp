@@ -9,6 +9,7 @@
 #include "../inc/admin_interface_events.h"
 #include "../inc/thread_fwk/jobdispatcher.h"
 #include "../inc/server_socket_listener.h"
+#include <dirent.h>
 
 ClientConnection::ClientConnection(int32_t _controlFd, ConfigHandler& _configHandler) :
 active(false),
@@ -26,6 +27,11 @@ configHandler(_configHandler){
 void ClientConnection::HandleEvent(const uint32_t eventNo, const EventDataBase* dataPtr) {
 	active = true;
 
+	if(eventNo != controlFd) {
+		active = false;
+		return;
+	}
+
 	FTPCommand command = GetCommand();
 
 	switch(command.ftpCommand) {
@@ -41,9 +47,60 @@ void ClientConnection::HandleEvent(const uint32_t eventNo, const EventDataBase* 
 		if(nullptr != user) {
 			if(command.args == user->passwd) {
 				send_string = "230 OK, user " + user->userName + " logged in";
+				currDir = user->homeDir;
 			}
 		}
 		SendResponse(send_string, controlFd);
+	}
+	break;
+	case FTPCommandEnum::PORT: {
+		std::string send_string = "200 PORT command successful";
+		std::vector<std::string> addressInfo = SplitString(command.args, ",");
+		uint32_t clientPort = std::stoi(addressInfo[4]) * 256 + std::stoi(addressInfo[5]);
+
+		std::string clientAddress = addressInfo[0] + "." +
+									addressInfo[1] + "." +
+									addressInfo[2] + "." +
+									addressInfo[3];
+
+		dataFd = socketApi.getClientSocketFileDescriptor(clientAddress, std::to_string(clientPort));
+
+		JobDispatcher::GetApi()->Log("dataFd: %d", dataFd);
+		SendResponse(send_string, controlFd);
+	}
+	break;
+	case FTPCommandEnum::LIST: {
+		char buffer[2048];
+		std::string response = "";
+		std::string ls = "ls -l";
+		ls.append(" " + currDir);
+		ls.append(" 2>&1");
+		FILE* file = popen(ls.c_str(), "r");
+
+		while (!feof(file)) {
+			if (fgets(buffer, 2048, file) != NULL) {
+				response.append(buffer);
+			}
+		}
+
+		std::vector<std::string> responseVector = SplitString(response, "\n");
+		response = "";
+		for (unsigned int i = 0; i < responseVector.size(); ++i) {
+			response += responseVector[i] + "\r\n";
+		}
+
+		response += "\r\n";
+
+		std::string send_string = "150 LIST executed ok, data follows\r\n";
+		SendResponse(send_string, controlFd);
+
+		SendResponse(response, dataFd);
+
+		send_string = "226 LIST data send finished\r\n";
+		SendResponse(send_string, controlFd);
+
+		socketApi.disconnect(dataFd);
+		dataFd = -1;
 	}
 	break;
 	case FTPCommandEnum::QUIT: {
@@ -51,9 +108,14 @@ void ClientConnection::HandleEvent(const uint32_t eventNo, const EventDataBase* 
 		SendResponse(send_string, controlFd);
 
 		JobDispatcher::GetApi()->UnsubscribeToEvent(controlFd, this);
-		JobDispatcher::GetApi()->RaiseEvent(CLIENT_DISCONNECTED_EVENT,
-				new ClientStatusChangeEventData(controlFd));
+		JobDispatcher::GetApi()->RaiseEvent(CLIENT_DISCONNECTED_EVENT, new ClientStatusChangeEventData(controlFd));
 	}
+	break;
+	case FTPCommandEnum::PWD: {
+		std::string send_string = "257 \"" + currDir + "\"";
+		SendResponse(send_string, controlFd);
+	}
+	break;
 	default:
 		std::string send_string = "500 - Not implemented";
 		SendResponse(send_string, controlFd);
@@ -78,6 +140,13 @@ FTPCommand ClientConnection::GetCommand() {
 		retVal.args = command[1];
 	} else if(command[0] == "QUIT") {
 		retVal.ftpCommand = FTPCommandEnum::QUIT;
+	} else if(command[0] == "PWD") {
+		retVal.ftpCommand = FTPCommandEnum::PWD;
+	} else if(command[0] == "PORT") {
+		retVal.ftpCommand = FTPCommandEnum::PORT;
+		retVal.args = command[1];
+	} else if(command[0] == "LIST") {
+		retVal.ftpCommand = FTPCommandEnum::LIST;
 	} else {
 		JobDispatcher::GetApi()->Log("Command: %s not implemented", command[0].c_str());
 	}

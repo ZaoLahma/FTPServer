@@ -1,50 +1,55 @@
-[2016-09-02 18:02:24.792689000]FTPServer starting...
-[2016-09-02 18:02:24.793758000]FTPServer waiting for connections on port 3370
-[2016-09-02 18:02:31.723467000]FTPServer new connection established. clientFd: 5
-[2016-09-02 18:02:31.725291000]Sending 220 OK.
+[2016-09-03 12:19:19.627549000]FTPServer starting...
+[2016-09-03 12:19:19.628684000]FTPServer waiting for connections on port 3370
+[2016-09-03 12:19:23.315190000]FTPServer new connection established. clientFd: 5
+[2016-09-03 12:19:23.315233000]Sending 220 OK.
 
 
-[2016-09-02 18:02:33.066978000]Sending 330 OK, send password
+[2016-09-03 12:19:24.646423000]Sending 330 OK, send password
 
 
-[2016-09-02 18:02:34.925978000]Sending 230 OK, user janne logged in
+[2016-09-03 12:19:25.785530000]Sending 530, user/passwd not correct
 
 
-[2016-09-02 18:02:35.028787000]Command: SYST not implemented
-[2016-09-02 18:02:35.028836000]Sending 500 - Not implemented
+[2016-09-03 12:19:26.727497000]Command: EPSV not implemented
+[2016-09-03 12:19:26.727540000]Sending 500 - Not implemented
 
 
-[2016-09-02 18:02:35.132547000]Command: FEAT not implemented
-[2016-09-02 18:02:35.132601000]Sending 500 - Not implemented
+[2016-09-03 12:19:26.831458000]Command: PASV not implemented
+[2016-09-03 12:19:26.831510000]Sending 500 - Not implemented
 
 
-[2016-09-02 18:02:35.234422000]Command: PWD not implemented
-[2016-09-02 18:02:35.234480000]Sending 500 - Not implemented
+[2016-09-03 12:19:26.933616000]dataFd: 6
+[2016-09-03 12:19:26.933652000]Sending 200 PORT command successful
 
 
-[2016-09-02 18:02:36.156892000]Command: EPSV not implemented
-[2016-09-02 18:02:36.156933000]Sending 500 - Not implemented
+[2016-09-03 12:19:27.042326000]Sending 150 LIST executed ok, data follows
 
 
-[2016-09-02 18:02:36.258698000]Command: PASV not implemented
-[2016-09-02 18:02:36.258748000]Sending 500 - Not implemented
+
+[2016-09-03 12:19:27.042434000]Sending total 928
+-rwxr-xr-x  1 janne  staff  268952 Sep  3 12:19 FTPServer
+-rw-r--r--  1 janne  staff     544 Aug 22 16:48 Makefile
+-rw-r--r--  1 janne  staff     225 Aug 23 15:45 README.md
+-rw-r--r--  1 janne  staff   36920 Sep  3 12:19 admin_interface.o
+-rw-r--r--  1 janne  staff   51644 Sep  3 12:19 client_connection.o
+-rw-r--r--  1 janne  staff     213 Aug 25 21:19 config.cfg
+-rw-r--r--  1 janne  staff   46788 Sep  3 12:19 config_handler.o
+drwxr-xr-x  9 janne  staff     306 Sep  1 20:54 inc
+drwxr-xr-x  4 janne  staff     136 Aug 22 16:48 lib_linux_arm
+drwxr-xr-x  4 janne  staff     136 Aug 25 22:18 lib_osx
+-rw-r--r--  1 janne  staff     758 Sep  3 12:19 log.txt
+-rw-r--r--  1 janne  staff    1868 Sep  3 12:19 main.o
+-rw-r--r--  1 janne  staff   39272 Sep  3 12:19 server_socket_listener.o
+drwxr-xr-x  7 janne  staff     238 Sep  1 20:54 src
 
 
-[2016-09-02 18:02:36.362605000]Command: PORT not implemented
-[2016-09-02 18:02:36.362662000]Sending 500 - Not implemented
 
 
-[2016-09-02 18:02:36.466977000]Command: LIST not implemented
-[2016-09-02 18:02:36.467029000]Sending 500 - Not implemented
+
+[2016-09-03 12:19:27.042496000]Sending 226 LIST data send finished
 
 
-[2016-09-02 18:02:36.876028000]Command: PWD not implemented
-[2016-09-02 18:02:36.876072000]Sending 500 - Not implemented
 
-
-[2016-09-02 18:02:42.060852000]Sending 221 Bye Bye
-
-
-[2016-09-02 18:02:42.060968000]Sending 500 - Not implemented
+[2016-09-03 12:19:28.816427000]Sending 221 Bye Bye
 
 

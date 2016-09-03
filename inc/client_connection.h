@@ -16,6 +16,9 @@ enum FTPCommandEnum {
 	NOT_IMPLEMENTED = 0,
 	USER,
 	PASS,
+	PWD,
+	PORT,
+	LIST,
 	QUIT
 };
 
@@ -41,6 +44,7 @@ private:
 	int32_t dataFd;
 	User* user;
 	ConfigHandler& configHandler;
+	std::string currDir;
 
 	FTPCommand GetCommand();
 	std::vector<std::string> SplitString(const std::string& string, const std::string& delimiter);
