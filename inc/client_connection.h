@@ -50,6 +50,13 @@ private:
 	std::vector<std::string> SplitString(const std::string& string, const std::string& delimiter);
 	std::string GetControlChannelData();
 	void SendResponse(const std::string& response, int fileDescriptor);
+
+	void HandleUserCommand(const FTPCommand& command);
+	void HandlePassCommand(const FTPCommand& command);
+	void HandlePortCommand(const FTPCommand& command);
+	void HandleListCommand(const FTPCommand& command);
+	void HandleQuitCommand();
+	void HandlePwdCommand();
 };
 
 typedef std::map<int, ClientConnection*> ClientConnMapT;

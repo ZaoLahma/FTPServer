@@ -1,55 +1,161 @@
-[2016-09-03 12:19:19.627549000]FTPServer starting...
-[2016-09-03 12:19:19.628684000]FTPServer waiting for connections on port 3370
-[2016-09-03 12:19:23.315190000]FTPServer new connection established. clientFd: 5
-[2016-09-03 12:19:23.315233000]Sending 220 OK.
+[2016-09-03 16:36:48.024245000]FTPServer starting...
+[2016-09-03 16:36:48.025229000]FTPServer waiting for connections on port 3370
+[2016-09-03 16:36:50.294555000]FTPServer new connection established. clientFd: 5
+[2016-09-03 16:36:50.294594000]Sending 220 OK.
 
 
-[2016-09-03 12:19:24.646423000]Sending 330 OK, send password
+[2016-09-03 16:36:51.527842000]Sending 330 OK, send password
 
 
-[2016-09-03 12:19:25.785530000]Sending 530, user/passwd not correct
+[2016-09-03 16:36:52.940745000]Sending 230 OK, user janne logged in
 
 
-[2016-09-03 12:19:26.727497000]Command: EPSV not implemented
-[2016-09-03 12:19:26.727540000]Sending 500 - Not implemented
+[2016-09-03 16:36:53.041807000]Command: SYST not implemented
+[2016-09-03 16:36:53.041862000]Sending 500 - Not implemented
 
 
-[2016-09-03 12:19:26.831458000]Command: PASV not implemented
-[2016-09-03 12:19:26.831510000]Sending 500 - Not implemented
+[2016-09-03 16:36:53.147008000]Command: FEAT not implemented
+[2016-09-03 16:36:53.147058000]Sending 500 - Not implemented
 
 
-[2016-09-03 12:19:26.933616000]dataFd: 6
-[2016-09-03 12:19:26.933652000]Sending 200 PORT command successful
+[2016-09-03 16:36:53.252106000]Sending 257 "/Users/janne"
 
 
-[2016-09-03 12:19:27.042326000]Sending 150 LIST executed ok, data follows
+[2016-09-03 16:36:53.400731000]Command: EPSV not implemented
+[2016-09-03 16:36:53.400774000]Sending 500 - Not implemented
+
+
+[2016-09-03 16:36:53.505985000]Command: PASV not implemented
+[2016-09-03 16:36:53.506034000]Sending 500 - Not implemented
+
+
+[2016-09-03 16:36:53.608038000]dataFd: 6
+[2016-09-03 16:36:53.608096000]Sending 200 PORT command successful
+
+
+[2016-09-03 16:36:53.714489000]Sending 150 LIST executed ok, data follows
+
+
+[2016-09-03 16:36:53.714641000]Sending total 0
+drwxr-xr-x   4 janne  staff   136 Jul 28 12:39 AndroidStudioProjects
+drwx------   6 janne  staff   204 Jan 28  2016 Applications
+drwx------+  3 janne  staff   102 Apr 30  2015 Desktop
+drwx------+  7 janne  staff   238 Aug 16 16:51 Documents
+drwx------+  4 janne  staff   136 Aug 25 20:28 Downloads
+drwxr-xr-x  14 janne  staff   476 Aug 22 19:00 GitHub
+drwx------@ 62 janne  staff  2108 Jul 26 22:23 Library
+drwxr-xr-x   4 janne  staff   136 Sep 11  2015 LocalGitRepo
+drwx------+  3 janne  staff   102 Apr 30  2015 Movies
+drwx------+  5 janne  staff   170 Aug 21 17:11 Music
+drwx------+  8 janne  staff   272 Nov 16  2015 Pictures
+drwxr-xr-x+  6 janne  staff   204 Aug 21 17:12 Public
+drwxr-xr-x   4 janne  staff   136 Nov 16  2015 VirtualBox VMs
+drwxr-xr-x   4 janne  staff   136 Feb 15  2016 eclipse
 
 
 
-[2016-09-03 12:19:27.042434000]Sending total 928
--rwxr-xr-x  1 janne  staff  268952 Sep  3 12:19 FTPServer
--rw-r--r--  1 janne  staff     544 Aug 22 16:48 Makefile
--rw-r--r--  1 janne  staff     225 Aug 23 15:45 README.md
--rw-r--r--  1 janne  staff   36920 Sep  3 12:19 admin_interface.o
--rw-r--r--  1 janne  staff   51644 Sep  3 12:19 client_connection.o
--rw-r--r--  1 janne  staff     213 Aug 25 21:19 config.cfg
--rw-r--r--  1 janne  staff   46788 Sep  3 12:19 config_handler.o
-drwxr-xr-x  9 janne  staff     306 Sep  1 20:54 inc
-drwxr-xr-x  4 janne  staff     136 Aug 22 16:48 lib_linux_arm
-drwxr-xr-x  4 janne  staff     136 Aug 25 22:18 lib_osx
--rw-r--r--  1 janne  staff     758 Sep  3 12:19 log.txt
--rw-r--r--  1 janne  staff    1868 Sep  3 12:19 main.o
--rw-r--r--  1 janne  staff   39272 Sep  3 12:19 server_socket_listener.o
-drwxr-xr-x  7 janne  staff     238 Sep  1 20:54 src
+
+
+[2016-09-03 16:36:53.714707000]Sending 226 LIST data send finished
+
+
+[2016-09-03 16:36:56.090335000]dataFd: 6
+[2016-09-03 16:36:56.090379000]Sending 200 PORT command successful
+
+
+[2016-09-03 16:36:56.197358000]Sending 150 LIST executed ok, data follows
+
+
+[2016-09-03 16:36:56.197472000]Sending ls: Public: No such file or directory
 
 
 
 
 
-[2016-09-03 12:19:27.042496000]Sending 226 LIST data send finished
+[2016-09-03 16:36:56.197518000]Sending 226 LIST data send finished
+
+
+[2016-09-03 16:37:03.164801000]dataFd: 6
+[2016-09-03 16:37:03.164840000]Sending 200 PORT command successful
+
+
+[2016-09-03 16:37:03.273027000]Sending 150 LIST executed ok, data follows
+
+
+[2016-09-03 16:37:03.273129000]Sending total 0
+drwxr-xr-x   4 janne  staff   136 Jul 28 12:39 AndroidStudioProjects
+drwx------   6 janne  staff   204 Jan 28  2016 Applications
+drwx------+  3 janne  staff   102 Apr 30  2015 Desktop
+drwx------+  7 janne  staff   238 Aug 16 16:51 Documents
+drwx------+  4 janne  staff   136 Aug 25 20:28 Downloads
+drwxr-xr-x  14 janne  staff   476 Aug 22 19:00 GitHub
+drwx------@ 62 janne  staff  2108 Jul 26 22:23 Library
+drwxr-xr-x   4 janne  staff   136 Sep 11  2015 LocalGitRepo
+drwx------+  3 janne  staff   102 Apr 30  2015 Movies
+drwx------+  5 janne  staff   170 Aug 21 17:11 Music
+drwx------+  8 janne  staff   272 Nov 16  2015 Pictures
+drwxr-xr-x+  6 janne  staff   204 Aug 21 17:12 Public
+drwxr-xr-x   4 janne  staff   136 Nov 16  2015 VirtualBox VMs
+drwxr-xr-x   4 janne  staff   136 Feb 15  2016 eclipse
 
 
 
-[2016-09-03 12:19:28.816427000]Sending 221 Bye Bye
+
+
+[2016-09-03 16:37:03.273182000]Sending 226 LIST data send finished
+
+
+[2016-09-03 16:37:06.186957000]dataFd: 6
+[2016-09-03 16:37:06.186999000]Sending 200 PORT command successful
+
+
+[2016-09-03 16:37:06.298277000]Sending 150 LIST executed ok, data follows
+
+
+[2016-09-03 16:37:06.298386000]Sending total 0
+drwx-wx-wx+ 3 janne  staff  102 Apr 30  2015 Drop Box
+
+
+
+
+
+[2016-09-03 16:37:06.298424000]Sending 226 LIST data send finished
+
+
+[2016-09-03 16:37:11.745738000]dataFd: 6
+[2016-09-03 16:37:11.745774000]Sending 200 PORT command successful
+
+
+[2016-09-03 16:37:11.856663000]Sending 150 LIST executed ok, data follows
+
+
+[2016-09-03 16:37:11.856773000]Sending 
+
+
+
+
+[2016-09-03 16:37:11.856808000]Sending 226 LIST data send finished
+
+
+[2016-09-03 16:37:18.296635000]dataFd: 6
+[2016-09-03 16:37:18.296675000]Sending 200 PORT command successful
+
+
+[2016-09-03 16:37:18.409612000]Sending 150 LIST executed ok, data follows
+
+
+[2016-09-03 16:37:18.409734000]Sending total 0
+drwxr-xr-x  14 janne  staff  476 Jan 28  2016 OpenTTD
+drwxr-xr-x   5 janne  staff  170 Aug 27 08:47 ViberDownloads
+drwxr-xr-x  13 janne  staff  442 Aug 20 13:04 workspace
+
+
+
+
+
+[2016-09-03 16:37:18.409779000]Sending 226 LIST data send finished
+
+
+[2016-09-03 16:37:20.225052000]Sending 221 Bye Bye
 
 
