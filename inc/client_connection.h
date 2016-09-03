@@ -45,6 +45,7 @@ private:
 	User* user;
 	ConfigHandler& configHandler;
 	std::string currDir;
+	bool loggedIn;
 
 	FTPCommand GetCommand();
 	std::vector<std::string> SplitString(const std::string& string, const std::string& delimiter);

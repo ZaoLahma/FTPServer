@@ -16,7 +16,8 @@ active(false),
 controlFd(_controlFd),
 dataFd(-1),
 user(nullptr),
-configHandler(_configHandler){
+configHandler(_configHandler),
+loggedIn(false) {
 	JobDispatcher::GetApi()->SubscribeToEvent(controlFd, this);
 
 	std::string initConnStr = "220 OK.";
@@ -27,42 +28,56 @@ configHandler(_configHandler){
 void ClientConnection::HandleEvent(const uint32_t eventNo, const EventDataBase* dataPtr) {
 	active = true;
 
-	if(eventNo != controlFd) {
+	if(eventNo != (uint32_t)controlFd) {
 		active = false;
 		return;
 	}
 
 	FTPCommand command = GetCommand();
-
-	switch(command.ftpCommand) {
-	case FTPCommandEnum::USER: {
-		HandleUserCommand(command);
-	}
-	break;
-	case FTPCommandEnum::PASS: {
-		HandlePassCommand(command);
-	}
-	break;
-	case FTPCommandEnum::PORT: {
-		HandlePortCommand(command);
-	}
-	break;
-	case FTPCommandEnum::LIST: {
-		HandleListCommand(command);
-	}
-	break;
-	case FTPCommandEnum::QUIT: {
-		HandleQuitCommand();
-	}
-	break;
-	case FTPCommandEnum::PWD: {
-		HandlePwdCommand();
-	}
-	break;
-	default:
-		std::string send_string = "500 - Not implemented";
-		SendResponse(send_string, controlFd);
+	if(false == loggedIn) {
+		switch(command.ftpCommand) {
+		case FTPCommandEnum::USER: {
+			HandleUserCommand(command);
+		}
 		break;
+		case FTPCommandEnum::PASS: {
+			HandlePassCommand(command);
+		}
+		break;
+		case FTPCommandEnum::NOT_IMPLEMENTED: {
+			std::string send_string = "500 - Not implemented";
+			SendResponse(send_string, controlFd);
+		}
+		break;
+		default:
+			break;
+		}
+	} else {
+		switch(command.ftpCommand) {
+			case FTPCommandEnum::PORT: {
+				HandlePortCommand(command);
+			}
+			break;
+			case FTPCommandEnum::LIST: {
+				HandleListCommand(command);
+			}
+			break;
+			case FTPCommandEnum::QUIT: {
+				HandleQuitCommand();
+			}
+			break;
+			case FTPCommandEnum::PWD: {
+				HandlePwdCommand();
+			}
+			break;
+			case FTPCommandEnum::NOT_IMPLEMENTED: {
+				std::string send_string = "500 - Not implemented";
+				SendResponse(send_string, controlFd);
+			}
+			break;
+			default:
+				break;
+		}
 	}
 
 	active = false;
@@ -176,6 +191,9 @@ void ClientConnection::HandlePassCommand(const FTPCommand& command) {
 		if(command.args == user->passwd) {
 			send_string = "230 OK, user " + user->userName + " logged in";
 			currDir = user->homeDir;
+			loggedIn = true;
+		} else {
+
 		}
 	}
 	SendResponse(send_string, controlFd);
