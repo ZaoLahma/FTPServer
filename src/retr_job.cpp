@@ -34,17 +34,35 @@ void RetrJob::Execute() {
 	JobDispatcher::GetApi()->Log("filePath: %s, size: %d", filePath.c_str(), length);
 
 	SocketBuf sendBuf;
-	sendBuf.dataSize = 1;
-	sendBuf.data = new char[1];
-	while (length > 0) {
-		char c = fileStream.get();
-		if (c == '\n') {
-			*sendBuf.data = '\r';
+	if(false == binaryFlag) {
+		sendBuf.dataSize = 1;
+		sendBuf.data = new char[1];
+		while (length > 0) {
+			char c = fileStream.get();
+			if (c == '\n') {
+				*sendBuf.data = '\r';
+				socketApi.sendData(dataFd, sendBuf);
+			}
+			*sendBuf.data = c;
+			socketApi.sendData(dataFd, sendBuf);
+			length -= 1;
+		}
+	} else {
+		unsigned int max_buf = 2048;
+		sendBuf.data = new char[max_buf];
+		while (length > 0) {
+			unsigned int read_bytes = 0;
+			while (read_bytes != max_buf) {
+				sendBuf.data[read_bytes] = fileStream.get();
+				read_bytes++;
+				length -= 1;
+				if (length == 0) {
+					break;
+				}
+			}
+			sendBuf.dataSize = read_bytes;
 			socketApi.sendData(dataFd, sendBuf);
 		}
-		*sendBuf.data = c;
-		socketApi.sendData(dataFd, sendBuf);
-		length -= 1;
 	}
 
 	delete sendBuf.data;
