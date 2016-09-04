@@ -10,6 +10,7 @@
 #include "../inc/thread_fwk/jobdispatcher.h"
 #include "../inc/server_socket_listener.h"
 #include "../inc/retr_job.h"
+#include "../inc/stor_job.h"
 #include "../inc/ftp_thread_model.h"
 #include "../inc/ftp_utils.h"
 #include <dirent.h>
@@ -55,6 +56,9 @@ void ClientConnection::HandleEvent(const uint32_t eventNo, const EventDataBase* 
 			HandlePassCommand(command);
 		}
 		break;
+		case FTPCommandEnum::QUIT: {
+			HandleQuitCommand();
+		}
 		case FTPCommandEnum::NOT_IMPLEMENTED: {
 			std::string send_string = "500 - Not implemented";
 			FTPUtils::SendString(send_string, controlFd, socketApi);
@@ -87,6 +91,14 @@ void ClientConnection::HandleEvent(const uint32_t eventNo, const EventDataBase* 
 			break;
 			case FTPCommandEnum::TYPE: {
 				HandleTypeCommand(command);
+			}
+			break;
+			case FTPCommandEnum::STOR: {
+				HandleStorCommand(command);
+			}
+			break;
+			case FTPCommandEnum::DELE: {
+				HandleDeleCommand(command);
 			}
 			break;
 			case FTPCommandEnum::NOT_IMPLEMENTED: {
@@ -129,6 +141,12 @@ FTPCommand ClientConnection::GetCommand() {
 		}
 	} else if(command[0] == "RETR") {
 		retVal.ftpCommand = FTPCommandEnum::RETR;
+		retVal.args = command[1];
+	} else if(command[0] == "STOR") {
+		retVal.ftpCommand = FTPCommandEnum::STOR;
+		retVal.args = command[1];
+	} else if(command[0] == "DELE") {
+		retVal.ftpCommand = FTPCommandEnum::DELE;
 		retVal.args = command[1];
 	} else if(command[0] == "TYPE") {
 		retVal.ftpCommand = FTPCommandEnum::TYPE;
@@ -265,6 +283,34 @@ void ClientConnection::HandleListCommand(const FTPCommand& command) {
 void ClientConnection::HandleRetrCommand(const FTPCommand& command) {
 	std::string filePath = currDir + "/" + command.args;
 	JobDispatcher::GetApi()->ExecuteJobInGroup(new RetrJob(filePath, dataFd, controlFd, binaryFlag), DATA_CHANNEL_THREAD_GROUP_ID);
+}
+
+void ClientConnection::HandleStorCommand(const FTPCommand& command) {
+	if(user->rights == WRITE) {
+		std::string filePath = currDir + "/" + command.args;
+		JobDispatcher::GetApi()->ExecuteJobInGroup(new StorJob(filePath, dataFd, controlFd, binaryFlag), DATA_CHANNEL_THREAD_GROUP_ID);
+	} else {
+		std::string send_string = "550 DELE refused due to user access rights";
+		FTPUtils::SendString(send_string, controlFd, socketApi);
+	}
+}
+
+void ClientConnection::HandleDeleCommand(const FTPCommand& command) {
+	std::string send_string = "";
+	if(user->rights == WRITE) {
+		int status;
+		std::string fileString = currDir + "/" + command.args;
+		status = remove(fileString.c_str());
+		if(0 == status) {
+			send_string = "250 " + fileString + " deleted OK";
+		} else {
+			send_string = "550 DELE not performed due to unknown reason"; //FIXME
+		}
+	} else {
+		send_string = "550 DELE refused due to user access rights";
+	}
+
+	FTPUtils::SendString(send_string, controlFd, socketApi);
 }
 
 void ClientConnection::HandleTypeCommand(const FTPCommand& command) {
