@@ -14,7 +14,7 @@
 
 #define FTP_CLIENT_INACTIVE_CHECK_TIMEOUT 0x30001000
 
-ServerSocketListener::ServerSocketListener() : running(true), noOfCycles(0) {
+ServerSocketListener::ServerSocketListener() : running(true) {
 	JobDispatcher::GetApi()->SubscribeToEvent(CLIENT_DISCONNECTED_EVENT, this);
 	JobDispatcher::GetApi()->SubscribeToEvent(CLIENT_INACTIVE_EVENT, this);
 	JobDispatcher::GetApi()->SubscribeToEvent(FTP_SHUT_DOWN_EVENT, this);
@@ -90,9 +90,8 @@ void ServerSocketListener::Execute() {
 		} else if (retval == 0) {
 			//printf("No connections established\n");
 		} else {
-			perror("select failed\n");
-			JobDispatcher::GetApi()->NotifyExecutionFinished();
-			break;
+			//Select failed. This should be fixed...
+			perror("Select failed\n");
 		}
 
 		/* Clean up connections that have been disconnected */
@@ -108,7 +107,11 @@ void ServerSocketListener::Execute() {
 void ServerSocketListener::DisconnectInactiveConnections() {
 	ClientConnMapT::iterator connection = clientConnections.begin();
 	while (connection != clientConnections.end()) {
-
+		if(connection->second->IsDisconnected()) {
+			delete connection->second;
+			connection = clientConnections.erase(connection);
+			continue;
+		}
 		connection++;
 	}
 }
@@ -116,12 +119,7 @@ void ServerSocketListener::DisconnectInactiveConnections() {
 void ServerSocketListener::HandleEvent(const uint32_t eventNo,
 		const EventDataBase* dataPtr) {
 	if (CLIENT_DISCONNECTED_EVENT == eventNo) {
-		ClientStatusChangeEventData* statusChangeData = (ClientStatusChangeEventData*)(dataPtr);
-		std::lock_guard<std::mutex> fileDescriptorLock(fileDescriptorMutex);
-		ClientConnMapT::iterator connection = clientConnections.find(statusChangeData->fileDescriptor);
-		socketAPI.disconnect(statusChangeData->fileDescriptor);
-		delete connection->second;
-		clientConnections.erase(connection);
+
 	} else if (CLIENT_INACTIVE_EVENT == eventNo) {
 
 	} else if(FTP_SHUT_DOWN_EVENT == eventNo) {
@@ -144,7 +142,6 @@ void ServerSocketListener::HandleEvent(const uint32_t eventNo,
 		JobDispatcher::GetApi()->RaiseEvent(FTP_LIST_CONNECTIONS_EVENT_RSP, new ListConnectionsEventData(response_string));
 	} else if (FTP_CLIENT_INACTIVE_CHECK_TIMEOUT == eventNo) {
 		std::lock_guard<std::mutex> fileDescriptorLock(fileDescriptorMutex);
-		noOfCycles++;
 		ClientConnMapT::iterator connection = clientConnections.begin();
 		for( ; connection != clientConnections.end(); ++connection) {
 			connection->second->CheckIfInactive();

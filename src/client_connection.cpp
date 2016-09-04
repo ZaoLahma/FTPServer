@@ -24,6 +24,7 @@ configHandler(_configHandler),
 loggedIn(false),
 binaryFlag(false),
 inactiveTooLong(false),
+disconnected(false),
 noOfCycles(0) {
 	JobDispatcher::GetApi()->SubscribeToEvent(controlFd, this);
 
@@ -335,6 +336,8 @@ void ClientConnection::HandleQuitCommand() {
 	std::string send_string = "221 Bye Bye";
 	FTPUtils::SendString(send_string, controlFd, socketApi);
 
+	disconnected = true;
+
 	JobDispatcher::GetApi()->UnsubscribeToEvent(controlFd, this);
 	JobDispatcher::GetApi()->RaiseEvent(CLIENT_DISCONNECTED_EVENT, new ClientStatusChangeEventData(controlFd));
 }
@@ -346,7 +349,7 @@ void ClientConnection::HandlePwdCommand() {
 
 void ClientConnection::CheckIfInactive() {
 	noOfCycles++;
-	if(noOfCycles > 2 * 60) {
+	if(noOfCycles > 2 * 30) {
 		noOfCycles = 0;
 		if(true == inactiveTooLong) {
 			HandleQuitCommand();
@@ -358,4 +361,8 @@ void ClientConnection::CheckIfInactive() {
 
 void ClientConnection::ForceDisconnect() {
 	HandleQuitCommand();
+}
+
+bool ClientConnection::IsDisconnected() {
+	return disconnected;
 }

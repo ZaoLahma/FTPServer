@@ -41,6 +41,8 @@ public:
 	void CheckIfInactive();
 	void ForceDisconnect();
 
+	bool IsDisconnected();
+
 	bool active;
 	int32_t controlFd;
 protected:
@@ -56,6 +58,7 @@ private:
 	bool loggedIn;
 	bool binaryFlag;
 	bool inactiveTooLong;
+	bool disconnected;
 	uint32_t noOfCycles;
 
 	FTPCommand GetCommand();
