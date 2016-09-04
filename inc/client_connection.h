@@ -20,6 +20,7 @@ enum FTPCommandEnum {
 	PORT,
 	LIST,
 	RETR,
+	TYPE,
 	QUIT
 };
 
@@ -59,6 +60,7 @@ private:
 	void HandlePortCommand(const FTPCommand& command);
 	void HandleListCommand(const FTPCommand& command);
 	void HandleRetrCommand(const FTPCommand& command);
+	void HandleTypeCommand(const FTPCommand& command);
 	void HandleQuitCommand();
 	void HandlePwdCommand();
 };

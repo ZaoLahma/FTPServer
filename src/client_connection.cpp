@@ -85,6 +85,10 @@ void ClientConnection::HandleEvent(const uint32_t eventNo, const EventDataBase* 
 				HandleRetrCommand(command);
 			}
 			break;
+			case FTPCommandEnum::TYPE: {
+				HandleTypeCommand(command);
+			}
+			break;
 			case FTPCommandEnum::NOT_IMPLEMENTED: {
 				std::string send_string = "500 - Not implemented";
 				FTPUtils::SendString(send_string, controlFd, socketApi);
@@ -125,6 +129,9 @@ FTPCommand ClientConnection::GetCommand() {
 		}
 	} else if(command[0] == "RETR") {
 		retVal.ftpCommand = FTPCommandEnum::RETR;
+		retVal.args = command[1];
+	} else if(command[0] == "TYPE") {
+		retVal.ftpCommand = FTPCommandEnum::TYPE;
 		retVal.args = command[1];
 	} else {
 		JobDispatcher::GetApi()->Log("Command: %s not implemented", command[0].c_str());
@@ -258,6 +265,21 @@ void ClientConnection::HandleListCommand(const FTPCommand& command) {
 void ClientConnection::HandleRetrCommand(const FTPCommand& command) {
 	std::string filePath = currDir + "/" + command.args;
 	JobDispatcher::GetApi()->ExecuteJobInGroup(new RetrJob(filePath, dataFd, controlFd, binaryFlag), DATA_CHANNEL_THREAD_GROUP_ID);
+}
+
+void ClientConnection::HandleTypeCommand(const FTPCommand& command) {
+	if(command.args == "I" || command.args == "A") {
+		std::string send_string = "200 Transfer mode changed to: " + command.args;
+		if(command.args == "I") {
+			binaryFlag = true;
+		} else {
+			binaryFlag = false;
+		}
+		FTPUtils::SendString(send_string, controlFd, socketApi);
+	} else {
+		std::string send_string = "500 - Not implemented";
+		FTPUtils::SendString(send_string, controlFd, socketApi);
+	}
 }
 
 void ClientConnection::HandleQuitCommand() {

@@ -1,42 +1,54 @@
-[2016-09-03 23:34:43.536635000]FTPServer starting...
-[2016-09-03 23:34:43.537777000]FTPServer waiting for connections on port 3370
-[2016-09-03 23:34:45.696835000]FTPServer new connection established. clientFd: 5
-[2016-09-03 23:34:45.696876000]Sending 220 OK.
+[2016-09-04 11:33:24.949230000]FTPServer starting...
+[2016-09-04 11:33:24.950374000]FTPServer waiting for connections on port 3370
+[2016-09-04 11:33:28.223574000]FTPServer new connection established. clientFd: 5
+[2016-09-04 11:33:28.223616000]Sending 220 OK.
 
 
-[2016-09-03 23:34:46.856023000]Sending 330 OK, send password
+[2016-09-04 11:33:29.324342000]Sending 330 OK, send password
 
 
-[2016-09-03 23:34:48.292945000]Sending 230 OK, user janne logged in
+[2016-09-04 11:33:30.629448000]Sending 230 OK, user janne logged in
 
 
-[2016-09-03 23:34:48.394764000]Command: SYST not implemented
-[2016-09-03 23:34:48.394811000]Sending 500 - Not implemented
+[2016-09-04 11:33:30.733103000]Command: SYST not implemented
+[2016-09-04 11:33:30.733170000]Sending 500 - Not implemented
 
 
-[2016-09-03 23:34:48.495445000]Command: FEAT not implemented
-[2016-09-03 23:34:48.495499000]Sending 500 - Not implemented
+[2016-09-04 11:33:30.838310000]Command: FEAT not implemented
+[2016-09-04 11:33:30.838359000]Sending 500 - Not implemented
 
 
-[2016-09-03 23:34:48.596374000]Sending 257 "/Users/janne/Pictures"
+[2016-09-04 11:33:30.942123000]Sending 257 "/Users/janne/Pictures"
 
 
-[2016-09-03 23:34:49.597681000]Command: EPSV not implemented
-[2016-09-03 23:34:49.597718000]Sending 500 - Not implemented
+[2016-09-04 11:33:32.797267000]Sending 200 Transfer mode changed to: I
 
 
-[2016-09-03 23:34:49.698756000]Command: PASV not implemented
-[2016-09-03 23:34:49.698813000]Sending 500 - Not implemented
+[2016-09-04 11:33:37.017178000]Sending 200 Transfer mode changed to: A
 
 
-[2016-09-03 23:34:49.805160000]dataFd: 6
-[2016-09-03 23:34:49.805208000]Sending 200 PORT command successful
+[2016-09-04 11:33:39.465319000]Sending 200 Transfer mode changed to: I
 
 
-[2016-09-03 23:34:49.917013000]Sending 150 LIST executed ok, data follows
+[2016-09-04 11:33:43.551223000]Sending 200 Transfer mode changed to: A
 
 
-[2016-09-03 23:34:49.917101000]Sending total 912
+[2016-09-04 11:33:43.655048000]Command: EPSV not implemented
+[2016-09-04 11:33:43.655104000]Sending 500 - Not implemented
+
+
+[2016-09-04 11:33:43.760236000]Command: PASV not implemented
+[2016-09-04 11:33:43.760285000]Sending 500 - Not implemented
+
+
+[2016-09-04 11:33:43.862008000]dataFd: 6
+[2016-09-04 11:33:43.862047000]Sending 200 PORT command successful
+
+
+[2016-09-04 11:33:43.973805000]Sending 150 LIST executed ok, data follows
+
+
+[2016-09-04 11:33:43.973882000]Sending total 912
 drwxr-xr-x@ 11 janne  staff     374 Aug  8 18:20 Photos Library.photoslibrary
 -rw-r-----@  1 janne  staff  194181 Nov 16  2015 orange-polygons-wallpaper-for-2560x1600-61-874.jpg
 -rw-r-----@  1 janne  staff  269474 Nov 16  2015 star-river-wallpaper-for-2560x1600-61-293.jpg
@@ -45,28 +57,31 @@ drwxr-xr-x@ 11 janne  staff     374 Aug  8 18:20 Photos Library.photoslibrary
 
 
 
-[2016-09-03 23:34:49.917156000]Sending 226 LIST data send finished
+[2016-09-04 11:33:43.973953000]Sending 226 LIST data send finished
 
 
-[2016-09-03 23:34:54.702930000]Command: SIZE not implemented
-[2016-09-03 23:34:54.702972000]Sending 500 - Not implemented
+[2016-09-04 11:33:48.425343000]Sending 200 Transfer mode changed to: I
 
 
-[2016-09-03 23:34:54.804213000]dataFd: 6
-[2016-09-03 23:34:54.804253000]Sending 200 PORT command successful
+[2016-09-04 11:33:48.530647000]Command: SIZE not implemented
+[2016-09-04 11:33:48.530696000]Sending 500 - Not implemented
 
 
-[2016-09-03 23:34:54.909002000]Sending 150 RETR executed ok, data follows
+[2016-09-04 11:33:48.636620000]dataFd: 6
+[2016-09-04 11:33:48.636665000]Sending 200 PORT command successful
 
 
-[2016-09-03 23:34:54.909111000]filePath: /Users/janne/Pictures/star-river-wallpaper-for-2560x1600-61-293.jpg, size: 269474
-[2016-09-03 23:34:55.563631000]Sending 226 RETR data send finished
+[2016-09-04 11:33:48.739295000]Sending 150 RETR executed ok, data follows
 
 
-[2016-09-03 23:34:55.564017000]Command: MDTM not implemented
-[2016-09-03 23:34:55.564041000]Sending 500 - Not implemented
+[2016-09-04 11:33:48.739505000]filePath: /Users/janne/Pictures/orange-polygons-wallpaper-for-2560x1600-61-874.jpg, size: 194181
+[2016-09-04 11:33:48.745649000]Sending 226 RETR data send finished
 
 
-[2016-09-03 23:35:02.677046000]Sending 221 Bye Bye
+[2016-09-04 11:33:48.844198000]Command: MDTM not implemented
+[2016-09-04 11:33:48.844246000]Sending 500 - Not implemented
+
+
+[2016-09-04 11:33:58.335828000]Sending 221 Bye Bye
 
 
