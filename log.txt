@@ -1,82 +1,26 @@
-[2016-09-04 20:42:43.663686000]FTPServer starting...
-[2016-09-04 20:42:43.664737000]FTPServer waiting for connections on port 3370
-[2016-09-04 20:42:46.013361000]FTPServer new connection established. clientFd: 5
-[2016-09-04 20:42:46.013402000]Sending 220 OK.
+[2016-09-04 21:19:03.371779000]FTPServer starting...
+[2016-09-04 21:19:03.373008000]FTPServer waiting for connections on port 3370
+[2016-09-04 21:19:07.545155000]FTPServer new connection established. clientFd: 5
+[2016-09-04 21:19:07.545194000]Sending 220 OK.
 
 
-[2016-09-04 20:42:47.062269000]Sending 330 OK, send password
+[2016-09-04 21:19:08.710689000]Sending 330 OK, send password
 
 
-[2016-09-04 20:42:48.286246000]Sending 230 OK, user janne logged in
+[2016-09-04 21:19:10.085491000]Sending 230 OK, user janne logged in
 
 
-[2016-09-04 20:42:48.391430000]Command: SYST not implemented
-[2016-09-04 20:42:48.391478000]Sending 500 - Not implemented
+[2016-09-04 21:19:10.187666000]Command: SYST not implemented
+[2016-09-04 21:19:10.187756000]Sending 500 - Not implemented
 
 
-[2016-09-04 20:42:48.496509000]Command: FEAT not implemented
-[2016-09-04 20:42:48.496561000]Sending 500 - Not implemented
+[2016-09-04 21:19:10.292294000]Command: FEAT not implemented
+[2016-09-04 21:19:10.292400000]Sending 500 - Not implemented
 
 
-[2016-09-04 20:42:48.599009000]Sending 257 "/Users/janne/Pictures"
+[2016-09-04 21:19:10.396661000]Sending 257 "/Users/janne/Pictures"
 
 
-[2016-09-04 20:42:53.123158000]Sending 250 /Users/janne/Pictures/testfile.txt deleted OK
-
-
-[2016-09-04 20:42:55.617612000]Command: EPSV not implemented
-[2016-09-04 20:42:55.617652000]Sending 500 - Not implemented
-
-
-[2016-09-04 20:42:55.722686000]Command: PASV not implemented
-[2016-09-04 20:42:55.722730000]Sending 500 - Not implemented
-
-
-[2016-09-04 20:42:55.825847000]dataFd: 6
-[2016-09-04 20:42:55.825885000]Sending 200 PORT command successful
-
-
-[2016-09-04 20:42:55.933648000]Sending 150 LIST executed ok, data follows
-
-
-[2016-09-04 20:42:55.933931000]Sending total 912
-drwxr-xr-x@ 11 janne  staff     374 Aug  8 18:20 Photos Library.photoslibrary
--rw-r-----@  1 janne  staff  194181 Nov 16  2015 orange-polygons-wallpaper-for-2560x1600-61-874.jpg
--rw-r-----@  1 janne  staff  269474 Nov 16  2015 star-river-wallpaper-for-2560x1600-61-293.jpg
-
-
-
-
-
-[2016-09-04 20:42:55.934049000]Sending 226 LIST data send finished
-
-
-[2016-09-04 20:43:00.870867000]dataFd: 6
-[2016-09-04 20:43:00.870916000]Sending 200 PORT command successful
-
-
-[2016-09-04 20:43:00.970727000]Sending 150 STORE ok, send data pretty please
-
-
-[2016-09-04 20:43:00.974648000]Sending 226 STOR data received ok
-
-
-[2016-09-04 20:43:07.819149000]Sending 250 /Users/janne/Pictures/testfile.txt deleted OK
-
-
-[2016-09-04 20:43:11.976026000]Sending 200 Transfer mode changed to: I
-
-
-[2016-09-04 20:43:14.870556000]dataFd: 6
-[2016-09-04 20:43:14.870593000]Sending 200 PORT command successful
-
-
-[2016-09-04 20:43:14.970726000]Sending 150 STORE ok, send data pretty please
-
-
-[2016-09-04 20:43:14.971355000]Sending 226 STOR data received ok
-
-
-[2016-09-04 20:43:31.821930000]Sending 221 Bye Bye
+[2016-09-04 21:19:12.713329000]Sending 221 Bye Bye
 
 

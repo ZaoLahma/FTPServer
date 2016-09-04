@@ -22,7 +22,9 @@ dataFd(-1),
 user(nullptr),
 configHandler(_configHandler),
 loggedIn(false),
-binaryFlag(false){
+binaryFlag(false),
+inactiveTooLong(false),
+noOfCycles(0) {
 	JobDispatcher::GetApi()->SubscribeToEvent(controlFd, this);
 
 	JobDispatcher::GetApi()->SubscribeToEvent(DATA_TRANSFER_COMPLETE_EVENT_NO, this);
@@ -39,6 +41,7 @@ ClientConnection::~ClientConnection() {
 
 void ClientConnection::HandleEvent(const uint32_t eventNo, const EventDataBase* dataPtr) {
 	active = true;
+	inactiveTooLong = false;
 
 	if(eventNo != (uint32_t)controlFd) {
 		active = false;
@@ -48,24 +51,24 @@ void ClientConnection::HandleEvent(const uint32_t eventNo, const EventDataBase* 
 	FTPCommand command = GetCommand();
 	if(false == loggedIn) {
 		switch(command.ftpCommand) {
-		case FTPCommandEnum::USER: {
-			HandleUserCommand(command);
-		}
-		break;
-		case FTPCommandEnum::PASS: {
-			HandlePassCommand(command);
-		}
-		break;
-		case FTPCommandEnum::QUIT: {
-			HandleQuitCommand();
-		}
-		case FTPCommandEnum::NOT_IMPLEMENTED: {
-			std::string send_string = "500 - Not implemented";
-			FTPUtils::SendString(send_string, controlFd, socketApi);
-		}
-		break;
-		default:
+			case FTPCommandEnum::USER: {
+				HandleUserCommand(command);
+			}
 			break;
+			case FTPCommandEnum::PASS: {
+				HandlePassCommand(command);
+			}
+			break;
+			case FTPCommandEnum::QUIT: {
+				HandleQuitCommand();
+			}
+			case FTPCommandEnum::NOT_IMPLEMENTED: {
+				std::string send_string = "500 - Not implemented";
+				FTPUtils::SendString(send_string, controlFd, socketApi);
+			}
+			break;
+			default:
+				break;
 		}
 	} else {
 		switch(command.ftpCommand) {
@@ -339,4 +342,20 @@ void ClientConnection::HandleQuitCommand() {
 void ClientConnection::HandlePwdCommand() {
 	std::string send_string = "257 \"" + currDir + "\"";
 	FTPUtils::SendString(send_string, controlFd, socketApi);
+}
+
+void ClientConnection::CheckIfInactive() {
+	noOfCycles++;
+	if(noOfCycles > 2 * 60) {
+		noOfCycles = 0;
+		if(true == inactiveTooLong) {
+			HandleQuitCommand();
+		} else {
+			inactiveTooLong = true;
+		}
+	}
+}
+
+void ClientConnection::ForceDisconnect() {
+	HandleQuitCommand();
 }

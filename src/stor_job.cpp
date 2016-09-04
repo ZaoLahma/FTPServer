@@ -44,8 +44,9 @@ void StorJob::Execute() {
 		} while (receiveBuf.dataSize == max_buf);
 	}
 
+	socketApi.disconnect(dataFd);
+	dataFd = -1;
+
 	send_string = "226 STOR data received ok";
 	FTPUtils::SendString(send_string, controlFd, socketApi);
-
-	socketApi.disconnect(dataFd);
 }

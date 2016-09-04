@@ -38,6 +38,9 @@ public:
 	~ClientConnection();
 	void HandleEvent(const uint32_t eventNo, const EventDataBase* dataPtr);
 
+	void CheckIfInactive();
+	void ForceDisconnect();
+
 	bool active;
 	int32_t controlFd;
 protected:
@@ -52,6 +55,8 @@ private:
 	std::string currDir;
 	bool loggedIn;
 	bool binaryFlag;
+	bool inactiveTooLong;
+	uint32_t noOfCycles;
 
 	FTPCommand GetCommand();
 	std::vector<std::string> SplitString(const std::string& string, const std::string& delimiter);

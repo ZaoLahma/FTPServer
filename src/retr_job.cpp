@@ -31,8 +31,6 @@ void RetrJob::Execute() {
 	std::string send_string = "150 RETR executed ok, data follows";
 	FTPUtils::SendString(send_string, controlFd, socketApi);
 
-	JobDispatcher::GetApi()->Log("filePath: %s, size: %d", filePath.c_str(), length);
-
 	SocketBuf sendBuf;
 	if(false == binaryFlag) {
 		sendBuf.dataSize = 1;

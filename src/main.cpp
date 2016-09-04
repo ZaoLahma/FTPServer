@@ -11,8 +11,6 @@
 #include "../inc/ftp_thread_model.h"
 
 int main(void) {
-	JobDispatcher::GetApi()->AddExecGroup(DEFAULT_EXEC_GROUP_ID, 0);
-
 	JobDispatcher::GetApi()->AddExecGroup(SOCKET_LISTENER_THREAD_GROUP_ID,
 										  SOCKET_LISTENER_THREAD_GROUP_MAX_NO_OF_THREADS);
 
