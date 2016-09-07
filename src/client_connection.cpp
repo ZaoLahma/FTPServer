@@ -385,7 +385,27 @@ void ClientConnection::HandleCwdCommand(const FTPCommand& command) {
 		tmpDir += "/" + splitCurrDir[i];
 	}
 
-	currDir = tmpDir;
+	if(tmpDir.find(ftpRootDir) != std::string::npos) {
+
+		char buffer[2048];
+		std::string ls = "ls -l";
+		ls.append(" " + tmpDir);
+		ls.append(" 2>&1");
+		std::string resString;
+		FILE* file = popen(ls.c_str(), "r");
+		while (!feof(file)) {
+			if (fgets(buffer, 2048, file) != NULL) {
+				resString.append(buffer);
+			}
+		}
+		if(resString.find("No such file or directory") == std::string::npos) {
+			currDir = tmpDir;
+		} else {
+			send_string = "550 CWD not performed. " + tmpDir + " - No such file or directory";
+		}
+	} else {
+		send_string = "550 CWD outside of FTP root dir not allowed";
+	}
 
 	FTPUtils::SendString(send_string, controlFd, socketApi);
 }
