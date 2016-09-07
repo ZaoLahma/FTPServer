@@ -13,6 +13,7 @@
 #include "../inc/stor_job.h"
 #include "../inc/ftp_thread_model.h"
 #include "../inc/ftp_utils.h"
+#include "../inc/data_handling_events.h"
 #include <dirent.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -30,8 +31,6 @@ disconnected(false),
 noOfCycles(0) {
 	JobDispatcher::GetApi()->SubscribeToEvent(controlFd, this);
 
-	JobDispatcher::GetApi()->SubscribeToEvent(DATA_TRANSFER_COMPLETE_EVENT_NO, this);
-
 	std::string initConnStr = "220 OK.";
 
 	FTPUtils::SendString(initConnStr, controlFd, socketApi);
@@ -39,7 +38,6 @@ noOfCycles(0) {
 
 ClientConnection::~ClientConnection() {
 	JobDispatcher::GetApi()->UnsubscribeToEvent(controlFd, this);
-	JobDispatcher::GetApi()->UnsubscribeToEvent(DATA_TRANSFER_COMPLETE_EVENT_NO, this);
 }
 
 void ClientConnection::HandleEvent(const uint32_t eventNo, const EventDataBase* dataPtr) {
@@ -105,6 +103,10 @@ void ClientConnection::HandleEvent(const uint32_t eventNo, const EventDataBase* 
 			break;
 			case FTPCommandEnum::DELE: {
 				HandleDeleCommand(command);
+			}
+			break;
+			case FTPCommandEnum::ABOR: {
+				HandleAborCommand();
 			}
 			break;
 			case FTPCommandEnum::CWD: {
@@ -178,6 +180,8 @@ FTPCommand ClientConnection::GetCommand() {
 	} else if(command[0] == "RMD") {
 		retVal.ftpCommand = FTPCommandEnum::RMD;
 		retVal.args = command[1];
+	} else if(command[0].find("ABOR") != std::string::npos) {
+		retVal.ftpCommand = FTPCommandEnum::ABOR;
 	} else {
 		JobDispatcher::GetApi()->Log("Command: %s not implemented", command[0].c_str());
 	}
@@ -316,7 +320,7 @@ void ClientConnection::HandleStorCommand(const FTPCommand& command) {
 		std::string filePath = currDir + "/" + command.args;
 		JobDispatcher::GetApi()->ExecuteJobInGroup(new StorJob(filePath, dataFd, controlFd, binaryFlag), DATA_CHANNEL_THREAD_GROUP_ID);
 	} else {
-		std::string send_string = "550 DELE refused due to user access rights";
+		std::string send_string = "550 STOR refused due to user access rights";
 		FTPUtils::SendString(send_string, controlFd, socketApi);
 	}
 }
@@ -330,13 +334,17 @@ void ClientConnection::HandleDeleCommand(const FTPCommand& command) {
 		if(0 == status) {
 			send_string = "250 " + fileString + " deleted OK";
 		} else {
-			send_string = "550 DELE not performed due to unknown reason"; //FIXME
+			send_string = "550 DELE of " + fileString + " not performed due to unknown reason"; //FIXME
 		}
 	} else {
 		send_string = "550 DELE refused due to user access rights";
 	}
 
 	FTPUtils::SendString(send_string, controlFd, socketApi);
+}
+
+void ClientConnection::HandleAborCommand() {
+	JobDispatcher::GetApi()->RaiseEvent(ABORT_DATA_TRANSFER_EVENT_ID, new AbortDataTransferData(dataFd));
 }
 
 void ClientConnection::HandleTypeCommand(const FTPCommand& command) {
@@ -365,6 +373,8 @@ void ClientConnection::HandleQuitCommand() {
 }
 
 void ClientConnection::HandlePwdCommand() {
+	JobDispatcher::GetApi()->RaiseEvent(ABORT_DATA_TRANSFER_EVENT_ID, new AbortDataTransferData(dataFd));
+
 	std::string send_string = "257 \"" + currDir + "\"";
 	FTPUtils::SendString(send_string, controlFd, socketApi);
 }

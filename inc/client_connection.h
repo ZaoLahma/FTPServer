@@ -23,6 +23,7 @@ enum FTPCommandEnum {
 	TYPE,
 	STOR,
 	DELE,
+	ABOR,
 	CWD,
 	MKD,
 	RMD,
@@ -81,6 +82,7 @@ private:
 	void HandleMkdCommand(const FTPCommand& command);
 	void HandleRmdCommand(const FTPCommand& command);
 	void HandleQuitCommand();
+	void HandleAborCommand();
 	void HandlePwdCommand();
 };
 

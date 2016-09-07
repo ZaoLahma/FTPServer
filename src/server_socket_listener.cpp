@@ -95,16 +95,16 @@ void ServerSocketListener::Execute() {
 		}
 
 		/* Clean up connections that have been disconnected */
-		DisconnectInactiveConnections();
+		CleanupDisconnectedConnections();
 	}
 
-	/* Disconnect any lingering still active connections during shut down procedure */
-	DisconnectInactiveConnections();
+	/* Clean up any lingering still active connections during shut down procedure */
+	CleanupDisconnectedConnections();
 
 	JobDispatcher::GetApi()->RaiseEvent(FTP_SHUT_DOWN_EVENT_RSP, nullptr);
 }
 
-void ServerSocketListener::DisconnectInactiveConnections() {
+void ServerSocketListener::CleanupDisconnectedConnections() {
 	ClientConnMapT::iterator connection = clientConnections.begin();
 	while (connection != clientConnections.end()) {
 		if(connection->second->IsDisconnected()) {

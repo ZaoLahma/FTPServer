@@ -54,7 +54,7 @@ private:
 	std::mutex fileDescriptorMutex;
 	ConfigHandler config;
 	bool running;
-	void DisconnectInactiveConnections();
+	void CleanupDisconnectedConnections();
 };
 
 
