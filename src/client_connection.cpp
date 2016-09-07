@@ -105,6 +105,10 @@ void ClientConnection::HandleEvent(const uint32_t eventNo, const EventDataBase* 
 				HandleDeleCommand(command);
 			}
 			break;
+			case FTPCommandEnum::CWD: {
+				HandleCwdCommand(command);
+			}
+			break;
 			case FTPCommandEnum::NOT_IMPLEMENTED: {
 				std::string send_string = "500 - Not implemented";
 				FTPUtils::SendString(send_string, controlFd, socketApi);
@@ -154,6 +158,9 @@ FTPCommand ClientConnection::GetCommand() {
 		retVal.args = command[1];
 	} else if(command[0] == "TYPE") {
 		retVal.ftpCommand = FTPCommandEnum::TYPE;
+		retVal.args = command[1];
+	} else if(command[0] == "CWD") {
+		retVal.ftpCommand = FTPCommandEnum::CWD;
 		retVal.args = command[1];
 	} else {
 		JobDispatcher::GetApi()->Log("Command: %s not implemented", command[0].c_str());
@@ -221,6 +228,7 @@ void ClientConnection::HandlePassCommand(const FTPCommand& command) {
 		if(command.args == user->passwd) {
 			send_string = "230 OK, user " + user->userName + " logged in";
 			currDir = user->homeDir;
+			ftpRootDir = user->homeDir;
 			loggedIn = true;
 		} else {
 
@@ -269,8 +277,6 @@ void ClientConnection::HandleListCommand(const FTPCommand& command) {
 	for (unsigned int i = 0; i < responseVector.size(); ++i) {
 		response += responseVector[i] + "\r\n";
 	}
-
-	response += "\r\n";
 
 	std::string send_string = "150 LIST executed ok, data follows";
 	FTPUtils::SendString(send_string, controlFd, socketApi);
@@ -347,9 +353,46 @@ void ClientConnection::HandlePwdCommand() {
 	FTPUtils::SendString(send_string, controlFd, socketApi);
 }
 
+void ClientConnection::HandleCwdCommand(const FTPCommand& command) {
+	std::string send_string = "250 CWD OK";
+
+	std::vector<std::string> splitCurrDir = SplitString(currDir, "/");
+
+	std::vector<std::string> changeDir;
+
+	if(".." == command.args) {
+		splitCurrDir.pop_back();
+	} else {
+		if(command.args.find("/") != std::string::npos) {
+			changeDir = SplitString(command.args, "/");
+			for(unsigned int i = 0; i < changeDir.size(); ++i) {
+				if(changeDir[i] == ".") {
+
+				} else if(changeDir[i] == "..") {
+					splitCurrDir.pop_back();
+				} else {
+					splitCurrDir.push_back(changeDir[i]);
+				}
+			}
+		} else {
+			splitCurrDir.push_back(command.args);
+		}
+	}
+
+	std::string tmpDir;
+
+	for(unsigned int i = 0; i < splitCurrDir.size(); ++i) {
+		tmpDir += "/" + splitCurrDir[i];
+	}
+
+	currDir = tmpDir;
+
+	FTPUtils::SendString(send_string, controlFd, socketApi);
+}
+
 void ClientConnection::CheckIfInactive() {
 	noOfCycles++;
-	if(noOfCycles > 2 * 30) {
+	if(noOfCycles > 2 * 60 * 5) {
 		noOfCycles = 0;
 		if(true == inactiveTooLong) {
 			HandleQuitCommand();

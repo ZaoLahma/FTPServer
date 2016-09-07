@@ -23,6 +23,7 @@ enum FTPCommandEnum {
 	TYPE,
 	STOR,
 	DELE,
+	CWD,
 	QUIT
 };
 
@@ -51,6 +52,7 @@ protected:
 private:
 	ClientConnection();
 	SocketAPI socketApi;
+	std::string ftpRootDir;
 	int32_t dataFd;
 	User* user;
 	ConfigHandler& configHandler;
@@ -73,6 +75,7 @@ private:
 	void HandleTypeCommand(const FTPCommand& command);
 	void HandleStorCommand(const FTPCommand& command);
 	void HandleDeleCommand(const FTPCommand& command);
+	void HandleCwdCommand(const FTPCommand& command);
 	void HandleQuitCommand();
 	void HandlePwdCommand();
 };
