@@ -8,6 +8,7 @@
 #include "../inc/ftp_utils.h"
 #include "../inc/admin_interface_events.h"
 #include "../inc/thread_fwk/jobdispatcher.h"
+#include <string.h>
 
 void FTPUtils::SendString(const std::string& string, int32_t fileDescriptor, SocketAPI& socketApi) {
 	std::string stringToSend = string;
