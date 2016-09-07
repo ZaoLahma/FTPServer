@@ -46,7 +46,6 @@ void RetrJob::Execute() {
 			*sendBuf.data = c;
 			socketApi.sendData(dataFd, sendBuf);
 			length -= 1;
-			std::this_thread::sleep_for(std::chrono::milliseconds(500));
 		}
 	} else {
 		unsigned int max_buf = 2048;
