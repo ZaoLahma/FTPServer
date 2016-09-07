@@ -25,6 +25,7 @@ enum FTPCommandEnum {
 	DELE,
 	CWD,
 	MKD,
+	RMD,
 	QUIT
 };
 
@@ -78,6 +79,7 @@ private:
 	void HandleDeleCommand(const FTPCommand& command);
 	void HandleCwdCommand(const FTPCommand& command);
 	void HandleMkdCommand(const FTPCommand& command);
+	void HandleRmdCommand(const FTPCommand& command);
 	void HandleQuitCommand();
 	void HandlePwdCommand();
 };

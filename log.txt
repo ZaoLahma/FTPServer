@@ -1,99 +1,317 @@
-[2016-09-07 21:08:46.936636000]FTPServer starting...
-[2016-09-07 21:08:46.937743000]FTPServer waiting for connections on port 3370
-[2016-09-07 21:08:49.214227000]FTPServer new connection established. clientFd: 5
-[2016-09-07 21:08:49.214285000]Sending 220 OK.
+[2016-09-07 21:18:04.621292000]FTPServer starting...
+[2016-09-07 21:18:04.622446000]FTPServer waiting for connections on port 3370
+[2016-09-07 21:18:15.397146000]FTPServer new connection established. clientFd: 5
+[2016-09-07 21:18:15.397200000]Sending 220 OK.
 
 
-[2016-09-07 21:08:49.880457000]Sending 330 OK, send password
+[2016-09-07 21:18:16.632143000]Sending 330 OK, send password
 
 
-[2016-09-07 21:08:51.571185000]Sending 230 OK, user janne logged in
+[2016-09-07 21:18:18.010881000]Sending 230 OK, user janne logged in
 
 
-[2016-09-07 21:08:51.676323000]Command: SYST not implemented
-[2016-09-07 21:08:51.676372000]Sending 500 - Not implemented
+[2016-09-07 21:18:18.114870000]Command: SYST not implemented
+[2016-09-07 21:18:18.114921000]Sending 500 - Not implemented
 
 
-[2016-09-07 21:08:51.779360000]Command: FEAT not implemented
-[2016-09-07 21:08:51.779465000]Sending 500 - Not implemented
+[2016-09-07 21:18:18.215621000]Command: FEAT not implemented
+[2016-09-07 21:18:18.215677000]Sending 500 - Not implemented
 
 
-[2016-09-07 21:08:51.880170000]Sending 257 "/Users/janne"
+[2016-09-07 21:18:18.316162000]Sending 257 "/Users/janne"
 
 
-[2016-09-07 21:08:54.408731000]Sending 250 CWD OK
+[2016-09-07 21:18:18.523812000]Command: EPSV not implemented
+[2016-09-07 21:18:18.523853000]Sending 500 - Not implemented
 
 
-[2016-09-07 21:08:54.496431000]Sending 257 "/Users/janne/Downloads"
+[2016-09-07 21:18:18.626308000]Command: PASV not implemented
+[2016-09-07 21:18:18.626370000]Sending 500 - Not implemented
 
 
-[2016-09-07 21:08:54.861056000]Command: EPSV not implemented
-[2016-09-07 21:08:54.861096000]Sending 500 - Not implemented
+[2016-09-07 21:18:18.727673000]dataFd: 6
+[2016-09-07 21:18:18.727713000]Sending 200 PORT command successful
 
 
-[2016-09-07 21:08:54.965682000]Command: PASV not implemented
-[2016-09-07 21:08:54.965737000]Sending 500 - Not implemented
+[2016-09-07 21:18:18.840080000]Sending 150 LIST executed ok, data follows
 
 
-[2016-09-07 21:08:55.067891000]dataFd: 7
-[2016-09-07 21:08:55.067928000]Sending 200 PORT command successful
+[2016-09-07 21:18:18.840189000]Sending total 920
+drwxr-xr-x   4 janne  staff     136 Jul 28 12:39 AndroidStudioProjects
+drwx------   6 janne  staff     204 Jan 28  2016 Applications
+drwx------+  3 janne  staff     102 Apr 30  2015 Desktop
+drwx------+  7 janne  staff     238 Aug 16 16:51 Documents
+drwx------+  6 janne  staff     204 Sep  7 21:07 Downloads
+drwxr-xr-x  14 janne  staff     476 Aug 22 19:00 GitHub
+drwx------@ 62 janne  staff    2108 Jul 26 22:23 Library
+drwxr-xr-x   4 janne  staff     136 Sep 11  2015 LocalGitRepo
+drwx------+  3 janne  staff     102 Apr 30  2015 Movies
+drwx------+  5 janne  staff     170 Aug 21 17:11 Music
+drwx------+  7 janne  staff     238 Sep  4 20:59 Pictures
+drwxr-xr-x+  6 janne  staff     204 Aug 21 17:12 Public
+drwxr-xr-x   4 janne  staff     136 Nov 16  2015 VirtualBox VMs
+drwxr-xr-x   4 janne  staff     136 Feb 15  2016 eclipse
+-rw-r--r--   1 janne  staff  194177 Sep  4 20:59 orange-polygons-wallpaper-for-2560x1600-61-874.jpg
+-rw-r--r--   1 janne  staff  269422 Sep  3 23:34 star-river-wallpaper-for-2560x1600-61-293.jpg
+-rw-r--r--   1 janne  staff    2156 Sep  7 20:49 testfile.txt
 
 
-[2016-09-07 21:08:55.176026000]Sending 150 LIST executed ok, data follows
 
 
-[2016-09-07 21:08:55.176099000]Sending total 0
-drwxr-xr-x  3 janne  staff  102 Sep  7 21:07 TestDir
+[2016-09-07 21:18:18.840257000]Sending 226 LIST data send finished
+
+
+[2016-09-07 21:18:22.018034000]Sending 250 CWD OK
+
+
+[2016-09-07 21:18:22.107806000]Sending 257 "/Users/janne/Downloads"
+
+
+[2016-09-07 21:18:23.874253000]dataFd: 8
+[2016-09-07 21:18:23.874297000]Sending 200 PORT command successful
+
+
+[2016-09-07 21:18:23.985376000]Sending 150 LIST executed ok, data follows
+
+
+[2016-09-07 21:18:23.985506000]Sending total 0
+drwxr-xr-x  4 janne  staff  136 Sep  7 21:09 TestDir
 -rw-r--r--  1 janne  staff    0 Sep  3 22:50 eclipse
 
 
 
 
-[2016-09-07 21:08:55.176137000]Sending 226 LIST data send finished
+[2016-09-07 21:18:23.985549000]Sending 226 LIST data send finished
 
 
-[2016-09-07 21:08:57.697561000]Sending 250 CWD OK
+[2016-09-07 21:18:27.179149000]Sending 250 CWD OK
 
 
-[2016-09-07 21:08:57.785007000]Sending 257 "/Users/janne/Downloads/TestDir"
+[2016-09-07 21:18:27.270686000]Sending 257 "/Users/janne/Downloads/TestDir"
 
 
-[2016-09-07 21:08:58.162549000]dataFd: 9
-[2016-09-07 21:08:58.162585000]Sending 200 PORT command successful
+[2016-09-07 21:18:27.626046000]dataFd: 10
+[2016-09-07 21:18:27.626131000]Sending 200 PORT command successful
 
 
-[2016-09-07 21:08:58.275329000]Sending 150 LIST executed ok, data follows
+[2016-09-07 21:18:27.734229000]Sending 150 LIST executed ok, data follows
 
 
-[2016-09-07 21:08:58.275422000]Sending total 0
-drwxr-xr-x  2 janne  staff  68 Sep  7 21:07 Tes
-
-
-
-
-[2016-09-07 21:08:58.275460000]Sending 226 LIST data send finished
-
-
-[2016-09-07 21:09:00.974043000]Sending 257 /Users/janne/Downloads/TestDir/Hej created OK
-
-
-[2016-09-07 21:09:02.168429000]dataFd: 9
-[2016-09-07 21:09:02.168468000]Sending 200 PORT command successful
-
-
-[2016-09-07 21:09:02.276474000]Sending 150 LIST executed ok, data follows
-
-
-[2016-09-07 21:09:02.276580000]Sending total 0
+[2016-09-07 21:18:27.734358000]Sending total 0
 drwxr-xr-x  2 janne  staff  68 Sep  7 21:09 Hej
 drwxr-xr-x  2 janne  staff  68 Sep  7 21:07 Tes
 
 
 
 
-[2016-09-07 21:09:02.276618000]Sending 226 LIST data send finished
+[2016-09-07 21:18:27.734398000]Sending 226 LIST data send finished
 
 
-[2016-09-07 21:09:04.356741000]Sending 221 Bye Bye
+[2016-09-07 21:18:31.178609000]Sending 250 /Users/janne/Downloads/TestDir/Hej removed OK
+
+
+[2016-09-07 21:18:32.835875000]dataFd: 10
+[2016-09-07 21:18:32.835910000]Sending 200 PORT command successful
+
+
+[2016-09-07 21:18:32.948651000]Sending 150 LIST executed ok, data follows
+
+
+[2016-09-07 21:18:32.948765000]Sending total 0
+drwxr-xr-x  2 janne  staff  68 Sep  7 21:07 Tes
+
+
+
+
+[2016-09-07 21:18:32.948803000]Sending 226 LIST data send finished
+
+
+[2016-09-07 21:18:35.985192000]Sending 250 /Users/janne/Downloads/TestDir/Tes removed OK
+
+
+[2016-09-07 21:18:37.283741000]Sending 250 CWD OK
+
+
+[2016-09-07 21:18:37.374422000]Sending 257 "/Users/janne/Downloads"
+
+
+[2016-09-07 21:18:40.358306000]Sending 250 /Users/janne/Downloads/TestDir removed OK
+
+
+[2016-09-07 21:18:41.498758000]dataFd: 13
+[2016-09-07 21:18:41.498799000]Sending 200 PORT command successful
+
+
+[2016-09-07 21:18:41.611019000]Sending 150 LIST executed ok, data follows
+
+
+[2016-09-07 21:18:41.611095000]Sending total 0
+-rw-r--r--  1 janne  staff  0 Sep  3 22:50 eclipse
+
+
+
+
+[2016-09-07 21:18:41.611136000]Sending 226 LIST data send finished
+
+
+[2016-09-07 21:18:47.477700000]Sending 250 CWD OK
+
+
+[2016-09-07 21:18:47.565077000]Sending 257 "/Users/janne"
+
+
+[2016-09-07 21:18:48.043545000]dataFd: 15
+[2016-09-07 21:18:48.043581000]Sending 200 PORT command successful
+
+
+[2016-09-07 21:18:48.151912000]Sending 150 LIST executed ok, data follows
+
+
+[2016-09-07 21:18:48.151993000]Sending total 920
+drwxr-xr-x   4 janne  staff     136 Jul 28 12:39 AndroidStudioProjects
+drwx------   6 janne  staff     204 Jan 28  2016 Applications
+drwx------+  3 janne  staff     102 Apr 30  2015 Desktop
+drwx------+  7 janne  staff     238 Aug 16 16:51 Documents
+drwx------+  5 janne  staff     170 Sep  7 21:18 Downloads
+drwxr-xr-x  14 janne  staff     476 Aug 22 19:00 GitHub
+drwx------@ 62 janne  staff    2108 Jul 26 22:23 Library
+drwxr-xr-x   4 janne  staff     136 Sep 11  2015 LocalGitRepo
+drwx------+  3 janne  staff     102 Apr 30  2015 Movies
+drwx------+  5 janne  staff     170 Aug 21 17:11 Music
+drwx------+  7 janne  staff     238 Sep  4 20:59 Pictures
+drwxr-xr-x+  6 janne  staff     204 Aug 21 17:12 Public
+drwxr-xr-x   4 janne  staff     136 Nov 16  2015 VirtualBox VMs
+drwxr-xr-x   4 janne  staff     136 Feb 15  2016 eclipse
+-rw-r--r--   1 janne  staff  194177 Sep  4 20:59 orange-polygons-wallpaper-for-2560x1600-61-874.jpg
+-rw-r--r--   1 janne  staff  269422 Sep  3 23:34 star-river-wallpaper-for-2560x1600-61-293.jpg
+-rw-r--r--   1 janne  staff    2156 Sep  7 20:49 testfile.txt
+
+
+
+
+[2016-09-07 21:18:48.152054000]Sending 226 LIST data send finished
+
+
+[2016-09-07 21:18:51.221044000]Sending 250 CWD OK
+
+
+[2016-09-07 21:18:51.307287000]Sending 257 "/Users/janne/Downloads"
+
+
+[2016-09-07 21:18:51.631572000]dataFd: 17
+[2016-09-07 21:18:51.631608000]Sending 200 PORT command successful
+
+
+[2016-09-07 21:18:51.743333000]Sending 150 LIST executed ok, data follows
+
+
+[2016-09-07 21:18:51.743407000]Sending total 0
+-rw-r--r--  1 janne  staff  0 Sep  3 22:50 eclipse
+
+
+
+
+[2016-09-07 21:18:51.743467000]Sending 226 LIST data send finished
+
+
+[2016-09-07 21:18:56.843959000]Sending 250 CWD OK
+
+
+[2016-09-07 21:18:56.931761000]Sending 257 "/Users/janne/Downloads/eclipse"
+
+
+[2016-09-07 21:18:57.964610000]dataFd: 19
+[2016-09-07 21:18:57.964647000]Sending 200 PORT command successful
+
+
+[2016-09-07 21:18:58.075635000]Sending 150 LIST executed ok, data follows
+
+
+[2016-09-07 21:18:58.075746000]Sending -rw-r--r--  1 janne  staff  0 Sep  3 22:50 /Users/janne/Downloads/eclipse
+
+
+
+
+[2016-09-07 21:18:58.075785000]Sending 226 LIST data send finished
+
+
+[2016-09-07 21:19:07.811815000]Sending 250 CWD OK
+
+
+[2016-09-07 21:19:07.897436000]Sending 257 "/Users/janne/Downloads"
+
+
+[2016-09-07 21:19:08.300790000]dataFd: 21
+[2016-09-07 21:19:08.300830000]Sending 200 PORT command successful
+
+
+[2016-09-07 21:19:08.412658000]Sending 150 LIST executed ok, data follows
+
+
+[2016-09-07 21:19:08.412748000]Sending total 0
+-rw-r--r--  1 janne  staff  0 Sep  3 22:50 eclipse
+
+
+
+
+[2016-09-07 21:19:08.412808000]Sending 226 LIST data send finished
+
+
+[2016-09-07 21:19:11.438645000]Sending 250 /Users/janne/Downloads/eclipse removed OK
+
+
+[2016-09-07 21:19:13.035580000]dataFd: 21
+[2016-09-07 21:19:13.035615000]Sending 200 PORT command successful
+
+
+[2016-09-07 21:19:13.146296000]Sending 150 LIST executed ok, data follows
+
+
+[2016-09-07 21:19:13.146405000]Sending 
+
+
+
+[2016-09-07 21:19:13.146444000]Sending 226 LIST data send finished
+
+
+[2016-09-07 21:19:14.307493000]Sending 250 CWD OK
+
+
+[2016-09-07 21:19:14.394858000]Sending 257 "/Users/janne"
+
+
+[2016-09-07 21:19:14.848476000]dataFd: 24
+[2016-09-07 21:19:14.848514000]Sending 200 PORT command successful
+
+
+[2016-09-07 21:19:14.961234000]Sending 150 LIST executed ok, data follows
+
+
+[2016-09-07 21:19:14.961306000]Sending total 920
+drwxr-xr-x   4 janne  staff     136 Jul 28 12:39 AndroidStudioProjects
+drwx------   6 janne  staff     204 Jan 28  2016 Applications
+drwx------+  3 janne  staff     102 Apr 30  2015 Desktop
+drwx------+  7 janne  staff     238 Aug 16 16:51 Documents
+drwx------+  4 janne  staff     136 Sep  7 21:19 Downloads
+drwxr-xr-x  14 janne  staff     476 Aug 22 19:00 GitHub
+drwx------@ 62 janne  staff    2108 Jul 26 22:23 Library
+drwxr-xr-x   4 janne  staff     136 Sep 11  2015 LocalGitRepo
+drwx------+  3 janne  staff     102 Apr 30  2015 Movies
+drwx------+  5 janne  staff     170 Aug 21 17:11 Music
+drwx------+  7 janne  staff     238 Sep  4 20:59 Pictures
+drwxr-xr-x+  6 janne  staff     204 Aug 21 17:12 Public
+drwxr-xr-x   4 janne  staff     136 Nov 16  2015 VirtualBox VMs
+drwxr-xr-x   4 janne  staff     136 Feb 15  2016 eclipse
+-rw-r--r--   1 janne  staff  194177 Sep  4 20:59 orange-polygons-wallpaper-for-2560x1600-61-874.jpg
+-rw-r--r--   1 janne  staff  269422 Sep  3 23:34 star-river-wallpaper-for-2560x1600-61-293.jpg
+-rw-r--r--   1 janne  staff    2156 Sep  7 20:49 testfile.txt
+
+
+
+
+[2016-09-07 21:19:14.961366000]Sending 226 LIST data send finished
+
+
+[2016-09-07 21:19:22.407564000]Sending 221 Bye Bye
 
 

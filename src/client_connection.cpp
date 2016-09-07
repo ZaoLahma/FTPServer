@@ -115,6 +115,10 @@ void ClientConnection::HandleEvent(const uint32_t eventNo, const EventDataBase* 
 				HandleMkdCommand(command);
 			}
 			break;
+			case FTPCommandEnum::RMD: {
+				HandleRmdCommand(command);
+			}
+			break;
 			case FTPCommandEnum::NOT_IMPLEMENTED: {
 				std::string send_string = "500 - Not implemented";
 				FTPUtils::SendString(send_string, controlFd, socketApi);
@@ -170,6 +174,9 @@ FTPCommand ClientConnection::GetCommand() {
 		retVal.args = command[1];
 	} else if(command[0] == "MKD") {
 		retVal.ftpCommand = FTPCommandEnum::MKD;
+		retVal.args = command[1];
+	} else if(command[0] == "RMD") {
+		retVal.ftpCommand = FTPCommandEnum::RMD;
 		retVal.args = command[1];
 	} else {
 		JobDispatcher::GetApi()->Log("Command: %s not implemented", command[0].c_str());
@@ -428,12 +435,29 @@ void ClientConnection::HandleMkdCommand(const FTPCommand& command) {
 		if(0 == status) {
 			send_string = "257 " + dirString + " created OK";
 		} else {
-			send_string = "550 STORE not performed due to unknown reason"; //FIXME
+			send_string = "550 MKD of " + dirString + " not performed due to unknown reason"; //FIXME
 		}
 	} else {
 		send_string = "550 MKD refused due to user rights";
 	}
 
+	FTPUtils::SendString(send_string, controlFd, socketApi);
+}
+
+void ClientConnection::HandleRmdCommand(const FTPCommand& command) {
+	std::string send_string;
+	if(user->rights == WRITE) {
+		int status;
+		std::string dirString = currDir + "/" + command.args;
+		status = remove(dirString.c_str());
+		if(0 == status) {
+			send_string = "250 " + dirString + " removed OK";
+		} else {
+			send_string = "550 RMD of " + dirString + " not performed due to unknown reason"; //FIXME
+		}
+	} else {
+		send_string = "550 RMD refused due to user access rights";
+	}
 	FTPUtils::SendString(send_string, controlFd, socketApi);
 }
 
