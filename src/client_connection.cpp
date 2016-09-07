@@ -14,6 +14,8 @@
 #include "../inc/ftp_thread_model.h"
 #include "../inc/ftp_utils.h"
 #include <dirent.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 ClientConnection::ClientConnection(int32_t _controlFd, ConfigHandler& _configHandler) :
 active(false),
@@ -109,6 +111,10 @@ void ClientConnection::HandleEvent(const uint32_t eventNo, const EventDataBase* 
 				HandleCwdCommand(command);
 			}
 			break;
+			case FTPCommandEnum::MKD: {
+				HandleMkdCommand(command);
+			}
+			break;
 			case FTPCommandEnum::NOT_IMPLEMENTED: {
 				std::string send_string = "500 - Not implemented";
 				FTPUtils::SendString(send_string, controlFd, socketApi);
@@ -161,6 +167,9 @@ FTPCommand ClientConnection::GetCommand() {
 		retVal.args = command[1];
 	} else if(command[0] == "CWD") {
 		retVal.ftpCommand = FTPCommandEnum::CWD;
+		retVal.args = command[1];
+	} else if(command[0] == "MKD") {
+		retVal.ftpCommand = FTPCommandEnum::MKD;
 		retVal.args = command[1];
 	} else {
 		JobDispatcher::GetApi()->Log("Command: %s not implemented", command[0].c_str());
@@ -405,6 +414,24 @@ void ClientConnection::HandleCwdCommand(const FTPCommand& command) {
 		}
 	} else {
 		send_string = "550 CWD outside of FTP root dir not allowed";
+	}
+
+	FTPUtils::SendString(send_string, controlFd, socketApi);
+}
+
+void ClientConnection::HandleMkdCommand(const FTPCommand& command) {
+	std::string send_string;
+	if(user->rights == WRITE) {
+		int status;
+		std::string dirString = currDir + "/" + command.args;
+		status = mkdir(dirString.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH | S_IWOTH);
+		if(0 == status) {
+			send_string = "257 " + dirString + " created OK";
+		} else {
+			send_string = "550 STORE not performed due to unknown reason"; //FIXME
+		}
+	} else {
+		send_string = "550 MKD refused due to user rights";
 	}
 
 	FTPUtils::SendString(send_string, controlFd, socketApi);
