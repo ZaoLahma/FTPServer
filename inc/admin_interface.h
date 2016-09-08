@@ -24,6 +24,8 @@ public:
 protected:
 
 private:
+	void Draw(const std::string& str);
+
 	bool running;
 	std::mutex shuttingDownMutex;
 	std::condition_variable shuttingDownCondition;

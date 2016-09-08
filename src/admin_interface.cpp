@@ -46,40 +46,34 @@ void AdminInterface::HandleEvent(const uint32_t eventNo, const EventDataBase* da
 		std::unique_lock<std::mutex> shuttingDownLock(shuttingDownMutex);
 		shuttingDownCondition.notify_one();
 	} else if(FTP_REFRESH_SCREEN_EVENT == eventNo) {
-		std::lock_guard<std::mutex> printLock(printMutex);
-
+		std::string strToDraw = "";
 		if(nullptr != dataPtr ){
 			const RefreshScreenEventData* screenData = static_cast<const RefreshScreenEventData*>(dataPtr);
-			screenBuf.push_back(screenData->str);
+			strToDraw = screenData->str;
 		}
 
-		if(screenBuf.size() > 40) {
-			screenBuf.erase(screenBuf.begin());
-		}
-
-		printf("\033c");
-		std::vector<std::string>::iterator screenIter = screenBuf.begin();
-		for( ; screenIter != screenBuf.end(); ++screenIter) {
-			std::cout<<*screenIter<<std::endl;
-		}
-		std::cout<<menuStr;
+		Draw(strToDraw);
 	} else if(FTP_LIST_CONNECTIONS_EVENT_RSP == eventNo) {
-		std::lock_guard<std::mutex> printLock(printMutex);
-
-		screenBuf.push_back("\nConnections:");
-
 		const ListConnectionsEventData* connectionsData = static_cast<const ListConnectionsEventData*>(dataPtr);
-		screenBuf.push_back(connectionsData->str);
-
-		if(screenBuf.size() > 40) {
-			screenBuf.erase(screenBuf.begin());
-		}
-
-		printf("\033c");
-		std::vector<std::string>::iterator screenIter = screenBuf.begin();
-		for( ; screenIter != screenBuf.end(); ++screenIter) {
-			std::cout<<*screenIter<<std::endl;
-		}
-		std::cout<<menuStr;
+		Draw("\nConnections:\n" + connectionsData->str);
 	}
+}
+
+void AdminInterface::Draw(const std::string& str) {
+	std::lock_guard<std::mutex> printLock(printMutex);
+
+	if("" != str) {
+		screenBuf.push_back(str);
+	}
+
+	if(screenBuf.size() > 40) {
+		screenBuf.erase(screenBuf.begin());
+	}
+
+	printf("\033c");
+	std::vector<std::string>::iterator screenIter = screenBuf.begin();
+	for( ; screenIter != screenBuf.end(); ++screenIter) {
+		std::cout<<*screenIter<<std::endl;
+	}
+	std::cout<<menuStr;
 }
