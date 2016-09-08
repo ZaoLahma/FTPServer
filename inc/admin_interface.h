@@ -18,6 +18,7 @@
 class AdminInterface : public JobBase, public EventListenerBase {
 public:
 	AdminInterface();
+	~AdminInterface();
 	void Execute();
 	void HandleEvent(const uint32_t eventNo, const EventDataBase* dataPtr);
 

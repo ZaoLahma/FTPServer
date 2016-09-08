@@ -21,6 +21,12 @@ AdminInterface::AdminInterface() : running(true) {
 	menuStr += "Command:\n";
 }
 
+AdminInterface::~AdminInterface() {
+	JobDispatcher::GetApi()->UnsubscribeToEvent(FTP_SHUT_DOWN_EVENT_RSP, this);
+	JobDispatcher::GetApi()->UnsubscribeToEvent(FTP_REFRESH_SCREEN_EVENT, this);
+	JobDispatcher::GetApi()->UnsubscribeToEvent(FTP_LIST_CONNECTIONS_EVENT_RSP, this);
+}
+
 void AdminInterface::Execute() {
 	std::string userInput;
 	while(running) {

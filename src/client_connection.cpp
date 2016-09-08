@@ -55,7 +55,7 @@ void ClientConnection::HandleEvent(const uint32_t eventNo, const EventDataBase* 
 		 *
 		 * End execution.
 		 */
-		JobDispatcher::GetApi()->Log("Client connection %d received event for %d. Ending execution", controlFd, eventNo);
+		JobDispatcher::GetApi()->Log("Client connection %d received event for %d. dataPtr: %p Ending execution", controlFd, eventNo, dataPtr);
 		JobDispatcher::GetApi()->NotifyExecutionFinished();
 	}
 

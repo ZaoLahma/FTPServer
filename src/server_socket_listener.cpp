@@ -118,6 +118,16 @@ void ServerSocketListener::CleanupDisconnectedConnections() {
 
 void ServerSocketListener::HandleEvent(const uint32_t eventNo,
 		const EventDataBase* dataPtr) {
+
+	if(dataPtr != nullptr) {
+		/*
+		 * Just to get rid of annoying compiler warning.
+		 * HUGE TODO: Fixme in a better way.
+		 */
+
+		JobDispatcher::GetApi()->Log("%p", dataPtr);
+	}
+
 	if (CLIENT_DISCONNECTED_EVENT == eventNo) {
 
 	} else if (CLIENT_INACTIVE_EVENT == eventNo) {
