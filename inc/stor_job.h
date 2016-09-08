@@ -16,6 +16,7 @@
 class StorJob : public JobBase, public EventListenerBase {
 public:
 	StorJob(const std::string& filePath, int32_t dataFd, int32_t controlFd, bool binaryFlag);
+	~StorJob();
 	void Execute();
 	void HandleEvent(const uint32_t eventNo, const EventDataBase* dataPtr);
 

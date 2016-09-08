@@ -123,7 +123,7 @@ void ServerSocketListener::HandleEvent(const uint32_t eventNo,
 	} else if (CLIENT_INACTIVE_EVENT == eventNo) {
 
 	} else if(FTP_SHUT_DOWN_EVENT == eventNo) {
-		/* Mark all connections as inactive to force a disconnect from the other thread */
+		/* Forcefully disconnect all active connections */
 		std::lock_guard<std::mutex> fileDescriptorLock(fileDescriptorMutex);
 		ClientConnMapT::iterator connection = clientConnections.begin();
 		for( ; connection != clientConnections.end(); ++connection) {

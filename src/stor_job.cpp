@@ -6,6 +6,7 @@
  */
 
 #include "../inc/stor_job.h"
+#include "../inc/thread_fwk/jobdispatcher.h"
 #include "../inc/ftp_utils.h"
 #include "../inc/data_handling_events.h"
 #include <fstream>
@@ -16,9 +17,12 @@ dataFd(_dataFd),
 controlFd(_controlFd),
 binaryFlag(_binaryFlag),
 transferActive(true) {
-
+	JobDispatcher::GetApi()->SubscribeToEvent(ABORT_DATA_TRANSFER_EVENT_ID, this);
 }
 
+StorJob::~StorJob() {
+	JobDispatcher::GetApi()->UnsubscribeToEvent(ABORT_DATA_TRANSFER_EVENT_ID, this);
+}
 
 void StorJob::Execute() {
 	std::ofstream fileStream(filePath);

@@ -37,17 +37,30 @@ noOfCycles(0) {
 }
 
 ClientConnection::~ClientConnection() {
+
 	JobDispatcher::GetApi()->UnsubscribeToEvent(controlFd, this);
+
+	/*
+	 * Cancel all ongoing file transfers
+	 */
+	HandleAborCommand();
 }
 
 void ClientConnection::HandleEvent(const uint32_t eventNo, const EventDataBase* dataPtr) {
+
+	if((int32_t) eventNo != controlFd) {
+		/*
+		 * Severe fault. Started sending stuff to
+		 * the wrong client connection potentially.
+		 *
+		 * End execution.
+		 */
+		JobDispatcher::GetApi()->Log("Client connection %d received event for %d. Ending execution", controlFd, eventNo);
+		JobDispatcher::GetApi()->NotifyExecutionFinished();
+	}
+
 	active = true;
 	inactiveTooLong = false;
-
-	if(eventNo != (uint32_t)controlFd) {
-		active = false;
-		return;
-	}
 
 	FTPCommand command = GetCommand();
 	if(false == loggedIn) {
