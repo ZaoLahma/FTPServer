@@ -488,7 +488,7 @@ void ClientConnection::CheckIfInactive() {
 	noOfCycles++;
 	if(noOfCycles > 2 * 60 * 5) {
 		noOfCycles = 0;
-		if(true == inactiveTooLong) {
+		if(true == inactiveTooLong && dataFd != -1) {
 			HandleQuitCommand();
 		} else {
 			inactiveTooLong = true;
