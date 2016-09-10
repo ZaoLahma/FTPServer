@@ -1,2 +1,67 @@
-[2016-09-08 15:42:41.172433000]FTPServer starting...
-[2016-09-08 15:42:41.173597000]FTPServer waiting for connections on port 3370
+[2016-09-10 16:22:00.638707000]FTPServer starting...
+[2016-09-10 16:22:00.639875000]FTPServer waiting for connections on port 3370
+[2016-09-10 16:22:03.321219000]FTPServer new connection established. clientFd: 5
+[2016-09-10 16:22:03.321261000]Sending 220 OK.
+
+
+[2016-09-10 16:22:04.488515000]Sending 330 OK, send password
+
+
+[2016-09-10 16:22:05.886309000]Sending 230 OK, user janne logged in
+
+
+[2016-09-10 16:22:05.990726000]Sending 215 UNIX Type: L8
+
+
+[2016-09-10 16:22:06.091713000]Command: FEAT not implemented
+[2016-09-10 16:22:06.091769000]Sending 500 - Not implemented
+
+
+[2016-09-10 16:22:06.192917000]Sending 257 "/Users/janne"
+
+
+[2016-09-10 16:22:06.676401000]Command: EPSV not implemented
+[2016-09-10 16:22:06.676444000]Sending 500 - Not implemented
+
+
+[2016-09-10 16:22:06.781619000]Command: PASV not implemented
+[2016-09-10 16:22:06.781670000]Sending 500 - Not implemented
+
+
+[2016-09-10 16:22:06.887999000]dataFd: 6
+[2016-09-10 16:22:06.888037000]Sending 200 PORT command successful
+
+
+[2016-09-10 16:22:06.998477000]Sending 150 LIST executed ok, data follows
+
+
+[2016-09-10 16:22:06.998591000]Sending total 944
+drwxr-xr-x   4 janne  staff     136 Jul 28 12:39 AndroidStudioProjects
+drwx------   6 janne  staff     204 Jan 28  2016 Applications
+drwx------+  3 janne  staff     102 Apr 30  2015 Desktop
+drwx------+  7 janne  staff     238 Aug 16 16:51 Documents
+drwx------+  6 janne  staff     204 Sep  8 21:39 Downloads
+drwxr-xr-x  14 janne  staff     476 Aug 22 19:00 GitHub
+drwx------@ 62 janne  staff    2108 Jul 26 22:23 Library
+drwxr-xr-x   4 janne  staff     136 Sep 11  2015 LocalGitRepo
+drwx------+  3 janne  staff     102 Apr 30  2015 Movies
+drwx------+  5 janne  staff     170 Aug 21 17:11 Music
+drwx------+  7 janne  staff     238 Sep  4 20:59 Pictures
+drwxr-xr-x+  6 janne  staff     204 Aug 21 17:12 Public
+drwxr-xr-x   4 janne  staff     136 Nov 16  2015 VirtualBox VMs
+drwxr-xr-x   4 janne  staff     136 Feb 15  2016 eclipse
+-rw-r--r--   1 janne  staff   10938 Sep  7 22:17 kweb_about_c.html
+-rw-r--r--   1 janne  staff  194177 Sep  4 20:59 orange-polygons-wallpaper-for-2560x1600-61-874.jpg
+-rw-r--r--   1 janne  staff  269422 Sep  3 23:34 star-river-wallpaper-for-2560x1600-61-293.jpg
+-rw-r--r--   1 janne  staff     601 Sep  7 21:54 testfile.txt
+
+
+
+
+[2016-09-10 16:22:06.998657000]Sending 226 LIST data send finished
+
+
+[2016-09-10 16:22:07.700300000]Sending 221 Bye Bye
+
+
+[2016-09-10 16:22:07.700410000]Received: 0x70007000, 0x7f9d72700020

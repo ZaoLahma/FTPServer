@@ -76,6 +76,10 @@ void ClientConnection::HandleEvent(const uint32_t eventNo, const EventDataBase* 
 			case FTPCommandEnum::QUIT: {
 				HandleQuitCommand();
 			}
+			case FTPCommandEnum::SYST: {
+				HandleSystCommand();
+			}
+			break;
 			case FTPCommandEnum::NOT_IMPLEMENTED: {
 				std::string send_string = "500 - Not implemented";
 				FTPUtils::SendString(send_string, controlFd, socketApi);
@@ -120,6 +124,10 @@ void ClientConnection::HandleEvent(const uint32_t eventNo, const EventDataBase* 
 			break;
 			case FTPCommandEnum::ABOR: {
 				HandleAborCommand();
+			}
+			break;
+			case FTPCommandEnum::SYST: {
+				HandleSystCommand();
 			}
 			break;
 			case FTPCommandEnum::CWD: {
@@ -195,6 +203,8 @@ FTPCommand ClientConnection::GetCommand() {
 		retVal.args = command[1];
 	} else if(command[0].find("ABOR") != std::string::npos) {
 		retVal.ftpCommand = FTPCommandEnum::ABOR;
+	} else if(command[0] == "SYST") {
+		retVal.ftpCommand = FTPCommandEnum::SYST;
 	} else {
 		JobDispatcher::GetApi()->Log("Command: %s not implemented", command[0].c_str());
 	}
@@ -481,6 +491,11 @@ void ClientConnection::HandleRmdCommand(const FTPCommand& command) {
 	} else {
 		send_string = "550 RMD refused due to user access rights";
 	}
+	FTPUtils::SendString(send_string, controlFd, socketApi);
+}
+
+void ClientConnection::HandleSystCommand() {
+	std::string send_string = "215 UNIX Type: L8";
 	FTPUtils::SendString(send_string, controlFd, socketApi);
 }
 
