@@ -25,7 +25,7 @@ dataFd(-1),
 user(nullptr),
 configHandler(_configHandler),
 loggedIn(false),
-binaryFlag(false),
+binaryFlag(true),
 inactiveTooLong(false),
 disconnected(false),
 noOfCycles(0) {
