@@ -11,6 +11,9 @@ ifeq ($(UNAME_S),Linux)
 ifeq ($(UNAME_M),armv7l)
 	LINKARGS += ./lib_linux_arm/jobdispatcher.a ./lib_linux_arm/socketwrapper.a
 endif
+ifeq ($(UNAME_M),x86_64)
+	LINKARGS += ./lib_linux_x86/jobdispatcher.a ./lib_linux_x86/socketwrapper.a
+endif
 endif
 
 ifeq ($(UNAME_S),Darwin)
