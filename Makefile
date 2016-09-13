@@ -7,8 +7,11 @@ EXE_NAME = FTPServer
 
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Linux)
+ifeq ($(UNAME_I),armv7l)
 	LINKARGS += ./lib_linux_arm/jobdispatcher.a ./lib_linux_arm/socketwrapper.a
 endif
+endif
+
 ifeq ($(UNAME_S),Darwin)
 	LINKARGS += ./lib_osx/jobdispatcher.a ./lib_osx/socketwrapper.a
 endif
