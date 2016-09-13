@@ -76,6 +76,7 @@ void ClientConnection::HandleEvent(const uint32_t eventNo, const EventDataBase* 
 			case FTPCommandEnum::QUIT: {
 				HandleQuitCommand();
 			}
+			break;
 			case FTPCommandEnum::SYST: {
 				HandleSystCommand();
 			}
