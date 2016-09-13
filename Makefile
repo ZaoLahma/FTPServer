@@ -6,8 +6,9 @@ OBJECTS = $(SOURCES:.cpp=.o)
 EXE_NAME = FTPServer
 
 UNAME_S := $(shell uname -s)
+UNAME_M := $(shell uname -m)
 ifeq ($(UNAME_S),Linux)
-ifeq ($(UNAME_I),armv7l)
+ifeq ($(UNAME_M),armv7l)
 	LINKARGS += ./lib_linux_arm/jobdispatcher.a ./lib_linux_arm/socketwrapper.a
 endif
 endif
