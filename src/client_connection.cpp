@@ -143,6 +143,10 @@ void ClientConnection::HandleEvent(const uint32_t eventNo, const EventDataBase* 
 				HandleRmdCommand(command);
 			}
 			break;
+			case FTPCommandEnum::PASV: {
+				HandlePasvCommand();
+			}
+			break;
 			case FTPCommandEnum::NOT_IMPLEMENTED: {
 				std::string send_string = "500 - Not implemented";
 				FTPUtils::SendString(send_string, controlFd, socketApi);
@@ -206,6 +210,8 @@ FTPCommand ClientConnection::GetCommand() {
 		retVal.ftpCommand = FTPCommandEnum::ABOR;
 	} else if(command[0] == "SYST") {
 		retVal.ftpCommand = FTPCommandEnum::SYST;
+	} else if(command[0] == "PASV") {
+		retVal.ftpCommand = FTPCommandEnum::PASV;
 	} else {
 		JobDispatcher::GetApi()->Log("Command: %s not implemented", command[0].c_str());
 	}
@@ -384,6 +390,14 @@ void ClientConnection::HandleTypeCommand(const FTPCommand& command) {
 		std::string send_string = "500 - Not implemented";
 		FTPUtils::SendString(send_string, controlFd, socketApi);
 	}
+}
+
+void ClientConnection::HandlePasvCommand() {
+	int serverFd = socketApi.getServerSocketFileDescriptor("3371");
+	std::string send_string = "227 PASV (127,0,0,1,13,43)";
+	FTPUtils::SendString(send_string, controlFd, socketApi);
+	dataFd = socketApi.waitForConnection(serverFd);
+	socketApi.disconnect(serverFd);
 }
 
 void ClientConnection::HandleQuitCommand() {
