@@ -1,184 +1,32 @@
-[2016-09-19 20:09:57.983144000]FTPServer starting...
-[2016-09-19 20:09:57.984337000]FTPServer waiting for connections on port 3370
-[2016-09-19 20:10:00.468156000]FTPServer new connection established. clientFd: 5
-[2016-09-19 20:10:00.468213000]Sending 220 OK.
+[2016-09-20 17:52:00.394062425]FTPServer starting...
+[2016-09-20 17:52:00.394517841]FTPServer waiting for connections on port 3370
+[2016-09-20 17:52:04.548076163]FTPServer new connection established. clientFd: 4
+[2016-09-20 17:52:04.548116810]Sending 220 OK.
 
 
-[2016-09-19 20:10:00.975252000]Sending 330 OK, send password
+[2016-09-20 17:52:05.907437727]Sending 330 OK, send password
 
 
-[2016-09-19 20:10:02.644634000]Sending 230 OK, user janne logged in
+[2016-09-20 17:52:07.660199002]Sending 230 OK, user janne logged in
 
 
-[2016-09-19 20:10:02.747449000]Sending 215 UNIX Type: L8
+[2016-09-20 17:52:07.760382250]Sending 215 UNIX Type: L8
 
 
-[2016-09-19 20:10:02.851813000]Command: FEAT not implemented
-[2016-09-19 20:10:02.851842000]Sending 500 - Not implemented
+[2016-09-20 17:52:13.671307819]Sending 227 PASV (127,0,0,1,13,43)
 
 
-[2016-09-19 20:10:02.954817000]Sending 257 "/Users/janne"
+[2016-09-20 17:52:13.774545467]Sending 150 LIST executed ok, data follows
 
 
-[2016-09-19 20:10:03.679997000]Command: EPSV not implemented
-[2016-09-19 20:10:03.680036000]Sending 500 - Not implemented
+[2016-09-20 17:52:13.775532456]Sending ls: cannot access '/Users/janne': No such file or directory
 
 
-[2016-09-19 20:10:03.782706000]Sending 227 PASV (127,0,0,1,13,43)
 
 
-[2016-09-19 20:10:03.907586000]Sending 150 LIST executed ok, data follows
+[2016-09-20 17:52:13.776172953]Sending 226 LIST data send finished
 
 
-[2016-09-19 20:10:03.907653000]Sending total 936
-drwxr-xr-x   4 janne  staff     136 Jul 28 12:39 AndroidStudioProjects
-drwx------   6 janne  staff     204 Jan 28  2016 Applications
-drwx------+  3 janne  staff     102 Apr 30  2015 Desktop
-drwx------+  9 janne  staff     306 Sep 15 19:56 Documents
-drwx------+ 10 janne  staff     340 Sep 17 11:22 Downloads
-drwxr-xr-x  15 janne  staff     510 Sep 13 20:48 GitHub
-drwx------@ 62 janne  staff    2108 Jul 26 22:23 Library
-drwxr-xr-x   4 janne  staff     136 Sep 11  2015 LocalGitRepo
-drwx------+  3 janne  staff     102 Apr 30  2015 Movies
-drwx------+  5 janne  staff     170 Aug 21 17:11 Music
-drwx------+  7 janne  staff     238 Sep  4 20:59 Pictures
-drwxr-xr-x+  6 janne  staff     204 Aug 21 17:12 Public
-drwxr-xr-x   4 janne  staff     136 Nov 16  2015 VirtualBox VMs
-drwxr-xr-x   4 janne  staff     136 Feb 15  2016 eclipse
--rw-r--r--   1 janne  staff   10938 Sep  7 22:17 kweb_about_c.html
--rw-r--r--   1 janne  staff  194177 Sep  4 20:59 orange-polygons-wallpaper-for-2560x1600-61-874.jpg
--rw-r--r--   1 janne  staff  269422 Sep  3 23:34 star-river-wallpaper-for-2560x1600-61-293.jpg
-
-
-
-
-[2016-09-19 20:10:03.907710000]Sending 226 LIST data send finished
-
-
-[2016-09-19 20:10:04.999071000]Sending 227 PASV (127,0,0,1,13,43)
-
-
-[2016-09-19 20:10:05.107738000]Sending 150 LIST executed ok, data follows
-
-
-[2016-09-19 20:10:05.107855000]Sending total 936
-drwxr-xr-x   4 janne  staff     136 Jul 28 12:39 AndroidStudioProjects
-drwx------   6 janne  staff     204 Jan 28  2016 Applications
-drwx------+  3 janne  staff     102 Apr 30  2015 Desktop
-drwx------+  9 janne  staff     306 Sep 15 19:56 Documents
-drwx------+ 10 janne  staff     340 Sep 17 11:22 Downloads
-drwxr-xr-x  15 janne  staff     510 Sep 13 20:48 GitHub
-drwx------@ 62 janne  staff    2108 Jul 26 22:23 Library
-drwxr-xr-x   4 janne  staff     136 Sep 11  2015 LocalGitRepo
-drwx------+  3 janne  staff     102 Apr 30  2015 Movies
-drwx------+  5 janne  staff     170 Aug 21 17:11 Music
-drwx------+  7 janne  staff     238 Sep  4 20:59 Pictures
-drwxr-xr-x+  6 janne  staff     204 Aug 21 17:12 Public
-drwxr-xr-x   4 janne  staff     136 Nov 16  2015 VirtualBox VMs
-drwxr-xr-x   4 janne  staff     136 Feb 15  2016 eclipse
--rw-r--r--   1 janne  staff   10938 Sep  7 22:17 kweb_about_c.html
--rw-r--r--   1 janne  staff  194177 Sep  4 20:59 orange-polygons-wallpaper-for-2560x1600-61-874.jpg
--rw-r--r--   1 janne  staff  269422 Sep  3 23:34 star-river-wallpaper-for-2560x1600-61-293.jpg
-
-
-
-
-[2016-09-19 20:10:05.107915000]Sending 226 LIST data send finished
-
-
-[2016-09-19 20:10:06.574773000]Sending 227 PASV (127,0,0,1,13,43)
-
-
-[2016-09-19 20:10:06.682931000]Sending 150 LIST executed ok, data follows
-
-
-[2016-09-19 20:10:06.683054000]Sending total 936
-drwxr-xr-x   4 janne  staff     136 Jul 28 12:39 AndroidStudioProjects
-drwx------   6 janne  staff     204 Jan 28  2016 Applications
-drwx------+  3 janne  staff     102 Apr 30  2015 Desktop
-drwx------+  9 janne  staff     306 Sep 15 19:56 Documents
-drwx------+ 10 janne  staff     340 Sep 17 11:22 Downloads
-drwxr-xr-x  15 janne  staff     510 Sep 13 20:48 GitHub
-drwx------@ 62 janne  staff    2108 Jul 26 22:23 Library
-drwxr-xr-x   4 janne  staff     136 Sep 11  2015 LocalGitRepo
-drwx------+  3 janne  staff     102 Apr 30  2015 Movies
-drwx------+  5 janne  staff     170 Aug 21 17:11 Music
-drwx------+  7 janne  staff     238 Sep  4 20:59 Pictures
-drwxr-xr-x+  6 janne  staff     204 Aug 21 17:12 Public
-drwxr-xr-x   4 janne  staff     136 Nov 16  2015 VirtualBox VMs
-drwxr-xr-x   4 janne  staff     136 Feb 15  2016 eclipse
--rw-r--r--   1 janne  staff   10938 Sep  7 22:17 kweb_about_c.html
--rw-r--r--   1 janne  staff  194177 Sep  4 20:59 orange-polygons-wallpaper-for-2560x1600-61-874.jpg
--rw-r--r--   1 janne  staff  269422 Sep  3 23:34 star-river-wallpaper-for-2560x1600-61-293.jpg
-
-
-
-
-[2016-09-19 20:10:06.683103000]Sending 226 LIST data send finished
-
-
-[2016-09-19 20:10:07.913696000]Sending 227 PASV (127,0,0,1,13,43)
-
-
-[2016-09-19 20:10:08.024272000]Sending 150 LIST executed ok, data follows
-
-
-[2016-09-19 20:10:08.024387000]Sending total 936
-drwxr-xr-x   4 janne  staff     136 Jul 28 12:39 AndroidStudioProjects
-drwx------   6 janne  staff     204 Jan 28  2016 Applications
-drwx------+  3 janne  staff     102 Apr 30  2015 Desktop
-drwx------+  9 janne  staff     306 Sep 15 19:56 Documents
-drwx------+ 10 janne  staff     340 Sep 17 11:22 Downloads
-drwxr-xr-x  15 janne  staff     510 Sep 13 20:48 GitHub
-drwx------@ 62 janne  staff    2108 Jul 26 22:23 Library
-drwxr-xr-x   4 janne  staff     136 Sep 11  2015 LocalGitRepo
-drwx------+  3 janne  staff     102 Apr 30  2015 Movies
-drwx------+  5 janne  staff     170 Aug 21 17:11 Music
-drwx------+  7 janne  staff     238 Sep  4 20:59 Pictures
-drwxr-xr-x+  6 janne  staff     204 Aug 21 17:12 Public
-drwxr-xr-x   4 janne  staff     136 Nov 16  2015 VirtualBox VMs
-drwxr-xr-x   4 janne  staff     136 Feb 15  2016 eclipse
--rw-r--r--   1 janne  staff   10938 Sep  7 22:17 kweb_about_c.html
--rw-r--r--   1 janne  staff  194177 Sep  4 20:59 orange-polygons-wallpaper-for-2560x1600-61-874.jpg
--rw-r--r--   1 janne  staff  269422 Sep  3 23:34 star-river-wallpaper-for-2560x1600-61-293.jpg
-
-
-
-
-[2016-09-19 20:10:08.024440000]Sending 226 LIST data send finished
-
-
-[2016-09-19 20:10:09.495881000]Sending 227 PASV (127,0,0,1,13,43)
-
-
-[2016-09-19 20:10:09.603522000]Sending 150 LIST executed ok, data follows
-
-
-[2016-09-19 20:10:09.603620000]Sending total 936
-drwxr-xr-x   4 janne  staff     136 Jul 28 12:39 AndroidStudioProjects
-drwx------   6 janne  staff     204 Jan 28  2016 Applications
-drwx------+  3 janne  staff     102 Apr 30  2015 Desktop
-drwx------+  9 janne  staff     306 Sep 15 19:56 Documents
-drwx------+ 10 janne  staff     340 Sep 17 11:22 Downloads
-drwxr-xr-x  15 janne  staff     510 Sep 13 20:48 GitHub
-drwx------@ 62 janne  staff    2108 Jul 26 22:23 Library
-drwxr-xr-x   4 janne  staff     136 Sep 11  2015 LocalGitRepo
-drwx------+  3 janne  staff     102 Apr 30  2015 Movies
-drwx------+  5 janne  staff     170 Aug 21 17:11 Music
-drwx------+  7 janne  staff     238 Sep  4 20:59 Pictures
-drwxr-xr-x+  6 janne  staff     204 Aug 21 17:12 Public
-drwxr-xr-x   4 janne  staff     136 Nov 16  2015 VirtualBox VMs
-drwxr-xr-x   4 janne  staff     136 Feb 15  2016 eclipse
--rw-r--r--   1 janne  staff   10938 Sep  7 22:17 kweb_about_c.html
--rw-r--r--   1 janne  staff  194177 Sep  4 20:59 orange-polygons-wallpaper-for-2560x1600-61-874.jpg
--rw-r--r--   1 janne  staff  269422 Sep  3 23:34 star-river-wallpaper-for-2560x1600-61-293.jpg
-
-
-
-
-[2016-09-19 20:10:09.603662000]Sending 226 LIST data send finished
-
-
-[2016-09-19 20:10:16.170695000]Sending 221 Bye Bye
+[2016-09-20 17:52:32.320002959]Sending 221 Bye Bye
 
 

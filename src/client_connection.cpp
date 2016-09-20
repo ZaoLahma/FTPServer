@@ -14,6 +14,7 @@
 #include "../inc/ftp_thread_model.h"
 #include "../inc/ftp_utils.h"
 #include "../inc/data_handling_events.h"
+#include "../inc/passive_mode_filedesc.h"
 #include <dirent.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -393,11 +394,7 @@ void ClientConnection::HandleTypeCommand(const FTPCommand& command) {
 }
 
 void ClientConnection::HandlePasvCommand() {
-	int serverFd = socketApi.getServerSocketFileDescriptor("3371");
-	std::string send_string = "227 PASV (127,0,0,1,13,43)";
-	FTPUtils::SendString(send_string, controlFd, socketApi);
-	dataFd = socketApi.waitForConnection(serverFd);
-	socketApi.disconnect(serverFd);
+	dataFd = PassiveModeFileDesc::getApi()->getDataFd(controlFd);
 }
 
 void ClientConnection::HandleQuitCommand() {

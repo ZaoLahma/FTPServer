@@ -22,6 +22,8 @@ class PassiveModeFileDesc {
 public:
 	static PassiveModeFileDesc* getApi();
 
+	int getDataFd(int controlFd);
+
 protected:
 
 private:
@@ -31,6 +33,7 @@ private:
 	SocketAPI socketApi;
 	static PassiveModeFileDesc* instance;
 	static std::mutex instanceCreationMutex;
+	std::mutex socketListenerMutex;
 };
 
 
