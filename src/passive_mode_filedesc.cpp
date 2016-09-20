@@ -10,6 +10,7 @@
 #include <cstdlib>
 #include <string>
 #include <algorithm>
+#include "../inc/thread_fwk/jobdispatcher.h"
 
 PassiveModeFileDesc* PassiveModeFileDesc::instance = nullptr;
 std::mutex PassiveModeFileDesc::instanceCreationMutex;
@@ -38,6 +39,10 @@ int PassiveModeFileDesc::GetDataFd(int controlFd) {
 
 	std::string address = config->address;
 
+	if(address == "") {
+		address = GetHostIpAddress();
+	}
+
 	std::replace(address.begin(), address.end(), '.', ',');
 
 	send_string += address + ",";
@@ -51,4 +56,29 @@ int PassiveModeFileDesc::GetDataFd(int controlFd) {
 	FTPUtils::SendString(send_string, controlFd, socketApi);
 
 	return socketApi.waitForConnection(serverFd);
+}
+
+std::string PassiveModeFileDesc::GetHostIpAddress() {
+	std::string retval;
+
+	std::string resString;
+	char buffer[2048];
+	std::string command = "ip addr 2>&1";
+	FILE* file = popen(command.c_str(), "r");
+	while (!feof(file)) {
+		if (fgets(buffer, 2048, file) != NULL) {
+			resString = std::string(buffer);
+			if(resString.find("inet ") != std::string::npos) {
+				if(resString.find("127.0.0.1") == std::string::npos) {
+					retval = resString;
+					retval = retval.substr(retval.find("inet ") + 5);
+					retval = retval.substr(0, retval.find("/"));
+					break;
+				}
+			}
+		}
+	}
+	fclose(file);
+
+    return retval;
 }

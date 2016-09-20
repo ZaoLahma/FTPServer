@@ -29,6 +29,7 @@ protected:
 
 private:
 	PassiveModeFileDesc();
+	std::string GetHostIpAddress();
 	int serverFd;
 	PassiveConfig* config;
 	SocketAPI socketApi;

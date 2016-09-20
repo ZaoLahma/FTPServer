@@ -1,32 +1,32 @@
-[2016-09-20 18:31:52.185789529]FTPServer starting...
-[2016-09-20 18:31:52.186111558]FTPServer waiting for connections on port 3370
-[2016-09-20 18:31:54.833517521]FTPServer new connection established. clientFd: 4
-[2016-09-20 18:31:54.833558915]Sending 220 OK.
+[2016-09-20 19:17:41.071152296]FTPServer starting...
+[2016-09-20 19:17:41.071472763]FTPServer waiting for connections on port 3370
+[2016-09-20 19:17:43.334658129]FTPServer new connection established. clientFd: 4
+[2016-09-20 19:17:43.334698896]Sending 220 OK.
 
 
-[2016-09-20 18:31:56.224127442]Sending 330 OK, send password
+[2016-09-20 19:17:44.581278446]Sending 330 OK, send password
 
 
-[2016-09-20 18:31:57.520194682]Sending 230 OK, user janne logged in
+[2016-09-20 19:17:46.357164555]Sending 230 OK, user janne logged in
 
 
-[2016-09-20 18:31:57.620347402]Sending 215 UNIX Type: L8
+[2016-09-20 19:17:46.457318677]Sending 215 UNIX Type: L8
 
 
-[2016-09-20 18:32:00.368203792]Sending 227 PASV (127,0,0,1,38,226)
+[2016-09-20 19:17:49.845127336]Sending 227 PASV (127,0,0,1,38,226)
 
 
-[2016-09-20 18:32:00.471430967]Sending 150 LIST executed ok, data follows
+[2016-09-20 19:17:49.947116311]Sending 150 LIST executed ok, data follows
 
 
-[2016-09-20 18:32:00.472441960]Sending ls: cannot access '/Users/janne': No such file or directory
+[2016-09-20 19:17:49.947642587]Sending ls: cannot access '/Users/janne': No such file or directory
 
 
 
 
-[2016-09-20 18:32:00.473035508]Sending 226 LIST data send finished
+[2016-09-20 19:17:49.948091759]Sending 226 LIST data send finished
 
 
-[2016-09-20 18:32:16.151652182]Sending 221 Bye Bye
+[2016-09-20 19:17:51.829610321]Sending 221 Bye Bye
 
 

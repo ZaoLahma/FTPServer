@@ -215,6 +215,9 @@ FTPCommand ClientConnection::GetCommand() {
 		retVal.ftpCommand = FTPCommandEnum::PASV;
 	} else {
 		JobDispatcher::GetApi()->Log("Command: %s not implemented", command[0].c_str());
+		if(command.size() > 1) {
+			JobDispatcher::GetApi()->Log("Arg for not supported command: %s", command[1].c_str());
+		}
 	}
 
 	return retVal;
@@ -322,6 +325,8 @@ void ClientConnection::HandleListCommand(const FTPCommand& command) {
 			response.append(buffer);
 		}
 	}
+
+	fclose(file);
 
 	std::vector<std::string> responseVector = SplitString(response, "\n");
 	response = "";
@@ -459,6 +464,9 @@ void ClientConnection::HandleCwdCommand(const FTPCommand& command) {
 				resString.append(buffer);
 			}
 		}
+
+		fclose(file);
+
 		if(resString.find("No such file or directory") == std::string::npos) {
 			currDir = tmpDir;
 		} else {
