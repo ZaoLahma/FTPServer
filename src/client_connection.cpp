@@ -394,7 +394,7 @@ void ClientConnection::HandleTypeCommand(const FTPCommand& command) {
 }
 
 void ClientConnection::HandlePasvCommand() {
-	dataFd = PassiveModeFileDesc::getApi()->getDataFd(controlFd);
+	dataFd = PassiveModeFileDesc::GetApi()->GetDataFd(controlFd);
 }
 
 void ClientConnection::HandleQuitCommand() {

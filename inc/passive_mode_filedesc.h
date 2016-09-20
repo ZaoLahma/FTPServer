@@ -11,6 +11,7 @@
 #include <thread>
 #include <mutex>
 #include "socket_wrapper/socket_api.h"
+#include "config_handler.h"
 
 /**
  * This class shall...
@@ -20,16 +21,16 @@
 
 class PassiveModeFileDesc {
 public:
-	static PassiveModeFileDesc* getApi();
+	static PassiveModeFileDesc* GetApi();
 
-	int getDataFd(int controlFd);
+	int GetDataFd(int controlFd);
 
 protected:
 
 private:
 	PassiveModeFileDesc();
 	int serverFd;
-	int portNo;
+	PassiveConfig* config;
 	SocketAPI socketApi;
 	static PassiveModeFileDesc* instance;
 	static std::mutex instanceCreationMutex;

@@ -22,14 +22,22 @@ public:
 	uint32_t rights = READ;
 };
 
+class PassiveConfig {
+public:
+	std::string address = "";
+	std::string portNo = "";
+};
+
 class ConfigHandler {
 public:
 	ConfigHandler();
 	User* GetUser(const std::string& userName);
+	PassiveConfig* GetPassiveConfig();
 
 protected:
 
 private:
+	std::string usersFilePath;
 	std::string configFilePath;
 	std::mutex fileMutex;
 };

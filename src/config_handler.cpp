@@ -10,14 +10,14 @@
 #include <fstream>
 
 ConfigHandler::ConfigHandler() :
+		usersFilePath("./users.cfg"),
 		configFilePath("./config.cfg") {
-
 }
 
 User* ConfigHandler::GetUser(const std::string& userName) {
 	std::lock_guard<std::mutex> fileLock(fileMutex);
 
-	std::ifstream file(configFilePath.c_str(), std::ifstream::in);
+	std::ifstream file(usersFilePath.c_str(), std::ifstream::in);
 	std::string fileBuf;
 
 	User* userPtr = nullptr;
@@ -74,4 +74,38 @@ User* ConfigHandler::GetUser(const std::string& userName) {
 
 	file.close();
 	return userPtr;
+}
+
+PassiveConfig* ConfigHandler::GetPassiveConfig() {
+	std::lock_guard<std::mutex> fileLock(fileMutex);
+
+	std::ifstream file(configFilePath.c_str(), std::ifstream::in);
+	std::string fileBuf;
+
+	PassiveConfig* configPtr = nullptr;
+	std::string state = "NO_STATE";
+
+	while (getline(file, fileBuf)) {
+		if("NO_STATE" == state) {
+			if(fileBuf.find("PASSIVE") != std::string::npos) {
+				state = "PASSIVE";
+				configPtr = new PassiveConfig();
+			}
+		} else if("PASSIVE" == state) {
+			if(fileBuf.find("PORT") != std::string::npos) {
+				std::string::size_type pos = fileBuf.find(" ");
+				std::string portNo = fileBuf.substr(pos + 1, fileBuf.length());
+				configPtr->portNo = portNo;
+			} else if(fileBuf.find("ADDR") != std::string::npos) {
+				std::string::size_type pos = fileBuf.find(" ");
+				std::string addr = fileBuf.substr(pos + 1, fileBuf.length());
+				configPtr->address = addr;
+			} else if(fileBuf.find("END_PASSIVE") != std::string::npos) {
+				state = "NO_STATE";
+			}
+		}
+	}
+
+	file.close();
+	return configPtr;
 }
