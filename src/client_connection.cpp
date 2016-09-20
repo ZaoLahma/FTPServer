@@ -18,6 +18,7 @@
 #include <dirent.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <errno.h>
 
 ClientConnection::ClientConnection(int32_t _controlFd, ConfigHandler& _configHandler) :
 active(false),
@@ -308,10 +309,10 @@ void ClientConnection::HandlePortCommand(const FTPCommand& command) {
 }
 
 void ClientConnection::HandleListCommand(const FTPCommand& command) {
-	char buffer[2048];
+	char buffer[4096];
 	std::string response = "";
-	std::string ls = "ls -l";
-	ls.append(" ");
+	std::string ls = "ls -l ";
+
 	if(command.args == "") {
 		ls.append(currDir);
 	} else {
@@ -321,12 +322,12 @@ void ClientConnection::HandleListCommand(const FTPCommand& command) {
 	FILE* file = popen(ls.c_str(), "r");
 
 	while (!feof(file)) {
-		if (fgets(buffer, 2048, file) != NULL) {
+		if (fgets(buffer, 4096, file) != NULL) {
 			response.append(buffer);
 		}
 	}
 
-	fclose(file);
+	pclose(file);
 
 	std::vector<std::string> responseVector = SplitString(response, "\n");
 	response = "";
@@ -465,7 +466,7 @@ void ClientConnection::HandleCwdCommand(const FTPCommand& command) {
 			}
 		}
 
-		fclose(file);
+		pclose(file);
 
 		if(resString.find("No such file or directory") == std::string::npos) {
 			currDir = tmpDir;

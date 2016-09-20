@@ -101,7 +101,7 @@ std::string PassiveModeFileDesc::GetHostIpAddress() {
 			}
 		}
 	}
-	fclose(file);
+	pclose(file);
 
     return retval;
 }
