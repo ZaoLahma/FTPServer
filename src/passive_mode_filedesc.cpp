@@ -7,10 +7,11 @@
 
 #include "../inc/passive_mode_filedesc.h"
 #include "../inc/ftp_utils.h"
+#include "../inc/thread_fwk/jobdispatcher.h"
 #include <cstdlib>
 #include <string>
 #include <algorithm>
-#include "../inc/thread_fwk/jobdispatcher.h"
+#include <sys/time.h>
 
 PassiveModeFileDesc* PassiveModeFileDesc::instance = nullptr;
 std::mutex PassiveModeFileDesc::instanceCreationMutex;
@@ -55,7 +56,29 @@ int PassiveModeFileDesc::GetDataFd(int controlFd) {
 
 	FTPUtils::SendString(send_string, controlFd, socketApi);
 
-	return socketApi.waitForConnection(serverFd);
+	fd_set rfds;
+	FD_ZERO(&rfds);
+	FD_SET(serverFd, &rfds);
+
+	int32_t maxFd = serverFd;
+
+	timeval timeout;
+	if("" != config->timeout) {
+		timeout.tv_usec = std::atoi(config->timeout.c_str());
+	} else {
+		timeout.tv_usec = 250000;
+	}
+	timeout.tv_sec = 0;
+
+	int retval = select(maxFd + 1, &rfds, NULL, NULL, &timeout);
+
+	if(retval > 0) {
+		return socketApi.waitForConnection(serverFd);
+	}
+
+	JobDispatcher::GetApi()->Log("PASV: Client did not connect within %d ms", timeout.tv_usec / 1000);
+
+	return -1;
 }
 
 std::string PassiveModeFileDesc::GetHostIpAddress() {

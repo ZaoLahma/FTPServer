@@ -26,6 +26,7 @@ class PassiveConfig {
 public:
 	std::string address = "";
 	std::string portNo = "";
+	std::string timeout = "";
 };
 
 class ConfigHandler {

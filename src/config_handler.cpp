@@ -100,6 +100,10 @@ PassiveConfig* ConfigHandler::GetPassiveConfig() {
 				std::string::size_type pos = fileBuf.find(" ");
 				std::string addr = fileBuf.substr(pos + 1, fileBuf.length());
 				configPtr->address = addr;
+			} else if(fileBuf.find("CONNECT_TIMEOUT") != std::string::npos) {
+				std::string::size_type pos = fileBuf.find(" ");
+				std::string timeout = fileBuf.substr(pos + 1, fileBuf.length());
+				configPtr->timeout = timeout;
 			} else if(fileBuf.find("END_PASSIVE") != std::string::npos) {
 				state = "NO_STATE";
 			}
