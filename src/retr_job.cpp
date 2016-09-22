@@ -44,7 +44,11 @@ void RetrJob::Execute() {
 				socketApi.sendData(dataFd, sendBuf);
 			}
 			*sendBuf.data = c;
-			socketApi.sendData(dataFd, sendBuf);
+
+			if(0 == socketApi.sendData(dataFd, sendBuf)) {
+				break;
+			}
+
 			length -= 1;
 		}
 	} else {
@@ -61,7 +65,9 @@ void RetrJob::Execute() {
 				}
 			}
 			sendBuf.dataSize = read_bytes;
-			socketApi.sendData(dataFd, sendBuf);
+			if(0 == socketApi.sendData(dataFd, sendBuf)) {
+				break;
+			}
 		}
 	}
 
