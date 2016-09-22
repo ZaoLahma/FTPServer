@@ -13,6 +13,7 @@
 class FTPUtils {
 public:
 	static void SendString(const std::string& string, int32_t fileDescriptor, SocketAPI& socket);
+	static std::string ExecProc(const std::string& command);
 protected:
 
 private:

@@ -26,3 +26,22 @@ void FTPUtils::SendString(const std::string& string, int32_t fileDescriptor, Soc
 
 	delete[] sendData.data;
 }
+
+std::string FTPUtils::ExecProc(const std::string& command) {
+	char buffer[4096];
+	std::string response = "";
+	std::string cmd = command + " 2>&1";
+
+	FILE* file = popen(cmd.c_str(), "r");
+
+	while (!feof(file)) {
+		if (fgets(buffer, 4096, file) != NULL) {
+			response.append(buffer);
+		}
+	}
+
+	pclose(file);
+
+
+	return response;
+}

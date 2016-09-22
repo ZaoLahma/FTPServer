@@ -309,25 +309,15 @@ void ClientConnection::HandlePortCommand(const FTPCommand& command) {
 }
 
 void ClientConnection::HandleListCommand(const FTPCommand& command) {
-	char buffer[4096];
-	std::string response = "";
-	std::string ls = "ls -l ";
+	std::string commandString = "ls -l ";
 
-	if(command.args == "") {
-		ls.append(currDir);
+	if("" != command.args) {
+		commandString += command.args;
 	} else {
-		ls.append(command.args);
-	}
-	ls.append(" 2>&1");
-	FILE* file = popen(ls.c_str(), "r");
-
-	while (!feof(file)) {
-		if (fgets(buffer, 4096, file) != NULL) {
-			response.append(buffer);
-		}
+		commandString += currDir;
 	}
 
-	pclose(file);
+	std::string response = FTPUtils::ExecProc(commandString);
 
 	std::vector<std::string> responseVector = SplitString(response, "\n");
 	response = "";
@@ -454,19 +444,7 @@ void ClientConnection::HandleCwdCommand(const FTPCommand& command) {
 
 	if(tmpDir.find(ftpRootDir) != std::string::npos) {
 
-		char buffer[2048];
-		std::string ls = "ls -l";
-		ls.append(" " + tmpDir);
-		ls.append(" 2>&1");
-		std::string resString;
-		FILE* file = popen(ls.c_str(), "r");
-		while (!feof(file)) {
-			if (fgets(buffer, 2048, file) != NULL) {
-				resString.append(buffer);
-			}
-		}
-
-		pclose(file);
+		std::string resString = FTPUtils::ExecProc("ls -l " + tmpDir);
 
 		if(resString.find("No such file or directory") == std::string::npos) {
 			currDir = tmpDir;
