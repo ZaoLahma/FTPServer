@@ -84,26 +84,24 @@ int PassiveModeFileDesc::GetDataFd(int controlFd) {
 std::string PassiveModeFileDesc::GetHostIpAddress() {
 	std::string retval;
 
-	std::string resString;
-	char buffer[2048];
-	std::string command = "ip addr 2>&1";
-	FILE* file = popen(command.c_str(), "r");
-	while (!feof(file)) {
-		if (fgets(buffer, 2048, file) != NULL) {
-			resString = std::string(buffer);
-			if(resString.find("inet ") != std::string::npos) {
-				if(resString.find("127.0.0.1") == std::string::npos) {
-					retval = resString;
-					retval = retval.substr(retval.find("inet ") + 5);
-					retval = retval.substr(0, retval.find("/"));
-					break;
-				}
+	std::string result = FTPUtils::ExecProc("ifconfig");
+
+	JobDispatcher::GetApi()->Log("result: %s", result.begin());
+
+	std::vector<std::string> splitString = FTPUtils::SplitString(result, "\n");
+
+	std::vector<std::string>::iterator resultsIter = splitString.begin();
+
+	for( ; resultsIter != splitString.end(); ++resultsIter) {
+		if(resultsIter->find("inet ") != std::string::npos) {
+			if(resultsIter->find("127.0.0.1") == std::string::npos) {
+				retval = *resultsIter;
+				retval = retval.substr(retval.find("inet ") + 5);
+				retval = retval.substr(0, retval.find(" "));
+				break;
 			}
 		}
 	}
-	pclose(file);
-
-	std::string result = FTPUtils::ExecProc("ip addr");
 
     return retval;
 }
