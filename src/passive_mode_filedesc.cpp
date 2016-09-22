@@ -103,5 +103,7 @@ std::string PassiveModeFileDesc::GetHostIpAddress() {
 	}
 	pclose(file);
 
+	std::string result = FTPUtils::ExecProc("ip addr");
+
     return retval;
 }

@@ -1,36 +1,36 @@
-[2016-09-22 20:06:54.846329000]FTPServer starting...
-[2016-09-22 20:06:54.847350000]FTPServer waiting for connections on port 3370
-[2016-09-22 20:06:57.529337000]FTPServer new connection established. clientFd: 5
-[2016-09-22 20:06:57.529403000]Sending 220 OK.
+[2016-09-22 20:11:47.689283000]FTPServer starting...
+[2016-09-22 20:11:47.690307000]FTPServer waiting for connections on port 3370
+[2016-09-22 20:11:50.941165000]FTPServer new connection established. clientFd: 5
+[2016-09-22 20:11:50.941237000]Sending 220 OK.
 
 
-[2016-09-22 20:06:58.011820000]Sending 330 OK, send password
+[2016-09-22 20:11:51.350481000]Sending 330 OK, send password
 
 
-[2016-09-22 20:06:59.546456000]Sending 230 OK, user janne logged in
+[2016-09-22 20:11:53.012890000]Sending 230 OK, user janne logged in
 
 
-[2016-09-22 20:06:59.650430000]Sending 215 UNIX Type: L8
+[2016-09-22 20:11:53.114143000]Sending 215 UNIX Type: L8
 
 
-[2016-09-22 20:06:59.751959000]Command: FEAT not implemented
-[2016-09-22 20:06:59.752043000]Sending 500 - Not implemented
+[2016-09-22 20:11:53.218775000]Command: FEAT not implemented
+[2016-09-22 20:11:53.218820000]Sending 500 - Not implemented
 
 
-[2016-09-22 20:06:59.852681000]Sending 257 "/Users/janne"
+[2016-09-22 20:11:53.323729000]Sending 257 "/Users/janne"
 
 
-[2016-09-22 20:07:00.214562000]Command: EPSV not implemented
-[2016-09-22 20:07:00.214587000]Sending 500 - Not implemented
+[2016-09-22 20:11:53.657592000]Command: EPSV not implemented
+[2016-09-22 20:11:53.657617000]Sending 500 - Not implemented
 
 
-[2016-09-22 20:07:00.319306000]Sending 227 PASV (127,0,0,1,38,226)
+[2016-09-22 20:11:53.762448000]Sending 227 PASV (127,0,0,1,38,226)
 
 
-[2016-09-22 20:07:00.443301000]Sending 150 LIST executed ok, data follows
+[2016-09-22 20:11:53.880505000]Sending 150 LIST executed ok, data follows
 
 
-[2016-09-22 20:07:00.443413000]Sending total 936
+[2016-09-22 20:11:53.880578000]Sending total 936
 drwxr-xr-x   4 janne  staff     136 Jul 28 12:39 AndroidStudioProjects
 drwx------   6 janne  staff     204 Jan 28  2016 Applications
 drwx------+  3 janne  staff     102 Apr 30  2015 Desktop
@@ -52,55 +52,45 @@ drwxr-xr-x   4 janne  staff     136 Feb 15  2016 eclipse
 
 
 
-[2016-09-22 20:07:00.443470000]Sending 226 LIST data send finished
+[2016-09-22 20:11:53.880650000]Sending 226 LIST data send finished
 
 
-[2016-09-22 20:07:04.343313000]Sending 250 CWD OK
+[2016-09-22 20:12:00.378528000]Sending 250 CWD OK
 
 
-[2016-09-22 20:07:04.431161000]Sending 257 "/Users/janne/GitHub"
+[2016-09-22 20:12:00.468683000]Sending 257 "/Users/janne/Pictures"
 
 
-[2016-09-22 20:07:06.010656000]Sending 227 PASV (127,0,0,1,38,226)
+[2016-09-22 20:12:00.832694000]Sending 227 PASV (127,0,0,1,38,226)
 
 
-[2016-09-22 20:07:06.119654000]Sending 150 LIST executed ok, data follows
+[2016-09-22 20:12:00.943575000]Sending 150 LIST executed ok, data follows
 
 
-[2016-09-22 20:07:06.119761000]Sending total 0
-drwxr-xr-x  19 janne  staff  646 Sep 22 20:06 FTPServer
-drwxr-xr-x  12 janne  staff  408 May 24 17:16 QuickZip
-drwxr-xr-x  12 janne  staff  408 Feb 14  2016 RpiGPIOAccess
-drwxr-xr-x  13 janne  staff  442 Sep 20 19:55 SocketWrapper
-drwxr-xr-x  17 janne  staff  578 Sep 14 22:10 ThreadFramework
-drwxr-xr-x  15 janne  staff  510 Sep 15 19:47 VirtualMachine
-drwxr-xr-x   6 janne  staff  204 Jul 28 20:42 android_learning_2d_graphics
-drwxr-xr-x   9 janne  staff  306 Aug  2 18:09 java_event_framework
-drwxr-xr-x   3 janne  staff  102 Aug 17 17:18 multithreadeventframework
-drwxr-xr-x   7 janne  staff  238 Jul  4 20:07 py_ann
-drwxr-xr-x  14 janne  staff  476 Sep 14 22:07 py_devrant
-drwxr-xr-x  20 janne  staff  680 Jun 17 19:58 py_par_programming
-drwxr-xr-x  14 janne  staff  476 May  7 11:49 simple2game
+[2016-09-22 20:12:00.943687000]Sending total 912
+drwxr-xr-x@ 11 janne  staff     374 Aug  8 18:20 Photos Library.photoslibrary
+-rw-r-----@  1 janne  staff  193530 Sep  4 20:59 orange-polygons-wallpaper-for-2560x1600-61-874.jpg
+-rw-r-----@  1 janne  staff  269474 Nov 16  2015 star-river-wallpaper-for-2560x1600-61-293.jpg
 
 
 
 
-[2016-09-22 20:07:06.119813000]Sending 226 LIST data send finished
+[2016-09-22 20:12:00.943743000]Sending 226 LIST data send finished
 
 
-[2016-09-22 20:07:06.923630000]Sending 250 CWD OK
+[2016-09-22 20:12:01.741255000]Sending 250 CWD OK
 
 
-[2016-09-22 20:07:07.015828000]Sending 257 "/Users/janne"
+[2016-09-22 20:12:01.836514000]Sending 257 "/Users/janne"
 
 
-[2016-09-22 20:07:07.522481000]Sending 227 PASV (127,0,0,1,38,226)
+[2016-09-22 20:12:02.315147000]Sending 227 PASV (127,0,0,1,38,226)
 
 
-[2016-09-22 20:07:07.635792000]Sending 150 LIST executed ok, data follows
+[2016-09-22 20:12:02.427348000]Sending 150 LIST executed ok, data follows
 
 
-[2016-09-22 20:07:07.635889000]Sending total 936
+[2016-09-22 20:12:02.427414000]Sending total 936
 drwxr-xr-x   4 janne  staff     136 Jul 28 12:39 AndroidStudioProjects
 drwx------   6 janne  staff     204 Jan 28  2016 Applications
 drwx------+  3 janne  staff     102 Apr 30  2015 Desktop
@@ -122,12 +112,9 @@ drwxr-xr-x   4 janne  staff     136 Feb 15  2016 eclipse
 
 
 
-[2016-09-22 20:07:07.635949000]Sending 226 LIST data send finished
+[2016-09-22 20:12:02.427497000]Sending 226 LIST data send finished
 
 
-[2016-09-22 20:07:09.739560000]Sending 550 CWD outside of FTP root dir not allowed
-
-
-[2016-09-22 20:07:10.997188000]Sending 221 Bye Bye
+[2016-09-22 20:12:03.549637000]Sending 221 Bye Bye
 
 

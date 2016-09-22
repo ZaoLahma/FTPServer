@@ -42,6 +42,26 @@ std::string FTPUtils::ExecProc(const std::string& command) {
 
 	pclose(file);
 
-
 	return response;
+}
+
+std::vector<std::string> FTPUtils::SplitString(const std::string& str, const std::string& delimiter) {
+	std::vector<std::string> retVal;
+
+	std::string::size_type start_pos = 0;
+	std::string::size_type end_pos = str.find(delimiter);
+
+	while (end_pos != std::string::npos) {
+		if (start_pos != end_pos) {
+			retVal.push_back(str.substr(start_pos, end_pos - start_pos));
+		}
+		start_pos = ++end_pos;
+		end_pos = str.find(delimiter, end_pos);
+	}
+
+	if (end_pos == std::string::npos) {
+		retVal.push_back(str.substr(start_pos, str.length()));
+	}
+
+	return retVal;
 }

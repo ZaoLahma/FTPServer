@@ -69,7 +69,6 @@ private:
 	uint32_t noOfCycles;
 
 	FTPCommand GetCommand();
-	std::vector<std::string> SplitString(const std::string& string, const std::string& delimiter);
 	std::string GetControlChannelData();
 
 	void HandleUserCommand(const FTPCommand& command);

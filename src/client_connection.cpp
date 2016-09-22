@@ -167,7 +167,7 @@ FTPCommand ClientConnection::GetCommand() {
 	retVal.ftpCommand = FTPCommandEnum::NOT_IMPLEMENTED;
 	retVal.args = "";
 
-	std::vector<std::string> command = SplitString(GetControlChannelData(), " ");
+	std::vector<std::string> command = FTPUtils::SplitString(GetControlChannelData(), " ");
 
 	if(command[0] == "USER") {
 		retVal.ftpCommand = FTPCommandEnum::USER;
@@ -248,28 +248,6 @@ std::string ClientConnection::GetControlChannelData() {
 	return stringBuf;
 }
 
-std::vector<std::string> ClientConnection::SplitString(const std::string& str,
-													   const std::string& delimiter) {
-	std::vector<std::string> retVal;
-
-	std::string::size_type start_pos = 0;
-	std::string::size_type end_pos = str.find(delimiter);
-
-	while (end_pos != std::string::npos) {
-		if (start_pos != end_pos) {
-			retVal.push_back(str.substr(start_pos, end_pos - start_pos));
-		}
-		start_pos = ++end_pos;
-		end_pos = str.find(delimiter, end_pos);
-	}
-
-	if (end_pos == std::string::npos) {
-		retVal.push_back(str.substr(start_pos, str.length()));
-	}
-
-	return retVal;
-}
-
 void ClientConnection::HandleUserCommand(const FTPCommand& command) {
 	user = configHandler.GetUser(command.args);
 
@@ -294,7 +272,7 @@ void ClientConnection::HandlePassCommand(const FTPCommand& command) {
 
 void ClientConnection::HandlePortCommand(const FTPCommand& command) {
 	std::string send_string = "200 PORT command successful";
-	std::vector<std::string> addressInfo = SplitString(command.args, ",");
+	std::vector<std::string> addressInfo = FTPUtils::SplitString(command.args, ",");
 	uint32_t clientPort = std::stoi(addressInfo[4]) * 256 + std::stoi(addressInfo[5]);
 
 	std::string clientAddress = addressInfo[0] + "." +
@@ -319,7 +297,7 @@ void ClientConnection::HandleListCommand(const FTPCommand& command) {
 
 	std::string response = FTPUtils::ExecProc(commandString);
 
-	std::vector<std::string> responseVector = SplitString(response, "\n");
+	std::vector<std::string> responseVector = FTPUtils::SplitString(response, "\n");
 	response = "";
 	for (unsigned int i = 0; i < responseVector.size(); ++i) {
 		response += responseVector[i] + "\r\n";
@@ -413,7 +391,7 @@ void ClientConnection::HandlePwdCommand() {
 void ClientConnection::HandleCwdCommand(const FTPCommand& command) {
 	std::string send_string = "250 CWD OK";
 
-	std::vector<std::string> splitCurrDir = SplitString(currDir, "/");
+	std::vector<std::string> splitCurrDir = FTPUtils::SplitString(currDir, "/");
 
 	std::vector<std::string> changeDir;
 
@@ -421,7 +399,7 @@ void ClientConnection::HandleCwdCommand(const FTPCommand& command) {
 		splitCurrDir.pop_back();
 	} else {
 		if(command.args.find("/") != std::string::npos) {
-			changeDir = SplitString(command.args, "/");
+			changeDir = FTPUtils::SplitString(command.args, "/");
 			for(unsigned int i = 0; i < changeDir.size(); ++i) {
 				if(changeDir[i] == ".") {
 
