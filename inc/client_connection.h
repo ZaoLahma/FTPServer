@@ -26,6 +26,7 @@ enum FTPCommandEnum {
 	ABOR,
 	SYST,
 	PASV,
+	SIZE,
 	CWD,
 	MKD,
 	RMD,
@@ -79,6 +80,7 @@ private:
 	void HandleTypeCommand(const FTPCommand& command);
 	void HandleStorCommand(const FTPCommand& command);
 	void HandleDeleCommand(const FTPCommand& command);
+	void HandleSizeCommand(const FTPCommand& command);
 	void HandleCwdCommand(const FTPCommand& command);
 	void HandleMkdCommand(const FTPCommand& command);
 	void HandleRmdCommand(const FTPCommand& command);
@@ -87,6 +89,8 @@ private:
 	void HandleAborCommand();
 	void HandleSystCommand();
 	void HandlePwdCommand();
+
+	std::string GetListResult(const FTPCommand& command);
 };
 
 typedef std::map<int, ClientConnection*> ClientConnMapT;
