@@ -125,10 +125,6 @@ void ClientConnection::HandleEvent(const uint32_t eventNo, const EventDataBase* 
 				HandleDeleCommand(command);
 			}
 			break;
-			case FTPCommandEnum::SIZE: {
-				HandleSizeCommand(command);
-			}
-			break;
 			case FTPCommandEnum::ABOR: {
 				HandleAborCommand();
 			}
@@ -218,9 +214,6 @@ FTPCommand ClientConnection::GetCommand() {
 		retVal.ftpCommand = FTPCommandEnum::SYST;
 	} else if(command[0] == "PASV") {
 		retVal.ftpCommand = FTPCommandEnum::PASV;
-	} else if(command[0] == "SIZE") {
-		retVal.ftpCommand = FTPCommandEnum::SIZE;
-		retVal.args = command[1];
 	} else {
 		JobDispatcher::GetApi()->Log("Command: %s not implemented", command[0].c_str());
 		if(command.size() > 1) {
@@ -294,7 +287,21 @@ void ClientConnection::HandlePortCommand(const FTPCommand& command) {
 }
 
 void ClientConnection::HandleListCommand(const FTPCommand& command) {
-	std::string response = GetListResult(command);
+	std::string commandString = "ls -l ";
+
+	if("" != command.args) {
+		commandString += command.args;
+	} else {
+		commandString += currDir;
+	}
+
+	std::string response = FTPUtils::ExecProc(commandString);
+
+	std::vector<std::string> responseVector = FTPUtils::SplitString(response, "\n");
+	response = "";
+	for (unsigned int i = 0; i < responseVector.size(); ++i) {
+		response += responseVector[i] + "\r\n";
+	}
 
 	std::string send_string = "150 LIST executed ok, data follows";
 	FTPUtils::SendString(send_string, controlFd, socketApi);
@@ -306,40 +313,6 @@ void ClientConnection::HandleListCommand(const FTPCommand& command) {
 
 	socketApi.disconnect(dataFd);
 	dataFd = -1;
-}
-
-std::string ClientConnection::GetListResult(const FTPCommand& command) {
-	std::string commandString = "ls -l ";
-
-	if("" != command.args) {
-		if(command.args.find(currDir) == std::string::npos) {
-			commandString += currDir;
-		}
-		commandString += " " + command.args;
-	} else {
-		commandString += currDir;
-	}
-
-	std::string tmpString = commandString.substr(6, commandString.length());
-	JobDispatcher::GetApi()->Log("tmpString: %s", tmpString.c_str());
-
-	if(commandString.substr(6, commandString.length()).find("-l") != std::string::npos) {
-		commandString = commandString.substr(0, commandString.length() - 3);
-	}
-
-	JobDispatcher::GetApi()->Log("commandString: %s", commandString.c_str());
-
-	std::string response = FTPUtils::ExecProc(commandString);
-
-	if(binaryFlag) {
-		std::vector<std::string> responseVector = FTPUtils::SplitString(response, "\n");
-		response = "";
-		for (unsigned int i = 0; i < responseVector.size(); ++i) {
-			response += responseVector[i] + "\r\n";
-		}
-	}
-
-	return response;
 }
 
 void ClientConnection::HandleRetrCommand(const FTPCommand& command) {
@@ -371,14 +344,6 @@ void ClientConnection::HandleDeleCommand(const FTPCommand& command) {
 	} else {
 		send_string = "550 DELE refused due to user access rights";
 	}
-
-	FTPUtils::SendString(send_string, controlFd, socketApi);
-}
-
-void ClientConnection::HandleSizeCommand(const FTPCommand& command) {
-	std::string send_string = "213 ";
-	std::string list_string = GetListResult(command);
-	send_string += std::to_string(list_string.length());
 
 	FTPUtils::SendString(send_string, controlFd, socketApi);
 }
@@ -425,36 +390,27 @@ void ClientConnection::HandlePwdCommand() {
 
 void ClientConnection::HandleCwdCommand(const FTPCommand& command) {
 	std::string send_string = "250 CWD OK";
-	std::string args = command.args;
-	JobDispatcher::GetApi()->Log("command.args: %s", command.args.c_str());
-	if(args.substr(0, ftpRootDir.length()).find(ftpRootDir) != std::string::npos) {
-		args = args.substr(ftpRootDir.length(), args.length() - 1);
-		JobDispatcher::GetApi()->Log("args: %s", args.c_str());
-	}
 
 	std::vector<std::string> splitCurrDir = FTPUtils::SplitString(currDir, "/");
 
 	std::vector<std::string> changeDir;
 
-	if(".." == args) {
+	if(".." == command.args) {
 		splitCurrDir.pop_back();
 	} else {
-		if(args.find("/") != std::string::npos) {
-			changeDir = FTPUtils::SplitString(args, "/");
+		if(command.args.find("/") != std::string::npos) {
+			changeDir = FTPUtils::SplitString(command.args, "/");
 			for(unsigned int i = 0; i < changeDir.size(); ++i) {
 				if(changeDir[i] == ".") {
 
-				} else if(0 == i && changeDir[i] == "/") {
-
-				}
-				else if(changeDir[i] == "..") {
+				} else if(changeDir[i] == "..") {
 					splitCurrDir.pop_back();
 				} else {
 					splitCurrDir.push_back(changeDir[i]);
 				}
 			}
 		} else {
-			splitCurrDir.push_back(args);
+			splitCurrDir.push_back(command.args);
 		}
 	}
 
@@ -470,7 +426,6 @@ void ClientConnection::HandleCwdCommand(const FTPCommand& command) {
 
 		if(resString.find("No such file or directory") == std::string::npos) {
 			currDir = tmpDir;
-			JobDispatcher::GetApi()->Log("currDir: %s", currDir.c_str());
 		} else {
 			send_string = "550 CWD not performed. " + tmpDir + " - No such file or directory";
 		}

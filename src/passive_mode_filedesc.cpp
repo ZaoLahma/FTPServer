@@ -86,6 +86,8 @@ std::string PassiveModeFileDesc::GetHostIpAddress() {
 
 	std::string result = FTPUtils::ExecProc("ifconfig");
 
+	JobDispatcher::GetApi()->Log("result: %s", result.begin());
+
 	std::vector<std::string> splitString = FTPUtils::SplitString(result, "\n");
 
 	std::vector<std::string>::iterator resultsIter = splitString.begin();
