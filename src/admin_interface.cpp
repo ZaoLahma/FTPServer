@@ -10,15 +10,16 @@
 #include "../inc/admin_interface_events.h"
 #include <iostream>
 
-AdminInterface::AdminInterface() : running(true) {
+AdminInterface::AdminInterface() : running(true), loggingEnabled(false) {
 	JobDispatcher::GetApi()->SubscribeToEvent(FTP_SHUT_DOWN_EVENT_RSP, this);
 	JobDispatcher::GetApi()->SubscribeToEvent(FTP_REFRESH_SCREEN_EVENT, this);
 	JobDispatcher::GetApi()->SubscribeToEvent(FTP_LIST_CONNECTIONS_EVENT_RSP, this);
 	menuStr = "\n--------------------------------------------\n";
 	menuStr += "Available commands\n";
-	menuStr += "Shutdown FTP server     - exit\n";
-	menuStr += "List active connections - list\n\n";
-	menuStr += "Command:\n";
+	menuStr += "List active connections - list\n";
+	menuStr += "Toggle screen logging   - log\n";
+	menuStr += "Shutdown FTP server     - exit\n\n";
+	menuStr += "command:\n";
 }
 
 AdminInterface::~AdminInterface() {
@@ -30,7 +31,7 @@ AdminInterface::~AdminInterface() {
 void AdminInterface::Execute() {
 	std::string userInput;
 	while(running) {
-		JobDispatcher::GetApi()->RaiseEvent(FTP_REFRESH_SCREEN_EVENT, nullptr);
+		Draw("");
 		std::cin>>userInput;
 
 		if("exit" == userInput) {
@@ -39,6 +40,13 @@ void AdminInterface::Execute() {
 			break;
 		} else if("list" == userInput) {
 			JobDispatcher::GetApi()->RaiseEvent(FTP_LIST_CONNECTIONS_EVENT, nullptr);
+		} else if("log" == userInput) {
+			loggingEnabled = !loggingEnabled;
+			if(loggingEnabled) {
+				Draw("Logging to screen on");
+			} else {
+				Draw("Logging to screen off");
+			}
 		}
 	}
 
@@ -52,6 +60,10 @@ void AdminInterface::HandleEvent(const uint32_t eventNo, const EventDataBase* da
 		std::unique_lock<std::mutex> shuttingDownLock(shuttingDownMutex);
 		shuttingDownCondition.notify_one();
 	} else if(FTP_REFRESH_SCREEN_EVENT == eventNo) {
+		if(!loggingEnabled) {
+			return;
+		}
+
 		std::string strToDraw = "";
 		if(nullptr != dataPtr ){
 			const RefreshScreenEventData* screenData = static_cast<const RefreshScreenEventData*>(dataPtr);
@@ -61,7 +73,7 @@ void AdminInterface::HandleEvent(const uint32_t eventNo, const EventDataBase* da
 		Draw(strToDraw);
 	} else if(FTP_LIST_CONNECTIONS_EVENT_RSP == eventNo) {
 		const ListConnectionsEventData* connectionsData = static_cast<const ListConnectionsEventData*>(dataPtr);
-		Draw("\nConnections:\n" + connectionsData->str);
+		Draw("Connections:\n" + connectionsData->str);
 	}
 }
 

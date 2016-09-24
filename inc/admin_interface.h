@@ -33,6 +33,7 @@ private:
 	std::mutex printMutex;
 	std::vector<std::string> screenBuf;
 	std::string menuStr;
+	bool loggingEnabled;
 };
 
 #endif /* INC_ADMIN_INTERFACE_H_ */

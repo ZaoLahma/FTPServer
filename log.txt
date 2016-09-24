@@ -1,87 +1,90 @@
-[2016-09-24 13:03:53.644048000]FTPServer starting...
-[2016-09-24 13:03:53.645237000]FTPServer waiting for connections on port 3370
-[2016-09-24 13:03:59.229430000]FTPServer new connection established. clientFd: 5
-[2016-09-24 13:03:59.229473000]Sending 220 OK.
+[2016-09-24 13:34:24.881151000]FTPServer starting...
+[2016-09-24 13:34:24.882214000]FTPServer waiting for connections on port 3370
+[2016-09-24 13:34:27.004474000]FTPServer new connection established. clientFd: 5
+[2016-09-24 13:34:27.004547000]Sending 220 OK.
 
 
-[2016-09-24 13:03:59.432566000]Sending 330 OK, send password
+[2016-09-24 13:34:27.521497000]Sending 330 OK, send password
 
 
-[2016-09-24 13:04:00.219387000]Sending 530, user/passwd not correct
+[2016-09-24 13:34:30.903261000]Sending 230 OK, user pi logged in
 
 
-[2016-09-24 13:04:02.397390000]Sending 221 Bye Bye
+[2016-09-24 13:34:31.006235000]Sending 215 UNIX Type: L8
 
 
-[2016-09-24 13:04:03.282993000]FTPServer new connection established. clientFd: 6
-[2016-09-24 13:04:03.283041000]Sending 220 OK.
+[2016-09-24 13:34:31.304908000]dataFd: 6
+[2016-09-24 13:34:31.304950000]Sending 200 PORT command successful
 
 
-[2016-09-24 13:04:03.625067000]Sending 330 OK, send password
+[2016-09-24 13:34:31.426290000]Sending 150 LIST executed ok, data follows
 
 
-[2016-09-24 13:04:05.219576000]Sending 230 OK, user janne logged in
-
-
-[2016-09-24 13:04:05.320469000]Sending 215 UNIX Type: L8
-
-
-[2016-09-24 13:04:05.424944000]Command: FEAT not implemented
-[2016-09-24 13:04:05.424996000]Sending 500 - Not implemented
-
-
-[2016-09-24 13:04:05.527979000]Sending 257 "/Users/janne"
-
-
-[2016-09-24 13:04:05.632358000]Command: EPSV not implemented
-[2016-09-24 13:04:05.632385000]Sending 500 - Not implemented
-
-
-[2016-09-24 13:04:05.742793000]Sending 227 PASV (192,168,1,71,38,226)
-
-
-[2016-09-24 13:04:05.847109000]Sending 150 LIST executed ok, data follows
-
-
-[2016-09-24 13:04:05.847223000]Sending total 24
-drwxr-xr-x   4 janne  staff    136 Jul 28 12:39 AndroidStudioProjects
-drwx------   6 janne  staff    204 Jan 28  2016 Applications
-drwx------+  3 janne  staff    102 Apr 30  2015 Desktop
-drwx------+  9 janne  staff    306 Sep 22 17:34 Documents
-drwx------+ 12 janne  staff    408 Sep 23 18:38 Downloads
-drwxr-xr-x  15 janne  staff    510 Sep 20 19:55 GitHub
-drwx------@ 62 janne  staff   2108 Jul 26 22:23 Library
-drwxr-xr-x   4 janne  staff    136 Sep 11  2015 LocalGitRepo
-drwx------+  3 janne  staff    102 Apr 30  2015 Movies
-drwx------+  5 janne  staff    170 Aug 21 17:11 Music
-drwx------+  7 janne  staff    238 Sep  4 20:59 Pictures
-drwxr-xr-x+  6 janne  staff    204 Aug 21 17:12 Public
-drwxr-xr-x   4 janne  staff    136 Nov 16  2015 VirtualBox VMs
-drwxr-xr-x   4 janne  staff    136 Feb 15  2016 eclipse
--rw-r--r--   1 janne  staff  10938 Sep  7 22:17 kweb_about_c.html
+[2016-09-24 13:34:31.426350000]Sending ls: /home/pi: No such file or directory
 
 
 
 
-[2016-09-24 13:04:05.847276000]Sending 226 LIST data send finished
+[2016-09-24 13:34:31.426382000]Sending 226 LIST data send finished
 
 
-[2016-09-24 13:04:08.214053000]Sending 250 CWD OK
+[2016-09-24 13:34:32.101444000]Sending 257 "/home/pi"
 
 
-[2016-09-24 13:04:08.304009000]Sending 257 "/Users/janne/Library"
+[2016-09-24 13:34:33.802543000]dataFd: 6
+[2016-09-24 13:34:33.802610000]Sending 200 PORT command successful
 
 
-[2016-09-24 13:04:08.792084000]Sending 227 PASV (192,168,1,71,38,226)
+[2016-09-24 13:34:33.919854000]Sending 150 LIST executed ok, data follows
 
 
-[2016-09-24 13:04:08.892501000]Sending 150 LIST executed ok, data follows
+[2016-09-24 13:34:33.919942000]Sending ls: /home/pi: No such file or directory
 
 
-[2016-09-24 13:04:08.892621000]Sending data too long to log
-[2016-09-24 13:04:08.892660000]Sending 226 LIST data send finished
 
 
-[2016-09-24 13:04:10.003625000]Sending 221 Bye Bye
+[2016-09-24 13:34:33.919987000]Sending 226 LIST data send finished
+
+
+[2016-09-24 13:34:40.136421000]Sending 200 Transfer mode changed to: A
+
+
+[2016-09-24 13:34:41.158346000]dataFd: 6
+[2016-09-24 13:34:41.158381000]Sending 200 PORT command successful
+
+
+[2016-09-24 13:34:41.277077000]Sending 150 LIST executed ok, data follows
+
+
+[2016-09-24 13:34:41.277157000]Sending ls: /home/pi: No such file or directory
+
+
+
+
+[2016-09-24 13:34:41.277206000]Sending 226 LIST data send finished
+
+
+[2016-09-24 13:34:43.221238000]Sending 257 "/home/pi"
+
+
+[2016-09-24 13:34:43.652245000]dataFd: 6
+[2016-09-24 13:34:43.652280000]Sending 200 PORT command successful
+
+
+[2016-09-24 13:34:43.772176000]Sending 150 LIST executed ok, data follows
+
+
+[2016-09-24 13:34:43.772256000]Sending ls: /home/pi: No such file or directory
+
+
+
+
+[2016-09-24 13:34:43.772306000]Sending 226 LIST data send finished
+
+
+[2016-09-24 13:34:49.328146000]Sending 200 Transfer mode changed to: I
+
+
+[2016-09-24 13:34:55.378666000]Sending 221 Bye Bye
 
 

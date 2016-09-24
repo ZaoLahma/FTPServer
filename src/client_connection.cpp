@@ -382,8 +382,6 @@ void ClientConnection::HandleQuitCommand() {
 }
 
 void ClientConnection::HandlePwdCommand() {
-	JobDispatcher::GetApi()->RaiseEvent(ABORT_DATA_TRANSFER_EVENT_ID, new AbortDataTransferData(dataFd));
-
 	std::string send_string = "257 \"" + currDir + "\"";
 	FTPUtils::SendString(send_string, controlFd, socketApi);
 }
