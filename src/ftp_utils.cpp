@@ -19,7 +19,12 @@ void FTPUtils::SendString(const std::string& string, int32_t fileDescriptor, Soc
 
 	memcpy(sendData.data, stringToSend.c_str(), sendData.dataSize);
 
-	JobDispatcher::GetApi()->Log("Sending %s\n", stringToSend.c_str());
+
+	if(stringToSend.length() < 3000) {
+		JobDispatcher::GetApi()->Log("Sending %s\n", stringToSend.c_str());
+	} else {
+		JobDispatcher::GetApi()->Log("Sending data too long to log");
+	}
 	JobDispatcher::GetApi()->RaiseEvent(FTP_REFRESH_SCREEN_EVENT, new RefreshScreenEventData("Sending " + stringToSend));
 
 	socketApi.sendData(fileDescriptor, sendData);
