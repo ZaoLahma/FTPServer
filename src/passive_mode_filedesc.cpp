@@ -8,6 +8,7 @@
 #include "../inc/passive_mode_filedesc.h"
 #include "../inc/ftp_utils.h"
 #include "../inc/thread_fwk/jobdispatcher.h"
+#include "../inc/admin_interface_events.h"
 #include <cstdlib>
 #include <string>
 #include <algorithm>
@@ -35,6 +36,8 @@ PassiveModeFileDesc* PassiveModeFileDesc::GetApi() {
 
 int PassiveModeFileDesc::GetDataFd(int controlFd) {
 	std::unique_lock<std::mutex> socketListenerLock(socketListenerMutex);
+
+	JobDispatcher::GetApi()->RaiseEvent(FTP_REFRESH_SCREEN_EVENT, new RefreshScreenEventData("Attempting to set up passive connection"));
 
 	std::string send_string = "227 PASV (";
 
@@ -69,6 +72,8 @@ int PassiveModeFileDesc::GetDataFd(int controlFd) {
 		timeout.tv_usec = 250000;
 	}
 	timeout.tv_sec = 0;
+
+	JobDispatcher::GetApi()->RaiseEvent(FTP_REFRESH_SCREEN_EVENT, new RefreshScreenEventData("Waiting for client to connect to: " + send_string));
 
 	int retval = select(maxFd + 1, &rfds, NULL, NULL, &timeout);
 

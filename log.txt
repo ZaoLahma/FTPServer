@@ -1,90 +1,72 @@
-[2016-09-24 13:34:24.881151000]FTPServer starting...
-[2016-09-24 13:34:24.882214000]FTPServer waiting for connections on port 3370
-[2016-09-24 13:34:27.004474000]FTPServer new connection established. clientFd: 5
-[2016-09-24 13:34:27.004547000]Sending 220 OK.
+[2016-09-24 14:22:36.727956973]FTPServer starting...
+[2016-09-24 14:22:36.728474305]FTPServer waiting for connections on port 3370
+[2016-09-24 14:22:40.705786637]FTPServer new connection established. clientFd: 4
+[2016-09-24 14:22:40.705828360]Sending 220 OK.
 
 
-[2016-09-24 13:34:27.521497000]Sending 330 OK, send password
+[2016-09-24 14:22:41.360963498]Sending 330 OK, send password
 
 
-[2016-09-24 13:34:30.903261000]Sending 230 OK, user pi logged in
+[2016-09-24 14:22:42.865535408]Sending 230 OK, user janne logged in
 
 
-[2016-09-24 13:34:31.006235000]Sending 215 UNIX Type: L8
+[2016-09-24 14:22:42.965663594]Sending 215 UNIX Type: L8
 
 
-[2016-09-24 13:34:31.304908000]dataFd: 6
-[2016-09-24 13:34:31.304950000]Sending 200 PORT command successful
+[2016-09-24 14:22:43.225742152]dataFd: 5
+[2016-09-24 14:22:43.225769059]Sending 200 PORT command successful
 
 
-[2016-09-24 13:34:31.426290000]Sending 150 LIST executed ok, data follows
+[2016-09-24 14:22:43.328093179]Sending 150 LIST executed ok, data follows
 
 
-[2016-09-24 13:34:31.426350000]Sending ls: /home/pi: No such file or directory
-
-
-
-
-[2016-09-24 13:34:31.426382000]Sending 226 LIST data send finished
-
-
-[2016-09-24 13:34:32.101444000]Sending 257 "/home/pi"
-
-
-[2016-09-24 13:34:33.802543000]dataFd: 6
-[2016-09-24 13:34:33.802610000]Sending 200 PORT command successful
-
-
-[2016-09-24 13:34:33.919854000]Sending 150 LIST executed ok, data follows
-
-
-[2016-09-24 13:34:33.919942000]Sending ls: /home/pi: No such file or directory
+[2016-09-24 14:22:43.328417627]Sending ls: cannot access '/Users/janne': No such file or directory
 
 
 
 
-[2016-09-24 13:34:33.919987000]Sending 226 LIST data send finished
+[2016-09-24 14:22:43.328574457]Sending 226 LIST data send finished
 
 
-[2016-09-24 13:34:40.136421000]Sending 200 Transfer mode changed to: A
+[2016-09-24 14:22:43.914129536]Sending 257 "/Users/janne"
 
 
-[2016-09-24 13:34:41.158346000]dataFd: 6
-[2016-09-24 13:34:41.158381000]Sending 200 PORT command successful
+[2016-09-24 14:22:45.524721828]Sending 550 CWD not performed. /Users/janne/hej - No such file or directory
 
 
-[2016-09-24 13:34:41.277077000]Sending 150 LIST executed ok, data follows
+[2016-09-24 14:22:46.155222261]dataFd: 5
+[2016-09-24 14:22:46.155248760]Sending 200 PORT command successful
 
 
-[2016-09-24 13:34:41.277157000]Sending ls: /home/pi: No such file or directory
+[2016-09-24 14:22:46.258495389]Sending 150 LIST executed ok, data follows
 
 
-
-
-[2016-09-24 13:34:41.277206000]Sending 226 LIST data send finished
-
-
-[2016-09-24 13:34:43.221238000]Sending 257 "/home/pi"
-
-
-[2016-09-24 13:34:43.652245000]dataFd: 6
-[2016-09-24 13:34:43.652280000]Sending 200 PORT command successful
-
-
-[2016-09-24 13:34:43.772176000]Sending 150 LIST executed ok, data follows
-
-
-[2016-09-24 13:34:43.772256000]Sending ls: /home/pi: No such file or directory
+[2016-09-24 14:22:46.258785540]Sending ls: cannot access '/Users/janne': No such file or directory
 
 
 
 
-[2016-09-24 13:34:43.772306000]Sending 226 LIST data send finished
+[2016-09-24 14:22:46.258942897]Sending 226 LIST data send finished
 
 
-[2016-09-24 13:34:49.328146000]Sending 200 Transfer mode changed to: I
+[2016-09-24 14:22:48.220088004]Sending 257 "/Users/janne"
 
 
-[2016-09-24 13:34:55.378666000]Sending 221 Bye Bye
+[2016-09-24 14:23:02.211127891]dataFd: 5
+[2016-09-24 14:23:02.211154933]Sending 200 PORT command successful
+
+
+[2016-09-24 14:23:02.314341617]Sending 150 LIST executed ok, data follows
+
+
+[2016-09-24 14:23:02.315409484]Sending ls: cannot access '/Users/janne': No such file or directory
+
+
+
+
+[2016-09-24 14:23:02.315963003]Sending 226 LIST data send finished
+
+
+[2016-09-24 14:23:04.764060501]Sending 221 Bye Bye
 
 

@@ -282,7 +282,7 @@ void ClientConnection::HandlePortCommand(const FTPCommand& command) {
 
 	dataFd = socketApi.getClientSocketFileDescriptor(clientAddress, std::to_string(clientPort));
 
-	JobDispatcher::GetApi()->Log("dataFd: %d", dataFd);
+	JobDispatcher::GetApi()->Log("PORT dataFd: %d", dataFd);
 	FTPUtils::SendString(send_string, controlFd, socketApi);
 }
 
@@ -369,6 +369,7 @@ void ClientConnection::HandleTypeCommand(const FTPCommand& command) {
 
 void ClientConnection::HandlePasvCommand() {
 	dataFd = PassiveModeFileDesc::GetApi()->GetDataFd(controlFd);
+	JobDispatcher::GetApi()->Log("PASV dataFd: %d", dataFd);
 }
 
 void ClientConnection::HandleQuitCommand() {
