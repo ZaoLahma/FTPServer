@@ -295,6 +295,10 @@ void ClientConnection::HandleListCommand(const FTPCommand& command) {
 			commandString += ftpRootDir;
 		}
 
+		if(command.args[0] != '/') {
+			commandString += "/";
+		}
+
 		commandString += command.args;
 	} else {
 		commandString += ftpRootDir + currDir;
@@ -414,25 +418,27 @@ void ClientConnection::HandleCwdCommand(const FTPCommand& command) {
 
 	std::string args = command.args;
 
-	if(".." == args) {
-		splitCurrDir.pop_back();
-	} else {
-		if(args.find(ftpRootDir) != std::string::npos) {
-			args = args.substr(ftpRootDir.length() + 1, args.length());
-		}
-		if(args.find("/") != std::string::npos) {
-			changeDir = FTPUtils::SplitString(args, "/");
-			for(unsigned int i = 0; i < changeDir.size(); ++i) {
-				if(changeDir[i] == ".") {
-
-				} else if(changeDir[i] == "..") {
-					splitCurrDir.pop_back();
-				} else {
-					splitCurrDir.push_back(changeDir[i]);
-				}
-			}
+	if("./" != args && "." != args) {
+		if(".." == args) {
+			splitCurrDir.pop_back();
 		} else {
-			splitCurrDir.push_back(args);
+			if(args.find(ftpRootDir) != std::string::npos) {
+				args = args.substr(ftpRootDir.length() + 1, args.length());
+			}
+			if(args.find("/") != std::string::npos) {
+				changeDir = FTPUtils::SplitString(args, "/");
+				for(unsigned int i = 0; i < changeDir.size(); ++i) {
+					if(changeDir[i] == ".") {
+
+					} else if(changeDir[i] == "..") {
+						splitCurrDir.pop_back();
+					} else {
+						splitCurrDir.push_back(changeDir[i]);
+					}
+				}
+			} else {
+				splitCurrDir.push_back(args);
+			}
 		}
 	}
 
@@ -448,6 +454,9 @@ void ClientConnection::HandleCwdCommand(const FTPCommand& command) {
 
 	if(resString.find("No such file or directory") == std::string::npos) {
 		currDir = tmpDir;
+		if("" == currDir) {
+			currDir = "/";
+		}
 	} else {
 		send_string = "550 CWD not performed. " + tmpDir + " - No such file or directory";
 	}

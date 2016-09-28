@@ -1,69 +1,137 @@
-[2016-09-28 07:33:52.680765754]FTPServer starting...
-[2016-09-28 07:33:52.681276549]FTPServer waiting for connections on port 3370
-[2016-09-28 07:33:57.908667953]FTPServer new connection established. clientFd: 4
-[2016-09-28 07:33:57.908719298]Sending 220 OK.
+[2016-09-28 18:01:16.126486000]FTPServer starting...
+[2016-09-28 18:01:16.128384000]FTPServer waiting for connections on port 3370
+[2016-09-28 18:01:18.337162000]FTPServer new connection established. clientFd: 5
+[2016-09-28 18:01:18.337210000]Sending 220 OK.
 
 
-[2016-09-28 07:33:57.908986987]Command: AUTH not implemented
-[2016-09-28 07:33:57.909000037]Arg for not supported command: TLS
-[2016-09-28 07:33:57.909009708]Sending 500 - Not implemented
+[2016-09-28 18:01:18.621783000]Sending 330 OK, send password
 
 
-[2016-09-28 07:33:58.009471424]Command: AUTH not implemented
-[2016-09-28 07:33:58.009512166]Arg for not supported command: SSL
-[2016-09-28 07:33:58.009526328]Sending 500 - Not implemented
+[2016-09-28 18:01:20.371270000]Sending 230 OK, user janne logged in
 
 
-[2016-09-28 07:33:58.109838458]Sending 330 OK, send password
+[2016-09-28 18:01:20.474679000]Sending 215 UNIX Type: L8
 
 
-[2016-09-28 07:33:58.209999540]Sending 230 OK, user janne_test logged in
+[2016-09-28 18:01:20.575640000]Command: FEAT not implemented
+[2016-09-28 18:01:20.575723000]Sending 500 - Not implemented
 
 
-[2016-09-28 07:34:02.319215863]FTPServer new connection established. clientFd: 5
-[2016-09-28 07:34:02.319265026]Sending 220 OK.
+[2016-09-28 18:01:20.675916000]Sending 257 "/"
 
 
-[2016-09-28 07:34:02.319532855]Command: AUTH not implemented
-[2016-09-28 07:34:02.319544889]Arg for not supported command: TLS
-[2016-09-28 07:34:02.319552147]Sending 500 - Not implemented
+[2016-09-28 18:01:20.831686000]Command: EPSV not implemented
+[2016-09-28 18:01:20.831728000]Sending 500 - Not implemented
 
 
-[2016-09-28 07:34:02.420256145]Command: AUTH not implemented
-[2016-09-28 07:34:02.420297559]Arg for not supported command: SSL
-[2016-09-28 07:34:02.420311853]Sending 500 - Not implemented
+[2016-09-28 18:01:20.946923000]Sending 227 PASV (192,168,1,189,38,226)
 
 
-[2016-09-28 07:34:02.520437445]Sending 330 OK, send password
+[2016-09-28 18:01:20.947467000]PASV dataFd: 7
+[2016-09-28 18:01:21.050178000]Sending 150 LIST executed ok, data follows
 
 
-[2016-09-28 07:34:02.620672232]Sending 230 OK, user janne_test logged in
+[2016-09-28 18:01:21.050268000]Sending total 0
+drwxr-xr-x   4 janne  staff   136 Jul 28 12:39 AndroidStudioProjects
+drwx------   6 janne  staff   204 Jan 28  2016 Applications
+drwx------+  3 janne  staff   102 Apr 30  2015 Desktop
+drwx------+  9 janne  staff   306 Sep 22 17:34 Documents
+drwx------+ 12 janne  staff   408 Sep 23 18:38 Downloads
+drwxr-xr-x  15 janne  staff   510 Sep 20 19:55 GitHub
+drwx------@ 62 janne  staff  2108 Jul 26 22:23 Library
+drwxr-xr-x   4 janne  staff   136 Sep 11  2015 LocalGitRepo
+drwx------+  3 janne  staff   102 Apr 30  2015 Movies
+drwx------+  5 janne  staff   170 Aug 21 17:11 Music
+drwx------+  7 janne  staff   238 Sep  4 20:59 Pictures
+drwxr-xr-x+  6 janne  staff   204 Aug 21 17:12 Public
+drwxr-xr-x   4 janne  staff   136 Nov 16  2015 VirtualBox VMs
+drwxr-xr-x   4 janne  staff   136 Feb 15  2016 eclipse
 
 
-[2016-09-28 07:34:02.724482040]Sending 250 CWD OK
 
 
-[2016-09-28 07:34:03.897521695]Sending 200 Transfer mode changed to: I
+[2016-09-28 18:01:21.050329000]Sending 226 LIST data send finished
 
 
-[2016-09-28 07:34:04.000695070]Sending 227 PASV (addr:192,168,1,242,38,226)
+[2016-09-28 18:01:25.214300000]Sending 250 CWD OK
 
 
-[2016-09-28 07:34:04.001401572]PASV: Client did not connect within 0 ms
-[2016-09-28 07:34:04.001431857]PASV dataFd: -1
-[2016-09-28 07:34:04.098626829]PORT dataFd: 7
-[2016-09-28 07:34:04.098659171]Sending 200 PORT command successful
+[2016-09-28 18:01:25.305296000]Sending 257 "/Public"
 
 
-[2016-09-28 07:34:04.198684383]Sending 150 RETR executed ok, data follows
+[2016-09-28 18:01:26.149969000]Sending 227 PASV (192,168,1,189,38,226)
 
 
-[2016-09-28 07:34:05.144077131]Sending 226 RETR data send finished
+[2016-09-28 18:01:26.150378000]PASV dataFd: 7
+[2016-09-28 18:01:26.243890000]Sending 150 LIST executed ok, data follows
 
 
-[2016-09-28 07:34:45.134766198]Sending 221 Bye Bye
+[2016-09-28 18:01:26.243966000]Sending total 0
+drwx-wx-wx+ 3 janne  staff  102 Apr 30  2015 Drop Box
 
 
-[2016-09-28 07:34:45.134883657]Sending 221 Bye Bye
+
+
+[2016-09-28 18:01:26.244001000]Sending 226 LIST data send finished
+
+
+[2016-09-28 18:01:27.725127000]Sending 250 CWD OK
+
+
+[2016-09-28 18:01:27.815300000]Sending 257 "/Public"
+
+
+[2016-09-28 18:01:28.541074000]Sending 227 PASV (192,168,1,189,38,226)
+
+
+[2016-09-28 18:01:28.541369000]PASV dataFd: 7
+[2016-09-28 18:01:28.630997000]Sending 150 LIST executed ok, data follows
+
+
+[2016-09-28 18:01:28.631065000]Sending total 0
+drwx-wx-wx+ 3 janne  staff  102 Apr 30  2015 Drop Box
+
+
+
+
+[2016-09-28 18:01:28.631099000]Sending 226 LIST data send finished
+
+
+[2016-09-28 18:01:30.869573000]Sending 250 CWD OK
+
+
+[2016-09-28 18:01:30.957958000]Sending 257 "/"
+
+
+[2016-09-28 18:01:31.442582000]Sending 227 PASV (192,168,1,189,38,226)
+
+
+[2016-09-28 18:01:31.443109000]PASV dataFd: 7
+[2016-09-28 18:01:31.542554000]Sending 150 LIST executed ok, data follows
+
+
+[2016-09-28 18:01:31.542633000]Sending total 0
+drwxr-xr-x   4 janne  staff   136 Jul 28 12:39 AndroidStudioProjects
+drwx------   6 janne  staff   204 Jan 28  2016 Applications
+drwx------+  3 janne  staff   102 Apr 30  2015 Desktop
+drwx------+  9 janne  staff   306 Sep 22 17:34 Documents
+drwx------+ 12 janne  staff   408 Sep 23 18:38 Downloads
+drwxr-xr-x  15 janne  staff   510 Sep 20 19:55 GitHub
+drwx------@ 62 janne  staff  2108 Jul 26 22:23 Library
+drwxr-xr-x   4 janne  staff   136 Sep 11  2015 LocalGitRepo
+drwx------+  3 janne  staff   102 Apr 30  2015 Movies
+drwx------+  5 janne  staff   170 Aug 21 17:11 Music
+drwx------+  7 janne  staff   238 Sep  4 20:59 Pictures
+drwxr-xr-x+  6 janne  staff   204 Aug 21 17:12 Public
+drwxr-xr-x   4 janne  staff   136 Nov 16  2015 VirtualBox VMs
+drwxr-xr-x   4 janne  staff   136 Feb 15  2016 eclipse
+
+
+
+
+[2016-09-28 18:01:31.542700000]Sending 226 LIST data send finished
+
+
+[2016-09-28 18:01:33.424707000]Sending 221 Bye Bye
 
 
