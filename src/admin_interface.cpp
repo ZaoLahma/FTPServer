@@ -19,7 +19,7 @@ AdminInterface::AdminInterface() : running(true), loggingEnabled(false) {
 	menuStr += "Available commands\n";
 	menuStr += "List active connections - list\n";
 	menuStr += "Toggle screen logging   - log\n";
-	menuStr += "Disconnect <clientId>   - disconnect client\n";
+	menuStr += "Disconnect connectionId - disconnect client\n";
 	menuStr += "Shutdown FTP server     - exit\n\n";
 	menuStr += "command:\n";
 }

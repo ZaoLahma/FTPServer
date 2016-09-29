@@ -147,7 +147,7 @@ void ServerSocketListener::HandleEvent(const uint32_t eventNo,
 
 		ClientConnMapT::iterator connection = clientConnections.begin();
 		for( ; connection != clientConnections.end(); ++connection) {
-			response_string += "controlFD: " + std::to_string(connection->second->controlFd) + "\n";
+			response_string += "connectionId: " + std::to_string(connection->second->controlFd) + "\n";
 		}
 		JobDispatcher::GetApi()->RaiseEvent(FTP_LIST_CONNECTIONS_EVENT_RSP, new ListConnectionsEventData(response_string));
 	} else if (FTP_CLIENT_INACTIVE_CHECK_TIMEOUT == eventNo) {
