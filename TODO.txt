@@ -1,16 +1,10 @@
-TODO in priority order
+TODO
 
-- Fix crash on disconnect during an active data transfer.
-  In fact, check that scenario in general.
+- Refactor directory handling.
 
 - Fix inactivity timer issue where a client might get 
   erroneously disconnected during data transfer.
   Need to not only keep track of control channel,
   but also data channel.
-
-- PASSIVE mode. Seriously.
-
-- PASSIVE mode config. Need to be able to define a port 
-  range to be used for passive connections.
 
 - Add more useful information about active connections.

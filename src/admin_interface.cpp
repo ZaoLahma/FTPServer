@@ -9,6 +9,7 @@
 #include "../inc/thread_fwk/jobdispatcher.h"
 #include "../inc/admin_interface_events.h"
 #include <iostream>
+#include <cstdlib>
 
 AdminInterface::AdminInterface() : running(true), loggingEnabled(false) {
 	JobDispatcher::GetApi()->SubscribeToEvent(FTP_SHUT_DOWN_EVENT_RSP, this);
@@ -18,6 +19,7 @@ AdminInterface::AdminInterface() : running(true), loggingEnabled(false) {
 	menuStr += "Available commands\n";
 	menuStr += "List active connections - list\n";
 	menuStr += "Toggle screen logging   - log\n";
+	menuStr += "Disconnect <clientId>   - disconnect client\n";
 	menuStr += "Shutdown FTP server     - exit\n\n";
 	menuStr += "command:\n";
 }
@@ -47,6 +49,10 @@ void AdminInterface::Execute() {
 			} else {
 				Draw("Logging to screen off");
 			}
+		} else if(userInput.find("disconnect") != std::string::npos) {
+			std::cin>>userInput;
+			uint32_t socketFd = std::atoi(userInput.c_str());
+			JobDispatcher::GetApi()->RaiseEvent(FTP_DISCONNECT_CLIENT_EVENT, new DisconnectClientEventData(socketFd));
 		}
 	}
 

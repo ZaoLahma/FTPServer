@@ -16,6 +16,7 @@
 #define FTP_REFRESH_SCREEN_EVENT       0x50001002
 #define FTP_LIST_CONNECTIONS_EVENT     0x50001003
 #define FTP_LIST_CONNECTIONS_EVENT_RSP 0x50001004
+#define FTP_DISCONNECT_CLIENT_EVENT    0x50001005
 
 class RefreshScreenEventData : public EventDataBase {
 public:
@@ -55,6 +56,23 @@ protected:
 
 private:
 	ListConnectionsEventData();
+};
+
+class DisconnectClientEventData : public EventDataBase {
+public:
+	DisconnectClientEventData(uint32_t clientFd_): clientFd(clientFd_) {
+
+	}
+
+	uint32_t clientFd;
+
+	EventDataBase* clone() const {
+		return new DisconnectClientEventData(clientFd);
+	}
+protected:
+
+private:
+	DisconnectClientEventData();
 };
 
 #endif /* INC_ADMIN_INTERFACE_EVENTS_H_ */

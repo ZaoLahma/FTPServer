@@ -20,6 +20,7 @@ ServerSocketListener::ServerSocketListener() : running(true) {
 	JobDispatcher::GetApi()->SubscribeToEvent(FTP_SHUT_DOWN_EVENT, this);
 	JobDispatcher::GetApi()->SubscribeToEvent(FTP_LIST_CONNECTIONS_EVENT, this);
 	JobDispatcher::GetApi()->SubscribeToEvent(FTP_CLIENT_INACTIVE_CHECK_TIMEOUT, this);
+	JobDispatcher::GetApi()->SubscribeToEvent(FTP_DISCONNECT_CLIENT_EVENT, this);
 
 	JobDispatcher::GetApi()->RaiseEventIn(FTP_CLIENT_INACTIVE_CHECK_TIMEOUT, nullptr, 500);
 }
@@ -30,6 +31,7 @@ ServerSocketListener::~ServerSocketListener() {
 	JobDispatcher::GetApi()->UnsubscribeToEvent(FTP_SHUT_DOWN_EVENT, this);
 	JobDispatcher::GetApi()->UnsubscribeToEvent(FTP_LIST_CONNECTIONS_EVENT, this);
 	JobDispatcher::GetApi()->UnsubscribeToEvent(FTP_CLIENT_INACTIVE_CHECK_TIMEOUT, this);
+	JobDispatcher::GetApi()->UnsubscribeToEvent(FTP_DISCONNECT_CLIENT_EVENT, this);
 }
 
 void ServerSocketListener::Execute() {
@@ -155,5 +157,14 @@ void ServerSocketListener::HandleEvent(const uint32_t eventNo,
 			connection->second->CheckIfInactive();
 		}
 		JobDispatcher::GetApi()->RaiseEventIn(FTP_CLIENT_INACTIVE_CHECK_TIMEOUT, nullptr, 500);
+	} else if(FTP_DISCONNECT_CLIENT_EVENT == eventNo) {
+		const DisconnectClientEventData* disconnectData = static_cast<const DisconnectClientEventData*>(dataPtr);
+		ClientConnMapT::iterator connection = clientConnections.find(disconnectData->clientFd);
+		if(connection != clientConnections.end()) {
+			JobDispatcher::GetApi()->RaiseEvent(FTP_REFRESH_SCREEN_EVENT, new RefreshScreenEventData("Disconnecting client: " + std::to_string(disconnectData->clientFd)));
+			connection->second->ForceDisconnect();
+		} else {
+			JobDispatcher::GetApi()->RaiseEvent(FTP_REFRESH_SCREEN_EVENT, new RefreshScreenEventData("Can't disconnect " + std::to_string(disconnectData->clientFd) + " - No such client."));
+		}
 	}
 }
