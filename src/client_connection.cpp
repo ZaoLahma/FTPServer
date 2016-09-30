@@ -327,24 +327,17 @@ void ClientConnection::HandleListCommand(const FTPCommand& command) {
 }
 
 void ClientConnection::HandleRetrCommand(const FTPCommand& command) {
-	std::string filePath;
+	std::string filePath = GetFilePath(command);
 
-	if(command.args.find(ftpRootDir) == std::string::npos) {
-		filePath += ftpRootDir;
-	}
-
-	if(command.args.find(currDir) == std::string::npos) {
-		filePath += currDir + "/";
-	}
-
-	filePath += command.args;
+	JobDispatcher::GetApi()->RaiseEvent(FTP_REFRESH_SCREEN_EVENT, new RefreshScreenEventData("filePath: " + filePath));
 
 	JobDispatcher::GetApi()->ExecuteJobInGroup(new RetrJob(filePath, dataFd, controlFd, binaryFlag), DATA_CHANNEL_THREAD_GROUP_ID);
 }
 
 void ClientConnection::HandleStorCommand(const FTPCommand& command) {
 	if(user->rights == WRITE) {
-		std::string filePath = currDir + "/" + command.args;
+		std::string filePath = GetFilePath(command);
+
 		JobDispatcher::GetApi()->ExecuteJobInGroup(new StorJob(filePath, dataFd, controlFd, binaryFlag), DATA_CHANNEL_THREAD_GROUP_ID);
 	} else {
 		std::string send_string = "550 STOR refused due to user access rights";
@@ -356,12 +349,14 @@ void ClientConnection::HandleDeleCommand(const FTPCommand& command) {
 	std::string send_string = "";
 	if(user->rights == WRITE) {
 		int status;
-		std::string fileString = currDir + "/" + command.args;
-		status = remove(fileString.c_str());
+
+		std::string filePath = GetFilePath(command);
+
+		status = remove(filePath.c_str());
 		if(0 == status) {
-			send_string = "250 " + fileString + " deleted OK";
+			send_string = "250 " + command.args + " deleted OK";
 		} else {
-			send_string = "550 DELE of " + fileString + " not performed due to unknown reason"; //FIXME
+			send_string = "550 DELE of " + command.args + " not performed due to unknown reason"; //FIXME
 		}
 	} else {
 		send_string = "550 DELE refused due to user access rights";
@@ -468,12 +463,12 @@ void ClientConnection::HandleMkdCommand(const FTPCommand& command) {
 	std::string send_string;
 	if(user->rights == WRITE) {
 		int status;
-		std::string dirString = currDir + "/" + command.args;
+		std::string dirString = this->GetFilePath(command);
 		status = mkdir(dirString.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH | S_IWOTH);
 		if(0 == status) {
-			send_string = "257 " + dirString + " created OK";
+			send_string = "257 " + command.args + " created OK";
 		} else {
-			send_string = "550 MKD of " + dirString + " not performed due to unknown reason"; //FIXME
+			send_string = "550 MKD of " + command.args + " not performed due to unknown reason"; //FIXME
 		}
 	} else {
 		send_string = "550 MKD refused due to user rights";
@@ -486,12 +481,12 @@ void ClientConnection::HandleRmdCommand(const FTPCommand& command) {
 	std::string send_string;
 	if(user->rights == WRITE) {
 		int status;
-		std::string dirString = currDir + "/" + command.args;
+		std::string dirString = GetFilePath(command);
 		status = remove(dirString.c_str());
 		if(0 == status) {
-			send_string = "250 " + dirString + " removed OK";
+			send_string = "250 " + command.args + " removed OK";
 		} else {
-			send_string = "550 RMD of " + dirString + " not performed due to unknown reason"; //FIXME
+			send_string = "550 RMD of " + command.args + " not performed due to unknown reason"; //FIXME
 		}
 	} else {
 		send_string = "550 RMD refused due to user access rights";
@@ -522,4 +517,20 @@ void ClientConnection::ForceDisconnect() {
 
 bool ClientConnection::IsDisconnected() {
 	return disconnected;
+}
+
+std::string ClientConnection::GetFilePath(const FTPCommand& command) {
+	std::string filePath;
+
+	if(command.args.find(ftpRootDir) == std::string::npos) {
+		filePath += ftpRootDir;
+	}
+
+	if(command.args.find(currDir) == std::string::npos) {
+		filePath += currDir + "/";
+	}
+
+	filePath += command.args;
+
+	return filePath;
 }

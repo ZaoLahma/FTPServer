@@ -71,6 +71,8 @@ private:
 	FTPCommand GetCommand();
 	std::string GetControlChannelData();
 
+	std::string GetFilePath(const FTPCommand& command);
+
 	void HandleUserCommand(const FTPCommand& command);
 	void HandlePassCommand(const FTPCommand& command);
 	void HandlePortCommand(const FTPCommand& command);
